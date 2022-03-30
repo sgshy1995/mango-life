@@ -1,4 +1,6 @@
-# mango-life
+# 懒比蛋生活
+
+开发中。
 
 ## Project setup
 ```
