@@ -28,6 +28,15 @@
             }
             
         }
+        ,{
+            "path" : "pages/mine/Mine",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationStyle":"custom",

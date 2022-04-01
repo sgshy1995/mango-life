@@ -1,6 +1,6 @@
 <template>
 	<view class="home-content">
-		<u-sticky>
+		<u-sticky class="home-sticky">
 			<view class="home-head">
 				<text class="home-title">懒比蛋生活</text>
 				<image class="home-img" src="../../static/lanbidan.png"></image>
@@ -51,8 +51,10 @@
 					'https://cdn.uviewui.com/uview/swiper/swiper1.png',
 				],
 				urls: [
-					'/pages/index/index',
-					'/pages/money/Money'
+					'/pages/index/Index',
+					'/pages/money/Money',
+					'/pages/memo/Memo',
+					'/pages/mine/Mine'
 				],
 				menuArr: [
 					[{
@@ -155,6 +157,10 @@
 	.u-swiper {
 		width: 100vw;
 	}
+	
+	.home-sticky{
+		top: 0 !important;
+	}
 
 	/* 头部 */
 	.home-head {
@@ -192,7 +198,7 @@
 	}
 
 	.u-swiper-block {
-		margin-top: 120rpx;
+		margin-top: 40rpx;
 	}
 	
 	.scroll-wrapper{

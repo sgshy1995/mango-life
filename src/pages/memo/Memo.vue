@@ -19,7 +19,8 @@
 				urls: [
 					'/pages/index/Index',
 					'/pages/money/Money',
-					'/pages/memo/Memo'
+					'/pages/memo/Memo',
+					'/pages/mine/Mine'
 				]
 			};
 		},
