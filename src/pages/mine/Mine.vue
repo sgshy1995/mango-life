@@ -31,14 +31,14 @@
 						<u-icon name="arrow-left" color="#333" size="18"></u-icon>
 						<text>返回</text>
 					</view>
-					<text class="top-title">注册</text>
+					<text class="top-title">{{ showType === 'register' ? '注册' : '登录' }}</text>
 				</view>
 				<u--form border="none" style="border: none;padding-left: 100rpx;padding-right: 100rpx;"
 					labelPosition="left" :model="formModel" ref="Form">
 					<u-form-item required labelWidth="70" label="用户名" prop="username" borderBottom>
 						<u--input placeholder="请输入用户名" v-model="formModel.username" border="none"></u--input>
 					</u-form-item>
-					<u-form-item required labelWidth="70" label="昵称" prop="nickname" borderBottom>
+					<u-form-item v-if="showType==='register'" required labelWidth="70" label="昵称" prop="nickname" borderBottom>
 						<u--input placeholder="请输入昵称" v-model="formModel.nickname" border="none"></u--input>
 					</u-form-item>
 					<u-form-item required labelWidth="70" label="密码" prop="password" borderBottom>
@@ -65,9 +65,12 @@
 
 						<text>已阅读并同意<text class="a-lisence">懒比蛋使用协议</text></text>
 					</view>
-					<u-button color="#ffbb00" type="primary" text="注册" @click="handleRegister"></u-button>
-					<u-button :customStyle="{color: '#333', borderColor: '#eee', marginTop: '24rpx'}" :plain="true"
-						type="primary" text="已有账号,立即登录"></u-button>
+					<u-button v-if="showType==='register'" color="#ffbb00" type="primary" text="注册" @click="handleRegister"></u-button>
+					<u-button v-else color="#ffbb00" type="primary" text="登录" @click="handleLogin"></u-button>
+					<u-button v-if="showType==='register'" :customStyle="{color: '#333', borderColor: '#eee', marginTop: '24rpx'}" :plain="true"
+						type="primary" text="已有账号,立即登录" @click="changeShowType('login')"></u-button>
+					<u-button v-else :customStyle="{color: '#333', borderColor: '#eee', marginTop: '24rpx'}" :plain="true"
+						type="primary" text="没有账号,前往注册" @click="changeShowType('register')"></u-button>
 				</view>
 			</view>
 		</u-popup>
@@ -77,7 +80,8 @@
 <script lang="ts">
 	import Vue from 'vue';
 	import {
-		registerAction
+		registerAction,
+		loginAction
 	} from '@/service/service'
 	export default Vue.extend({
 		data() {
@@ -93,6 +97,7 @@
 				arr.push(String.fromCharCode(i));
 			}
 			return {
+				showType: 'login',
 				selected: 3,
 				urls: [
 					'/pages/index/Index',
@@ -135,7 +140,7 @@
 				let errorMessage = ''
 				if (!this.formModel.username) {
 					errorMessage = '请输入用户名'
-				} else if (!this.formModel.nickname) {
+				} else if (!this.formModel.nickname && this.showType==='register') {
 					errorMessage = '请输入昵称'
 				} else if (!this.formModel.password) {
 					errorMessage = '请输入密码'
@@ -143,8 +148,15 @@
 					errorMessage = '请输入验证码'
 				}else if (this.formModel.code.toLowerCase() !== this.capValue.toLowerCase()) {
 					errorMessage = '验证码错误'
+					this.tapCaptcha();
 				}
 				return errorMessage
+			},
+			changeShowType(showType: string){
+				(this.$refs.Form!as any).resetFields()
+				this.tapCaptcha();
+				this.showType = showType
+				this.showPassword = false
 			},
 			handleRegister() {
 				const errorMessage = this.validateForm()
@@ -160,6 +172,24 @@
 					})
 				} else {
 					registerAction(this.formModel).then(res => {
+						console.log('res', res)
+					})
+				}
+			},
+			handleLogin(){
+				const errorMessage = this.validateForm()
+				if (errorMessage) {
+					uni.showToast({
+						title: errorMessage,
+						icon: 'none'
+					})
+				} else if (!this.selectedLicense.length) {
+					uni.showToast({
+						title: '请同意并勾选用户协议',
+						icon: 'none'
+					})
+				} else {
+					loginAction(this.formModel).then(res => {
 						console.log('res', res)
 					})
 				}

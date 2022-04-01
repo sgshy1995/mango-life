@@ -11,3 +11,14 @@ export const registerAction = (user: Record<string,any>): Promise<string> => {
 	data: user
   })
 }
+
+// 登录
+const loginUrl = '/user/login'
+export const loginAction = (user: Record<string,any>): Promise<string> => {
+  return doRequestAction({
+    url: loginUrl,
+    method: 'POST',
+    header: NoTokenJsonHeader,
+	data: user
+  })
+}
