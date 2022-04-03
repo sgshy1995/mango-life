@@ -10,13 +10,13 @@ interface RequestBase {
 
 interface RequestHeader {
   'content-type'?: 'application/json' | string
-  'authentication'?: string
+  'Authorization'?: string
 }
 
 const DOMAIN_URL: string = process.env.VUE_APP_API_BASE_URL;
 
 const getToken = (): string => {
-  const token = uni.getStorageSync('SYS_AUTH_TOKEN_KEY');
+  const token = 'Bearer ' + uni.getStorageSync('SYS_AUTH_TOKEN_KEY');
   return token
 }
 
@@ -35,7 +35,7 @@ export const doRequestAction = (requestBase: RequestBase): Promise<any> => {
 	if (!req.header) {
 	    req.header = {
 	      'content-type': 'application/json',
-	      'authentication': getToken()
+	      'Authorization': getToken()
 	    }
 	}
 	
