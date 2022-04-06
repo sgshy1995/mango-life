@@ -29,7 +29,7 @@
 			<u-tabbar-item text="我的" icon="account-fill"></u-tabbar-item>
 		</u-tabbar>
 		<LoginRegisterWrapper @ok="handleSuccess" ref="LoginRegisterWrapper"></LoginRegisterWrapper>
-		<UserInfoWrapper ref="UserInfoWrapper"></UserInfoWrapper>
+		<UserInfoWrapper :userInfo="userInfo" ref="UserInfoWrapper"></UserInfoWrapper>
 	</view>
 </template>
 

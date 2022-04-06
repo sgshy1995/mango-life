@@ -2,18 +2,32 @@
 	<view class="money-view">
 		<view class="money-body">
 			<view class="money-body-top">
-				<u-button type="primary" color="#ffbb00" text="分析" :customStyle="buttonStyle"></u-button>
+				<u-subsection style="width: 50%;color: #333 !important" :list="titleList" activeColor="#ffbb00" inactiveColor="#333" mode="subsection" @change="sectionChange" bgColor="#ffbb00" :current="curNow"></u-subsection>
+				<u-button type="primary" size="mini" color="#ffbb00" text="分析" :customStyle="buttonStyle"></u-button>
 			</view>
-			<view class="money-body-icons">
-				<view class="money-body-icon" v-for="(u,index) in iconsList" :key="u.id" @click="handleShowCalculator(u)">
-					<image :src="u.src"></image>
-					<text>{{ u.name + ': ' + u.money }}</text>
-				</view>
-			</view>
+			<swiper @change="swiperChange" :current="swiperCurrent">
+				<swiper-item>
+					<view class="money-body-icons">
+						<view class="money-body-icon" v-for="(u,index) in iconsListSpend" :key="u.id" @click="handleShowCalculator(u)">
+							<image :src="u.src"></image>
+							<text>{{ u.name + ': ' + u.money }}</text>
+						</view>
+					</view>
+				</swiper-item>
+				<swiper-item>
+					<view class="money-body-icons">
+						<view class="money-body-icon" v-for="(u,index) in iconsListIncome" :key="u.id" @click="handleShowCalculator(u)">
+							<image :src="u.src"></image>
+							<text>{{ u.name + ': ' + u.money }}</text>
+						</view>
+					</view>
+				</swiper-item>
+			</swiper>
+			
 			<view class="money-body-bottom">
-				<image src=""></image>
+				<image src="../../static/back-money-people.jpg"></image>
 				<view class="today">
-					<text>今日总支出：<br> <text style="color: #ffbb00">{{ showSwitch ? todayMoney : '***' }}</text></text>
+					<text>今日总<text>{{ curNow===0 ? '支出' : '收入' }}</text> ：<br> <text style="color: #ffbb00">{{ !showSwitch ? '***' : curNow===0 ? todaySpendMoney : todayIncomeMoney }}</text></text>
 					<u-switch style="margin-top: 20rpx;" v-model="showSwitch" size="20" activeColor="#ffbb00"></u-switch>
 				</view>
 			</view>
@@ -39,9 +53,13 @@
 		},
 		data() {
 			return {
-				todayMoney: 0,
+				swiperCurrent: 0,
+				todaySpendMoney: 0,
+				todayIncomeMoney: 0,
 				showSwitch: false,
 				selected: 1,
+				titleList: ['支出', '收入'],
+				curNow: 0,
 				urls: [
 					'/pages/index/Index',
 					'/pages/money/Money',
@@ -49,14 +67,53 @@
 					'/pages/mine/Mine'
 				],
 				buttonStyle: {
-					height: '50rpx',
-					width: '110rpx',
+					height: '42rpx',
+					width: '50rpx',
 					position: 'absolute',
-					top: '22rpx',
-					right: '22rpx',
-					color: '#333'
+					top: '26rpx',
+					right: '26rpx',
+					color: '#333',
+					fontSize: '12px !important'
 				},
-				iconsList: [
+				iconsListIncome: [
+					{
+						id: '1',
+						src: require('@/static/images/home/工资.png'),
+						name: '工资',
+						money: 0
+					},
+					{
+						id: '2',
+						src: require('@/static/images/home/理财.png'),
+						name: '理财',
+						money: 0
+					},
+					{
+						id: '3',
+						src: require('@/static/images/home/礼金.png'),
+						name: '礼金',
+						money: 0
+					},
+					{
+						id: '4',
+						src: require('@/static/images/home/兼职.png'),
+						name: '兼职',
+						money: 0
+					},
+					{
+						id: '5',
+						src: require('@/static/images/home/白嫖.png'),
+						name: '白嫖',
+						money: 0
+					},
+					{
+						id: '6',
+						src: require('@/static/images/home/其他.png'),
+						name: '其他',
+						money: 0
+					}
+				],
+				iconsListSpend: [
 					{
 						id: '1',
 						src: require('@/static/images/home/汉堡.png'),
@@ -136,6 +193,14 @@
 			this.selected = 1
 		},
 		methods:{
+			swiperChange(evt:{detail:{current:number,source:string}}){
+				this.curNow = evt.detail.current;
+				this.swiperCurrent = evt.detail.current;
+			},
+			sectionChange(index:number){
+				this.curNow = index;
+				this.swiperCurrent = index;
+			},
 			handleShowCalculator(record: any){
 				(this.$refs.CalendarWrapper as any).show()
 			},
@@ -158,6 +223,7 @@
 </script>
 
 <style lang="scss">
+
 	.money-view{
 		width: 100vw;
 		height: 100vh;
@@ -167,17 +233,25 @@
 	width: 100vw;
 	flex: 1 1 1;
 	box-sizing: border-box;
-	//background: url(../../static/back-money.jpg) 60%;
+	background: url(../../static/back-money.jpg) 60%;
 	background-size: cover;
 	position: relative;
 	
 	.money-body-top{
 		height: 90rpx;
 		width: 100vw;
-		text-align: right;
 		border-bottom: 1px solid #ffbb00;
 		position: relative;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		
+		.u-button__text{
+			font-size: 12px !important;
+		}
 	}
+	
+	
 	
 	.money-body-icons{
 		width: 100%;
@@ -185,9 +259,10 @@
 		flex-wrap: wrap;
 		padding: 40rpx;
 		box-sizing: border-box;
-		justify-content: space-between;
+		justify-content: flex-start;
+		height: 400rpx;
 		.money-body-icon{
-			width: 150rpx;
+			width: 166rpx;
 			height: 150rpx;
 			display: flex;
 			flex-direction: column;

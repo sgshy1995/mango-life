@@ -77,3 +77,9 @@ $uni-font-size-paragraph:30rpx;
 
 /* uni.scss */
 @import 'uview-ui/theme.scss';
+uni-swiper .uni-swiper-wrapper{
+	overflow: unset;
+}
+uni-swiper-item{
+	overflow: unset;
+}

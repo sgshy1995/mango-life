@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<u-popup :overlay="true" bgColor="#f7f7f7" :duration="200" mode="right" :customStyle="customStyleIn"
+		<u-popup :overlay="false" bgColor="#f7f7f7" :duration="200" mode="right" :customStyle="customStyleIn"
 			:safeAreaInsetTop="true" :show="showPopup" @close="close">
 			<view style="width: 100%;">
 				<u-button :customStyle="{color: '#333', borderColor: '#eee', marginBottom: '24rpx'}"

@@ -1,5 +1,5 @@
 <template>
-	<u-popup zIndex="20000" :show="showCalculator" @close="close" class="calculator">
+	<u-popup :overlay="true" :overlayStyle="{zIndex: 20000}" zIndex="20000" :show="showCalculator" @close="close" class="calculator">
 		<u-row justify="flex-start" class="calculator-info">
 			<u-col class="note" textAlign="center" align="center" justify="center" span="6">
 				<image src="../../static/images/home/备注.png" style="width: 18px;height: 18px;margin-right: 10rpx;"></image>

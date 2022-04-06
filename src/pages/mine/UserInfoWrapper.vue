@@ -10,6 +10,15 @@
 				</view>
 				<text class="top-title">个人信息</text>
 			</view>
+			<u-cell-group>
+				<u-cell icon="info-circle-fill" title="用户名" :value="userInfo.username"></u-cell>
+				<u-cell icon="account-fill" title="昵称" :value="userInfo.nickname"></u-cell>
+				<u-cell icon="lock-fill" title="私钥" :value="userInfo.primary_key"></u-cell>
+				<u-cell icon="phone-fill" title="手机" :value="userInfo.phone"></u-cell>
+				<u-cell icon="email-fill" title="邮箱" :value="userInfo.email"></u-cell>
+				<u-cell icon="man-add-fill" title="性别" :value="userInfo.gender"></u-cell>
+				<u-cell icon="gift-fill" title="生日" :value="userInfo.birthday"></u-cell>
+			</u-cell-group>
 		</view>
 	</u-popup>
 </template>
@@ -23,6 +32,22 @@
 					width: '100vw'
 				},
 				showPopup: false
+			}
+		},
+		props: {
+			userInfo: {
+				type: Object,
+				default:()=> {
+					return {
+						username: '',
+						nickname: '',
+						primary_key: '',
+						id: 0,
+						email: '',
+						phone: '',
+						avatar: ''
+					}
+				}
 			}
 		},
 		methods: {
