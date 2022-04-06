@@ -25,16 +25,17 @@
 			<u-tabbar-item text="备忘" icon="calendar-fill"></u-tabbar-item>
 			<u-tabbar-item text="我的" icon="account-fill"></u-tabbar-item>
 		</u-tabbar>
-		<Calculator ref="Calculator"></Calculator>
+		<CalendarWrapper ref="CalendarWrapper"></CalendarWrapper>
 	</view>
 </template>
 
 <script lang="ts">
 	import Vue from 'vue';
-	import Calculator from'./Calculator.vue'
+	
+	import CalendarWrapper from './CalendarWrapper.vue'
 	export default Vue.extend({
 		components: {
-			Calculator
+			CalendarWrapper
 		},
 		data() {
 			return {
@@ -136,7 +137,7 @@
 		},
 		methods:{
 			handleShowCalculator(record: any){
-				(this.$refs.Calculator as any).show()
+				(this.$refs.CalendarWrapper as any).show()
 			},
 			changeSwitch(){
 				this.showSwitch = !this.showSwitch

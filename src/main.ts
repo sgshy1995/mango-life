@@ -5,6 +5,11 @@ import App from './App.vue'
 import uView from "uview-ui";
 Vue.use(uView);
 
+// @ts-ignore
+import vueHashCalendar from 'vue-hash-calendar'
+import 'vue-hash-calendar/lib/vue-hash-calendar.css'
+Vue.use(vueHashCalendar)
+
 Vue.prototype.$toast  = function(message:string){
 	uni.showModal({
 		content: message
