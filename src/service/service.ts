@@ -39,3 +39,13 @@ export const avatarUploadAction = (path:string): Promise<Record<string,any>> => 
 		url: avatarUploadUrl
 	},path)
 }
+
+// 退出登录
+const logoutUrl = '/user/logout'
+export const logoutAction = (user: Record<string,any>): Promise<Record<string,any>> => {
+  return doRequestAction({
+    url: logoutUrl,
+    method: 'POST',
+	data: user
+  })
+}

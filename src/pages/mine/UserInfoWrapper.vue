@@ -26,18 +26,24 @@
 				<u-cell icon="man-add-fill" title="性别" :value="userInfo.gender"></u-cell>
 				<u-cell icon="gift-fill" title="生日" :value="userInfo.birthday"></u-cell>
 			</u-cell-group>
+			<view class="userinfo-bottom">
+				<u-button color="#ffbb00" type="primary" text="退出登录" @click="handleShowModal"></u-button>
+			</view>
 		</view>
+		<u-modal :show="showModal" showCancelButton confirmColor="#ffbb00" @confirm="handleLogout" @cancel="showModal=true" content="确定退出登录吗？"></u-modal>
 	</u-popup>
 </template>
 
 <script lang="ts">
 	import Vue from 'vue';
 	import {
-		avatarUploadAction
+		avatarUploadAction,
+		logoutAction
 	} from '@/service/service'
 	export default Vue.extend({
 		data() {
 			return {
+				showModal: false,
 				customStyleIn: {
 					width: '100vw'
 				},
@@ -85,6 +91,20 @@
 							console.log('err',err)
 						})
 					}.bind(this)
+				})
+			},
+			handleShowModal(){
+				this.showModal = true
+			},
+			handleLogout(){
+				logoutAction(this.userInfo).then(res=>{
+					this.showModal = false
+					uni.removeStorageSync('SYS_USER_INFO')
+					uni.removeStorageSync('SYS_AUTH_TOKEN_KEY')
+					this.$emit('change')
+					this.close()
+				}).catch(err=>{
+					
 				})
 			}
 		}
@@ -166,5 +186,11 @@
 				}
 			}
 		}
+	}
+	
+	.userinfo-bottom{
+		width: 100%;
+		box-sizing: border-box;
+		padding: 30rpx 40rpx;
 	}
 </style>
