@@ -3,7 +3,7 @@
 		<view class="mine-top">
 			<view class="mine-top-one">
 				<view v-if="userInfo.id" class="left" @click="handleShowUserInfo">
-					<u-avatar style="border: 2px solid #fff;margin-right: 14rpx;" color="#ccc" :src="userInfo.avatar"
+					<u-avatar style="border: 2px solid #fff;margin-right: 14rpx;background: #fff !important;" color="#ccc" :src="baseUrl + '/' + userInfo.avatar"
 						size="44" fontSize="36" bg-color="#f6f6f6"></u-avatar>
 					<text>{{ userInfo.nickname }}</text>
 				</view>
@@ -29,7 +29,7 @@
 			<u-tabbar-item text="我的" icon="account-fill"></u-tabbar-item>
 		</u-tabbar>
 		<LoginRegisterWrapper @ok="handleSuccess" ref="LoginRegisterWrapper"></LoginRegisterWrapper>
-		<UserInfoWrapper :userInfo="userInfo" ref="UserInfoWrapper"></UserInfoWrapper>
+		<UserInfoWrapper @change="getUserInfo(userInfo)" ref="UserInfoWrapper" :userInfo="userInfo"></UserInfoWrapper>
 	</view>
 </template>
 
@@ -45,6 +45,7 @@
 	export default Vue.extend({
 		data() {
 			return {
+				baseUrl: process.env.VUE_APP_API_BASE_URL,
 				showType: 'login',
 				selected: 3,
 				urls: [

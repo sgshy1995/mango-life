@@ -1,5 +1,5 @@
 import {Result} from "./service.d";
-import {doRequestAction,NoTokenJsonHeader} from "./request";
+import {doRequestAction,NoTokenJsonHeader,doUploadAction} from "./request";
 
 // 注册
 const registerUrl = '/user'
@@ -30,4 +30,12 @@ export const getUserInfoByUsernameAction = (user: Record<string,any>): Promise<R
     url: getUserInfoByUsernameUrl(user.username),
     method: 'GET'
   })
+}
+
+// 头像上传
+const avatarUploadUrl = '/user/upload'
+export const avatarUploadAction = (path:string): Promise<Record<string,any>> => {
+	return doUploadAction({
+		url: avatarUploadUrl
+	},path)
 }

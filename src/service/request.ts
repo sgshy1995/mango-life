@@ -59,3 +59,31 @@ export const doRequestAction = (requestBase: RequestBase): Promise<any> => {
 	    uni.request(req);
 	  }))
 }
+
+export const doUploadAction = (requestBase: RequestBase, path: string): Promise<any> => {
+	let req: RequestBase = {...NormalRequestData, ...requestBase, url:DOMAIN_URL + requestBase.url, method: 'POST'}
+	req.header = {
+	  'Authorization': getToken()
+	}
+	
+	return new Promise((resolve,reject) => {
+		uni.uploadFile({
+		          url: req.url,
+		          filePath: path,
+		          name: "file",
+		          header: {
+		            'Accept': "application/json",
+		            'Authorization': getToken(),
+		          },
+		          success: (uploadFileRes) => {
+		            console.log('uploadFileRes', uploadFileRes);
+					resolve(uploadFileRes)
+		          },
+		          fail: (err) => {
+		            console.log('err', err);
+					reject(err)
+		          },
+		        });
+	})
+	
+}

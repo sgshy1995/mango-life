@@ -3,7 +3,7 @@
 		<view class="money-body">
 			<view class="money-body-top">
 				<u-subsection style="width: 50%;color: #333 !important" :list="titleList" activeColor="#ffbb00" inactiveColor="#333" mode="subsection" @change="sectionChange" bgColor="#ffbb00" :current="curNow"></u-subsection>
-				<u-button type="primary" size="mini" color="#ffbb00" text="分析" :customStyle="buttonStyle"></u-button>
+				<u-button @click="handleShowAnalysis" type="primary" size="mini" color="#ffbb00" text="分析" :customStyle="buttonStyle"></u-button>
 			</view>
 			<swiper @change="swiperChange" :current="swiperCurrent">
 				<swiper-item>
@@ -40,16 +40,18 @@
 			<u-tabbar-item text="我的" icon="account-fill"></u-tabbar-item>
 		</u-tabbar>
 		<CalendarWrapper ref="CalendarWrapper"></CalendarWrapper>
+		<AnalysisWrapper ref="AnalysisWrapper"></AnalysisWrapper>
 	</view>
 </template>
 
 <script lang="ts">
 	import Vue from 'vue';
-	
+	import AnalysisWrapper from './AnalysisWrapper.vue'
 	import CalendarWrapper from './CalendarWrapper.vue'
 	export default Vue.extend({
 		components: {
-			CalendarWrapper
+			CalendarWrapper,
+			AnalysisWrapper
 		},
 		data() {
 			return {
@@ -193,6 +195,10 @@
 			this.selected = 1
 		},
 		methods:{
+			handleShowAnalysis(){
+				(this.$refs.AnalysisWrapper as any).showType = this.curNow === 0 ? 'spend' : 'income';
+				(this.$refs.AnalysisWrapper as any).show();
+			},
 			swiperChange(evt:{detail:{current:number,source:string}}){
 				this.curNow = evt.detail.current;
 				this.swiperCurrent = evt.detail.current;

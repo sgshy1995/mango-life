@@ -10,6 +10,13 @@
 				</view>
 				<text class="top-title">个人信息</text>
 			</view>
+			<view class="user-avatar">
+				<view class="left">
+					<u-icon name="photo-fill" color="#606266" size="22"></u-icon>用户头像
+				</view>
+				<image class="right" @click="uploadImage" :src="baseUrl + '/' + userInfo.avatar"></image>
+			</view>
+			<u-divider text="用户信息"></u-divider>
 			<u-cell-group>
 				<u-cell icon="info-circle-fill" title="用户名" :value="userInfo.username"></u-cell>
 				<u-cell icon="account-fill" title="昵称" :value="userInfo.nickname"></u-cell>
@@ -25,19 +32,23 @@
 
 <script lang="ts">
 	import Vue from 'vue';
+	import {
+		avatarUploadAction
+	} from '@/service/service'
 	export default Vue.extend({
 		data() {
 			return {
 				customStyleIn: {
 					width: '100vw'
 				},
-				showPopup: false
+				showPopup: false,
+				baseUrl: process.env.VUE_APP_API_BASE_URL
 			}
 		},
 		props: {
 			userInfo: {
 				type: Object,
-				default:()=> {
+				default: () => {
 					return {
 						username: '',
 						nickname: '',
@@ -52,19 +63,62 @@
 		},
 		methods: {
 			close() {
-				if(!this.showPopup) return
+				if (!this.showPopup) return
 				this.showPopup = false;
 			},
 			open() {
-			
+				
+			},
+			uploadImage() {
+				const that = this
+				uni.chooseImage({
+					count: 1,
+					sizeType: ['original', 'compressed'],
+					sourceType: ['album', 'camera'],
+					success: function(result: any) {
+						console.log('result path', result.tempFilePaths)
+						const imgUrl = result.tempFilePaths[0]
+						avatarUploadAction(imgUrl).then(res=>{
+							console.log('res',res)
+							that.$emit('change')
+						}).catch(err=>{
+							console.log('err',err)
+						})
+					}.bind(this)
+				})
 			}
 		}
 	})
 </script>
 
 <style lang="scss">
-.mine-popup {
+	.mine-popup {
 		box-sizing: border-box;
+
+		.user-avatar {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			box-sizing: border-box;
+			padding: 0 28rpx;
+			height: 100rpx;
+
+			.left {
+				display: flex;
+				flex-direction: row;
+				font-size: 14px;
+				flex-shrink: 0;
+				color: #333;
+				justify-content: center;
+				align-items: center;
+			}
+
+			.right {
+				width: 76rpx;
+				height: 76rpx;
+				border-radius: 50%;
+			}
+		}
 
 
 		.mine-popup-top {
