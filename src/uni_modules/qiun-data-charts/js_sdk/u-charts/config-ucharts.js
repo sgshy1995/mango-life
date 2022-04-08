@@ -260,22 +260,22 @@ const cfu = {
 	    "type": "line",
 	    "canvasId": "",
 	    "canvas2d": false,
-	    "background": "none",
+	    "background": "#fff",
 	    "animation": true,
 	    "timing": "easeOut",
 	    "duration": 1000,
 	    "color": [
-	        "#333"
+	        "#666"
 	    ],
 	    "rotate": false,
 	    "errorReload": true,
-	    "fontSize": 13,
+	    "fontSize": 12,
 	    "fontColor": "#666666",
 	    "enableScroll": true,
 	    "touchMoveLimit": 60,
 	    "enableMarkLine": false,
 	    "dataLabel": true,
-	    "dataPointShape": true,
+	    "dataPointShape": false,
 	    "dataPointShapeType": "solid",
 	    "tapLegend": true,
 	    "xAxis": {
@@ -284,7 +284,7 @@ const cfu = {
 	        "axisLineColor": "#CCCCCC",
 	        "calibration": false,
 	        "fontColor": "#666666",
-	        "fontSize": 13,
+	        "fontSize": 12,
 	        "rotateLabel": true,
 	        "itemCount": 7,
 	        "boundaryGap": "center",
@@ -328,7 +328,7 @@ const cfu = {
 	    "extra": {
 	        "line": {
 	            "type": "straight",
-	            "width": 1
+	            "width": 0.5
 	        },
 	        "tooltip": {
 	            "showBox": false,
@@ -340,7 +340,7 @@ const cfu = {
 	            "borderOpacity": 0.7,
 	            "bgColor": "#000000",
 	            "bgOpacity": 0.7,
-	            "gridType": "solid",
+	            "gridType": "dash",
 	            "dashLength": 4,
 	            "gridColor": "#CCCCCC",
 	            "fontColor": "#FFFFFF",
@@ -353,8 +353,8 @@ const cfu = {
 	            "labelFontColor": "#666666"
 	        },
 	        "markLine": {
-	            "type": "solid",
-	            "dashLength": 4,
+	            "type": "dash",
+	            "dashLength": 2,
 	            "data": []
 	        }
 	    }

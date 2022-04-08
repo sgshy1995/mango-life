@@ -14,7 +14,20 @@
 				<view class="left">
 					<u-icon name="photo-fill" color="#606266" size="22"></u-icon>用户头像
 				</view>
-				<image class="right" @click="uploadImage" :src="baseUrl + '/' + userInfo.avatar"></image>
+				<image v-if="userInfo.avatar" class="right" @click="uploadImage" :src="baseUrl + '/' + userInfo.avatar">
+				</image>
+				<u-avatar v-else icon="camera-fill" @click="uploadImage" fontSize="20"></u-avatar>
+			</view>
+			<u-divider text="团队/家庭"></u-divider>
+			<view class="user-team">
+				<u-cell-group>
+					<u-cell icon="home-fill" title="家庭/团队">
+						<view slot="value" class="user-team-value">
+							<text class="team-info">{{ userInfo.team_name || '暂无信息，请创建或邀请' }}</text>
+							<view @click="showTeamModal" class="manage"><u-icon name="list-dot" color="#606266" size="16"></u-icon></view>
+						</view>
+					</u-cell>
+				</u-cell-group>
 			</view>
 			<u-divider text="用户信息"></u-divider>
 			<u-cell-group>
@@ -30,7 +43,9 @@
 				<u-button color="#ffbb00" type="primary" text="退出登录" @click="handleShowModal"></u-button>
 			</view>
 		</view>
-		<u-modal :show="showModal" showCancelButton confirmColor="#ffbb00" @confirm="handleLogout" @cancel="showModal=true" content="确定退出登录吗？"></u-modal>
+		<u-modal :show="showModal" showCancelButton confirmColor="#ffbb00" @confirm="handleLogout"
+			@cancel="showModal=false" content="确定退出登录吗？"></u-modal>
+		<TeamManageModal @ok="$emit('change')" :userInfo="userInfo" ref="TeamManageModal"></TeamManageModal>
 	</u-popup>
 </template>
 
@@ -40,7 +55,11 @@
 		avatarUploadAction,
 		logoutAction
 	} from '@/service/service'
+	import TeamManageModal from './TeamManageModal.vue'
 	export default Vue.extend({
+		components: {
+			TeamManageModal
+		},
 		data() {
 			return {
 				showModal: false,
@@ -62,7 +81,9 @@
 						id: 0,
 						email: '',
 						phone: '',
-						avatar: ''
+						avatar: '',
+						team_id: 0,
+						team_name: ''
 					}
 				}
 			}
@@ -73,7 +94,10 @@
 				this.showPopup = false;
 			},
 			open() {
-				
+
+			},
+			showTeamModal(){
+				(this.$refs.TeamManageModal as any).show();
 			},
 			uploadImage() {
 				const that = this
@@ -84,27 +108,27 @@
 					success: function(result: any) {
 						console.log('result path', result.tempFilePaths)
 						const imgUrl = result.tempFilePaths[0]
-						avatarUploadAction(imgUrl).then(res=>{
-							console.log('res',res)
+						avatarUploadAction(imgUrl).then(res => {
+							console.log('res', res)
 							that.$emit('change')
-						}).catch(err=>{
-							console.log('err',err)
+						}).catch(err => {
+							console.log('err', err)
 						})
 					}.bind(this)
 				})
 			},
-			handleShowModal(){
+			handleShowModal() {
 				this.showModal = true
 			},
-			handleLogout(){
-				logoutAction(this.userInfo).then(res=>{
+			handleLogout() {
+				logoutAction(this.userInfo).then(res => {
 					this.showModal = false
 					uni.removeStorageSync('SYS_USER_INFO')
 					uni.removeStorageSync('SYS_AUTH_TOKEN_KEY')
 					this.$emit('change')
 					this.close()
-				}).catch(err=>{
-					
+				}).catch(err => {
+
 				})
 			}
 		}
@@ -114,6 +138,30 @@
 <style lang="scss">
 	.mine-popup {
 		box-sizing: border-box;
+		
+		.user-team{
+			box-sizing: border-box;
+			width: 100%;
+			
+			.user-team-value{
+				display: flex;
+				align-items: center;
+				
+				.team-info{
+					font-size: 14px;
+					color: #999999;
+				}
+				
+				.manage{
+					display: flex;
+					align-items: center;
+					font-size: 12px;
+					flex-direction: row;
+					margin-right: 10rpx;
+					margin-left: 30rpx;
+				}
+			}
+		}
 
 		.user-avatar {
 			display: flex;
@@ -187,8 +235,8 @@
 			}
 		}
 	}
-	
-	.userinfo-bottom{
+
+	.userinfo-bottom {
 		width: 100%;
 		box-sizing: border-box;
 		padding: 30rpx 40rpx;

@@ -2,9 +2,11 @@
 	<view>
 		<u-popup :overlay="false" bgColor="#f7f7f7" :duration="200" mode="right" :customStyle="customStyleIn"
 			:safeAreaInsetTop="true" :show="showPopup" @close="close">
-			<view style="width: 100%;">
-				<u-button :customStyle="{color: '#333', borderColor: '#eee', marginBottom: '24rpx'}"
-					:plain="true" type="primary" text="返回" @click="close"></u-button>
+			<u-navbar placeholder leftIconSize="14" border bgColor="#ffbb00"
+				:title="`${chooseInfo.name} / ${showType==='spend'?'支出':'收入'}`" @leftClick="close" leftText="返回">
+			</u-navbar>
+			<view style="padding: 20rpx;font-size: 12px;color: #909399;background: #f4f4f4;">
+				选择日期以查看记录或添加新纪录
 			</view>
 			<view style="width: 100%;">
 				<vue-hash-calendar :themeColor="themeColor" :disabled-date="disabledDate" @click="clickDate"
@@ -17,17 +19,29 @@
 					</template>
 				</vue-hash-calendar>
 			</view>
-			
+			<u-divider text="历史纪录" textSize="12"></u-divider>
+			<view class="history-list">
+				<u-cell-group>
+					<u-cell v-for="(u,index) in historyList" :key="u.id" :title="u.date" :label="u.remark">
+						<view slot="value" style="display: flex;align-items: center;">
+							<text>{{ (u.type === 'spend' ? '-' : '+') + u.money }}</text>
+							<u-icon style="margin-left: 30rpx;margin-right: 10rpx;" name="edit-pen-fill" color="#999" size="16"></u-icon>
+							<u-icon name="trash-fill" color="#999" size="16"></u-icon>
+						</view>
+					</u-cell>
+				</u-cell-group>
+			</view>
 		</u-popup>
-		<Calculator ref="Calculator"></Calculator>
+		<Calculator :showType="showType" ref="Calculator"></Calculator>
 	</view>
 </template>
 
 <script lang="ts">
 	import Vue from 'vue';
+	import moment from 'moment';
 	// @ts-ignore
 	import {lunar} from "@/utils/lunar";
-	import Calculator from'./Calculator.vue';
+	import Calculator from './Calculator.vue';
 	export default Vue.extend({
 		components: {
 			Calculator
@@ -41,22 +55,52 @@
 				visible: true,
 				themeColor: {
 					'main-color': '#ffbb00'
-				}
+				},
+				showType: 'spend',
+				chooseInfo: {},
+				historyList: [
+					{
+						id: '1',
+						date: '2022-04-08',
+						type: 'spend',
+						money: '12.31',
+						remark: '水费'
+					},
+					{
+						id: '2',
+						date: '2022-04-08',
+						type: 'spend',
+						money: '200.00',
+						remark: '燃气费'
+					},
+					{
+						id: '3',
+						date: '2022-04-08',
+						type: 'spend',
+						money: '102.34',
+						remark: '电费'
+					}
+				]
 			}
-		},
-		onLoad() {
-
-
 		},
 		methods: {
 			close() {
 				this.showPopup = false
 			},
-			show() {
+			show(record: {
+				id: string,
+				name: string,
+				src ? : string,
+				money ? : number
+			}) {
+				this.chooseInfo = {
+					...record
+				}
 				this.showPopup = true
 			},
 			clickDate(date: string) {
-				(this.$refs.Calculator as any).show()
+				(this.$refs.Calculator as any).show();
+				(this.$refs.Calculator as any).pickDate = moment(date, 'YYYY/MM/DD').format('YYYY/MM/DD');
 			},
 			disabledDate(date: Date) {
 				let timestamp = date.getTime();
@@ -71,9 +115,9 @@
 				day: string
 			}) {
 				if (!date) return;
-			
+
 				const lunarObj = lunar.solar2lunar(date.year, date.month, date.day);
-			
+
 				return lunarObj.festival || lunarObj.lunarFestival || lunarObj.IDayCn;
 			}
 		}
@@ -81,16 +125,22 @@
 </script>
 
 <style lang="scss">
-.lunar-content {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
+	.lunar-content {
+		display: flex;
+		align-items: center;
+		flex-direction: column;
 
-  .lunar {
-    font-size: 12px;
-    transform: scale(0.6);
-    width: 10vw;
-    text-align: center;
-  }
-}
+		.lunar {
+			font-size: 12px;
+			transform: scale(0.6);
+			width: 10vw;
+			text-align: center;
+		}
+	}
+
+	.history-list {
+		width: 100%;
+		box-sizing: border-box;
+		padding: 30rpx;
+	}
 </style>

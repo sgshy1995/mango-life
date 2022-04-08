@@ -49,3 +49,32 @@ export const logoutAction = (user: Record<string,any>): Promise<Record<string,an
 	data: user
   })
 }
+
+// 创建团队/家庭
+const createTeamUrl = '/team'
+export const createTeamAction = (team: Record<string,any>): Promise<Record<string,any>> => {
+  return doRequestAction({
+    url: createTeamUrl,
+    method: 'POST',
+	data: team
+  })
+}
+
+// 根据 id 获取团队/家庭信息
+const getTeamInfoByIdUrl = (id:number)=>`/team/${id}`
+export const getTeamInfoByIdAction = (team: Record<string,any>): Promise<Record<string,any>> => {
+  return doRequestAction({
+    url: getTeamInfoByIdUrl(team.id),
+    method: 'GET'
+  })
+}
+
+// 添加团队/家庭成员
+const addTeamMemberUrl = (id:number)=>`/team/${id}`
+export const addTeamMemberAction = (id:number, user: Record<string,any>): Promise<Record<string,any>> => {
+  return doRequestAction({
+    url: addTeamMemberUrl(id),
+    method: 'POST',
+	data: user
+  })
+}

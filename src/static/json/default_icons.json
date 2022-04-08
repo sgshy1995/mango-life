@@ -1,0 +1,78 @@
+{
+	"iconsListIncome": [
+		{
+			"id": "salary",
+			"name": "工资"
+		},
+		{
+			"id": "management",
+			"name": "理财"
+		},
+		{
+			"id": "bonus",
+			"name": "礼金"
+		},
+		{
+			"id": "concurrent",
+			"name": "兼职"
+		},
+		{
+			"id": "unearned",
+			"name": "白嫖"
+		},
+		{
+			"id": "income_others",
+			"name": "其他"
+		}
+	],
+	"iconsListSpend": [
+		{
+			"id": "food",
+			"name": "餐饮"
+		},
+		{
+			"id": "vegetable",
+			"name": "果蔬"
+		},
+		{
+			"id": "clothes",
+			"name": "衣服"
+		},
+		{
+			"id": "car",
+			"name": "汽车"
+		},
+		{
+			"id": "taobao",
+			"name": "淘宝"
+		},
+		{
+			"id": "supermarket",
+			"name": "超市"
+		},
+		{
+			"id": "payment",
+			"name": "缴费"
+		},
+		{
+			"id": "beautify",
+			"name": "美容"
+		},
+		{
+			"id": "convenience",
+			"name": "便利店"
+		},
+		{
+			"id": "traffic",
+			"name": "交通"
+		},
+		{
+			"id": "gift",
+			"name": "礼物"
+		},
+		{
+			"id": "spend_others",
+			"name": "其他"
+		}
+	]
+}

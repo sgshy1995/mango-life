@@ -8,7 +8,7 @@
 			<swiper @change="swiperChange" :current="swiperCurrent">
 				<swiper-item>
 					<view class="money-body-icons">
-						<view class="money-body-icon" v-for="(u,index) in iconsListSpend" :key="u.id" @click="handleShowCalculator(u)">
+						<view class="money-body-icon" v-for="(u,index) in iconsListSpend" :key="u.id" @click="handleShowCalendar(u)">
 							<image :src="u.src"></image>
 							<text>{{ u.name + ': ' + u.money }}</text>
 						</view>
@@ -16,7 +16,7 @@
 				</swiper-item>
 				<swiper-item>
 					<view class="money-body-icons">
-						<view class="money-body-icon" v-for="(u,index) in iconsListIncome" :key="u.id" @click="handleShowCalculator(u)">
+						<view class="money-body-icon" v-for="(u,index) in iconsListIncome" :key="u.id" @click="handleShowCalendar(u)">
 							<image :src="u.src"></image>
 							<text>{{ u.name + ': ' + u.money }}</text>
 						</view>
@@ -77,119 +77,25 @@
 					color: '#333',
 					fontSize: '12px !important'
 				},
-				iconsListIncome: [
-					{
-						id: '1',
-						src: require('@/static/images/home/工资.png'),
-						name: '工资',
-						money: 0
-					},
-					{
-						id: '2',
-						src: require('@/static/images/home/理财.png'),
-						name: '理财',
-						money: 0
-					},
-					{
-						id: '3',
-						src: require('@/static/images/home/礼金.png'),
-						name: '礼金',
-						money: 0
-					},
-					{
-						id: '4',
-						src: require('@/static/images/home/兼职.png'),
-						name: '兼职',
-						money: 0
-					},
-					{
-						id: '5',
-						src: require('@/static/images/home/白嫖.png'),
-						name: '白嫖',
-						money: 0
-					},
-					{
-						id: '6',
-						src: require('@/static/images/home/其他.png'),
-						name: '其他',
-						money: 0
-					}
-				],
-				iconsListSpend: [
-					{
-						id: '1',
-						src: require('@/static/images/home/汉堡.png'),
-						name: '吃饭',
-						money: 0
-					},
-					{
-						id: '2',
-						src: require('@/static/images/home/荔枝.png'),
-						name: '果蔬',
-						money: 0
-					},
-					{
-						id: '3',
-						src: require('@/static/images/home/裙子.png'),
-						name: '衣服',
-						money: 0
-					},
-					{
-						id: '4',
-						src: require('@/static/images/home/奥迪.png'),
-						name: '汽车',
-						money: 0
-					},
-					{
-						id: '5',
-						src: require('@/static/images/home/淘宝.png'),
-						name: '淘宝',
-						money: 0
-					},
-					{
-						id: '6',
-						src: require('@/static/images/home/购物车.png'),
-						name: '超市',
-						money: 0
-					},
-					{
-						id: '7',
-						src: require('@/static/images/home/水滴.png'),
-						name: '水费',
-						money: 0
-					},
-					{
-						id: '8',
-						src: require('@/static/images/home/闪电.png'),
-						name: '电费',
-						money: 0
-					},
-					{
-						id: '9',
-						src: require('@/static/images/home/便利店.png'),
-						name: '便利店',
-						money: 0
-					},
-					{
-						id: '10',
-						src: require('@/static/images/home/地铁.png'),
-						name: '交通',
-						money: 0
-					},
-					{
-						id: '11',
-						src: require('@/static/images/home/礼物.png'),
-						name: '礼物',
-						money: 0
-					},
-					{
-						id: '12',
-						src: require('@/static/images/home/其他.png'),
-						name: '其他',
-						money: 0
-					}
-				]
+				iconsListIncome: [],
+				iconsListSpend: []
 			};
+		},
+		created(){
+			this.iconsListIncome = require('@/static/json/default_icons.json').iconsListIncome.map((item: {id: string, name: string, src?: string, money?: number})=>{
+				return {
+					...item,
+					src: require(`@/static/images/home/${item.name}.png`),
+					money: 0
+				}
+			})
+			this.iconsListSpend = require('@/static/json/default_icons.json').iconsListSpend.map((item: {id: string, name: string, src?: string, money?: number})=>{
+				return {
+					...item,
+					src: require(`@/static/images/home/${item.name}.png`),
+					money: 0
+				}
+			})
 		},
 		onHide(){
 			this.selected = 1
@@ -207,8 +113,9 @@
 				this.curNow = index;
 				this.swiperCurrent = index;
 			},
-			handleShowCalculator(record: any){
-				(this.$refs.CalendarWrapper as any).show()
+			handleShowCalendar(record: {id: string, name: string, src?: string, money?: number}){
+				(this.$refs.CalendarWrapper as any).showType = this.curNow === 0 ? 'spend' : 'income';
+				(this.$refs.CalendarWrapper as any).show(record)
 			},
 			changeSwitch(){
 				this.showSwitch = !this.showSwitch

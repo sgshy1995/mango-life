@@ -62,7 +62,9 @@
 					id: 0,
 					email: '',
 					phone: '',
-					avatar: ''
+					avatar: '',
+					team_id: 0,
+					team_name: ''
 				}
 			};
 		},
@@ -101,7 +103,9 @@
 							id: 0,
 							email: '',
 							phone: '',
-							avatar: ''
+							avatar: '',
+							team_id: 0,
+							team_name: ''
 						}
 						uni.removeStorageSync('SYS_USER_INFO')
 						reject()
