@@ -26,7 +26,7 @@
 							<view v-if="u.id === teamInfo.owner" style="font-size: 12px;color: #fff;background: #F56C6E;padding: 2rpx 8rpx;border-radius: 8rpx;margin-left: 8rpx;">所有者</view>
 							<view v-else style="font-size: 12px;color: #fff;background: #61C63D;padding: 2rpx 8rpx;border-radius: 8rpx;margin-left: 8rpx;">成员</view>
 						</view>
-						<u-icon v-if="u.id !== teamInfo.owner" name="trash-fill" color="#888" size="20"></u-icon>
+						<u-icon v-if="u.id !== teamInfo.owner" name="trash-fill" color="#888" size="20" @click="handleRemoveMember"></u-icon>
 						<u-icon v-else name="trash-fill" color="#eee" size="20"></u-icon>
 					</view>
 				</view>
@@ -129,6 +129,9 @@
 					this.inviteName = ''
 					this.handleGetTeamInfo()
 				})
+			},
+			handleRemoveMember(){
+				(this as any).$toast('暂不支持删除成员')
 			}
 		}
 	})

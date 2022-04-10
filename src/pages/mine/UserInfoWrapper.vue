@@ -22,9 +22,9 @@
 			<view class="user-team">
 				<u-cell-group>
 					<u-cell icon="home-fill" title="家庭/团队">
-						<view slot="value" class="user-team-value">
+						<view slot="value" class="user-team-value" @click="showTeamModal">
 							<text class="team-info">{{ userInfo.team_name || '暂无信息，请创建或邀请' }}</text>
-							<view @click="showTeamModal" class="manage"><u-icon name="list-dot" color="#606266" size="16"></u-icon></view>
+							<view class="manage"><u-icon name="list-dot" color="#606266" size="16"></u-icon></view>
 						</view>
 					</u-cell>
 				</u-cell-group>

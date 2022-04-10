@@ -6,9 +6,9 @@
 				:title="`${chooseInfo.name} / ${showType==='spend'?'支出':'收入'}`" @leftClick="close" leftText="返回">
 			</u-navbar>
 			<view style="padding: 20rpx;font-size: 12px;color: #909399;background: #f4f4f4;">
-				选择日期以查看记录或添加新纪录
+				选择日期以查看记录，点击 "+" 添加新纪录
 			</view>
-			<view style="width: 100%;">
+			<view class="calendar-in">
 				<vue-hash-calendar :themeColor="themeColor" :disabled-date="disabledDate" @click="clickDate"
 					pickerType="date" :visible.sync="visible">
 					<template v-slot:day="scope">
@@ -18,6 +18,7 @@
 						</view>
 					</template>
 				</vue-hash-calendar>
+				<u-icon class="calendar-in-icon" @click="showCalculator" bold name="plus" color="#ffbb00" size="26"></u-icon>
 			</view>
 			<u-divider text="历史纪录" textSize="12"></u-divider>
 			<view class="history-list">
@@ -56,6 +57,7 @@
 				themeColor: {
 					'main-color': '#ffbb00'
 				},
+				pickDate: moment(new Date(), 'YYYY/MM/DD').format('YYYY/MM/DD'),
 				showType: 'spend',
 				chooseInfo: {},
 				historyList: [
@@ -99,8 +101,11 @@
 				this.showPopup = true
 			},
 			clickDate(date: string) {
+				this.pickDate = moment(date, 'YYYY/MM/DD').format('YYYY/MM/DD');
+			},
+			showCalculator(){
 				(this.$refs.Calculator as any).show();
-				(this.$refs.Calculator as any).pickDate = moment(date, 'YYYY/MM/DD').format('YYYY/MM/DD');
+				(this.$refs.Calculator as any).pickDate = this.pickDate;
 			},
 			disabledDate(date: Date) {
 				let timestamp = date.getTime();
@@ -125,6 +130,26 @@
 </script>
 
 <style lang="scss">
+	.calendar-in{
+		position: relative;
+		z-index: 1;
+		width: 100%;
+		margin-bottom: 44rpx;
+		
+		.calendar-in-icon{
+			box-sizing: border-box;
+			padding: 10rpx;
+			position: absolute;
+			z-index: 2;
+			bottom: 0;
+			left: 50%;
+			transform: translate(-50%,70%);
+			border: 4rpx dashed #7e7e7e;
+			border-radius: 12rpx;
+			background: #fff;
+		}
+	}
+	
 	.lunar-content {
 		display: flex;
 		align-items: center;
