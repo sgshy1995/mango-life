@@ -78,3 +78,75 @@ export const addTeamMemberAction = (id:number, user: Record<string,any>): Promis
 	data: user
   })
 }
+
+// 个人记账
+const personalChargeUrl = (id?:number | string)=>`/personal_charge${id ? ('/'+id) : ''}`
+export const addPersonalChargeAction = (personalRecord: Record<string,any>): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: personalChargeUrl(),
+	  method: 'POST',
+	  data: personalRecord
+	})
+}
+
+// 单个个人记账时间查询
+export const getDatePersonalChargeAction = (findOptions: Record<string,any>): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: personalChargeUrl(),
+	  method: 'GET',
+	  data: findOptions
+	})
+}
+
+// 个人记账删除
+export const deletePersonalChargeAction = (id: number): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: personalChargeUrl(id),
+	  method: 'DELETE'
+	})
+}
+
+// 个人记账修改
+export const changePersonalChargeAction = (id: number, personalRecord: Record<string,any>): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: personalChargeUrl(id),
+	  method: 'PUT',
+	  data: personalRecord
+	})
+}
+
+// 团队记账
+const teamChargeUrl = (id?:number | string)=>`/team_charge${id ? ('/'+id) : ''}`
+export const addTeamChargeAction = (teamRecord: Record<string,any>): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: teamChargeUrl(),
+	  method: 'POST',
+	  data: teamRecord
+	})
+}
+
+// 团队个人记账时间查询
+export const getDateTeamChargeAction = (findOptions: Record<string,any>): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: teamChargeUrl(),
+	  method: 'GET',
+	  data: findOptions
+	})
+}
+
+// 团队记账删除
+export const deleteTeamChargeAction = (id: number): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: teamChargeUrl(id),
+	  method: 'DELETE'
+	})
+}
+
+// 团队记账修改
+export const changeTeamChargeAction = (id: number, teamRecord: Record<string,any>): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: teamChargeUrl(id),
+	  method: 'PUT',
+	  data: teamRecord
+	})
+}

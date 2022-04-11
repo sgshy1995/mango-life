@@ -22,18 +22,23 @@
 			</view>
 			<u-divider text="历史纪录" textSize="12"></u-divider>
 			<view class="history-list">
-				<u-cell-group>
-					<u-cell v-for="(u,index) in historyList" :key="u.id" :title="u.date" :label="u.remark">
+				<view style="font-size: 12px;color: #909399;padding: 0 20rpx 40rpx 20rpx;">
+					<text>{{ pickDate }}</text><text>{{ ` ${chooseInfo.name} ${showType==='spend'?'总支出: ':'总收入: '}` }}</text><text>{{ todayMoney }}</text>
+				</view>
+				<u-cell-group v-if="historyList.length">
+					<u-cell v-for="(u,index) in historyList" :key="u.id" :title="moment(u.created_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')" :label="u.remark">
 						<view slot="value" style="display: flex;align-items: center;">
-							<text>{{ (u.type === 'spend' ? '-' : '+') + u.money }}</text>
-							<u-icon style="margin-left: 30rpx;margin-right: 10rpx;" name="edit-pen-fill" color="#999" size="16"></u-icon>
-							<u-icon name="trash-fill" color="#999" size="16"></u-icon>
+							<text>{{ (showType === 'spend' ? '-' : '+') + u.charge_num }}</text>
+							<u-icon style="margin-left: 30rpx;margin-right: 10rpx;" name="edit-pen-fill" color="#999" size="16" @click="handleEdit(u.id,u.charge_num,u.remark)"></u-icon>
+							<u-icon @click="handleDelete(u.id)" name="trash-fill" color="#999" size="16" ></u-icon>
 						</view>
 					</u-cell>
 				</u-cell-group>
+				<u-modal :show="showModal" showCancelButton @cancel="showModal = false;pickId = 0" @confirm="deleteHistoryData" confirmColor="#ffbb00"
+					content="确定删除该记录吗？"></u-modal>
 			</view>
 		</u-popup>
-		<Calculator :showType="showType" ref="Calculator"></Calculator>
+		<Calculator @ok="handleOk" :switchType="switchType" :chooseInfo="chooseInfo" :userInfo="userInfo" :showType="showType" ref="Calculator"></Calculator>
 	</view>
 </template>
 
@@ -43,57 +48,129 @@
 	// @ts-ignore
 	import {lunar} from "@/utils/lunar";
 	import Calculator from './Calculator.vue';
+	import {
+		getDatePersonalChargeAction,
+		deletePersonalChargeAction,
+		getDateTeamChargeAction,
+		deleteTeamChargeAction
+	} from '@/service/service';
 	export default Vue.extend({
 		components: {
 			Calculator
 		},
 		data() {
 			return {
+				moment: moment,
 				customStyleIn: {
 					width: '100vw'
 				},
 				showPopup: false,
 				visible: true,
+				showModal: false,
 				themeColor: {
 					'main-color': '#ffbb00'
 				},
-				pickDate: moment(new Date(), 'YYYY/MM/DD').format('YYYY/MM/DD'),
+				pickDate: moment(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD'),
 				showType: 'spend',
-				chooseInfo: {},
-				historyList: [
-					{
-						id: '1',
-						date: '2022-04-08',
-						type: 'spend',
-						money: '12.31',
-						remark: '水费'
-					},
-					{
-						id: '2',
-						date: '2022-04-08',
-						type: 'spend',
-						money: '200.00',
-						remark: '燃气费'
-					},
-					{
-						id: '3',
-						date: '2022-04-08',
-						type: 'spend',
-						money: '102.34',
-						remark: '电费'
+				chooseInfo: {
+					id: 0,
+					name: '',
+					src: '',
+					money: 0
+				},
+				// id date type money remark
+				historyList: [],
+				todayMoney: 0,
+				pickId: 0
+			}
+		},
+		props: {
+			userInfo: {
+				type: Object,
+				default: () => {
+					return {
+						username: '',
+						nickname: '',
+						primary_key: '',
+						id: 0,
+						email: '',
+						phone: '',
+						avatar: '',
+						team_id: 0,
+						team_name: ''
 					}
-				]
+				}
+			},
+			switchType: {
+				type: String,
+				default: 'personal'
+			}
+		},
+		watch: {
+			pickDate: {
+				handler(){
+					this.getHistoryData({charge_time: this.pickDate + ' 00:00:00', charge_type: this.chooseInfo.id})
+				}
+			},
+			chooseInfo: {
+				handler(){
+					if(this.chooseInfo.id){
+						this.getHistoryData({charge_time: this.pickDate + ' 00:00:00', charge_type: this.chooseInfo.id})
+					}
+				},
+				deep: true
 			}
 		},
 		methods: {
+			getHistoryData(findOptions: Record<string,any>){
+				this.switchType === 'personal' ?
+					getDatePersonalChargeAction({...findOptions, created_by: this.userInfo.id}).then(res=>{
+						this.historyList = res.data.result
+						this.todayMoney = this.showType === 'spend' ? res.data.summary.total.spend : res.data.summary.total.income
+					}) : getDateTeamChargeAction({...findOptions, team_id: this.userInfo.team_id}).then(res=>{
+						this.historyList = res.data.result
+						this.todayMoney = this.showType === 'spend' ? res.data.summary.total.spend : res.data.summary.total.income
+					})
+			},
+			deleteHistoryData(){
+				if(!this.pickId) {
+					(this as any).$toast('请选择记录');
+					return
+				}
+				this.switchType === 'personal' ?
+					deletePersonalChargeAction(this.pickId).then(res=>{
+						(this as any).$toast(res.message || '删除成功');
+						this.handleOk();
+						this.showModal = false
+					}) : deleteTeamChargeAction(this.pickId).then(res=>{
+						(this as any).$toast(res.message || '删除成功');
+						this.handleOk();
+						this.showModal = false
+					})
+			},
+			handleOk(){
+				this.$emit('ok')
+				this.getHistoryData({charge_time: this.pickDate + ' 00:00:00', charge_type: this.chooseInfo.id});
+			},
+			handleDelete(id: number){
+				this.pickId = id
+				this.showModal = true
+			},
+			handleEdit(id: number, charge_num: number, remark: string){
+				(this.$refs.Calculator as any).editInfo.id = id;
+				(this.$refs.Calculator as any).editInfo.charge_num = charge_num;
+				(this.$refs.Calculator as any).editInfo.remark = remark;
+				(this.$refs.Calculator as any).pickDate = this.pickDate;
+				(this.$refs.Calculator as any).show(true);
+			},
 			close() {
 				this.showPopup = false
 			},
 			show(record: {
-				id: string,
+				id: number,
 				name: string,
-				src ? : string,
-				money ? : number
+				src: string,
+				money: number
 			}) {
 				this.chooseInfo = {
 					...record
@@ -101,7 +178,7 @@
 				this.showPopup = true
 			},
 			clickDate(date: string) {
-				this.pickDate = moment(date, 'YYYY/MM/DD').format('YYYY/MM/DD');
+				this.pickDate = moment(date, 'YYYY-MM-DD').format('YYYY-MM-DD');
 			},
 			showCalculator(){
 				(this.$refs.Calculator as any).show();

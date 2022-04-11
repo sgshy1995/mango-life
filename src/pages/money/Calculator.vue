@@ -27,8 +27,8 @@
 					<text>{{ pickDate === todayDate ? '今日' : pickDate }}</text>
 				</view>
 				<view class="choose" style="border-top: 1rpx solid #999999;margin-top: 2px;padding-top: 2px;">
-					<image :src="pickIcon" style="width: 18px;height: 18px;"></image>
-					<text>礼物</text>
+					<image :src="chooseInfo.src" style="width: 18px;height: 18px;"></image>
+					<text>{{chooseInfo.name}}</text>
 				</view>
 			</u-col>
 		</u-row>
@@ -73,6 +73,10 @@
 			<u-col v-if="cache" @click="handleEqual" textAlign="center" align="center" justify="center" span="3">
 				=
 			</u-col>
+			<u-col v-else-if="editInfo.id" @click="handleOk" class="handle-submit" textAlign="center" align="center" justify="center"
+				span="3">
+				{{ showType === 'spend' ? '修改支出' : '修改收入' }}
+			</u-col>
 			<u-col v-else @click="handleOk" class="handle-submit" textAlign="center" align="center" justify="center"
 				span="3">
 				{{ showType === 'spend' ? '确认支出' : '确认收入' }}
@@ -85,7 +89,13 @@
 	import Vue from 'vue';
 	import {
 		toDecimal2
-	} from '../../utils/utils'
+	} from '../../utils/utils';
+	import {
+		addPersonalChargeAction,
+		changePersonalChargeAction,
+		addTeamChargeAction,
+		changeTeamChargeAction
+	} from '@/service/service';
 	import moment from 'moment';
 	export default Vue.extend({
 		data() {
@@ -98,19 +108,56 @@
 				editTag: '',
 				isAddOrReduce: false,
 				pickDate: '',
-				todayDate: moment(new Date(), 'YYYY/MM/DD').format('YYYY/MM/DD')
+				todayDate: moment(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD'),
+				ifEdit: false,
+				editInfo: {
+					charge_num: 0,
+					id: 0,
+					remark: ''
+				}
 			}
 		},
 		props: {
 			showType: {
 				type: String,
 				default: 'spend'
+			},
+			userInfo: {
+				type: Object,
+				default: () => {
+					return {
+						username: '',
+						nickname: '',
+						primary_key: '',
+						id: 0,
+						email: '',
+						phone: '',
+						avatar: '',
+						team_id: 0,
+						team_name: ''
+					}
+				}
+			},
+			chooseInfo: {
+				type: Object,
+				default: () => {
+					return {
+						id: 0,
+						name: '',
+						src: '',
+						money: 0
+					}
+				}
+			},
+			switchType: {
+				type: String,
+				default: 'personal'
 			}
 		},
 		methods: {
 			init() {
-				this.inputNote = ''
-				this.inputNum = '0'
+				this.inputNote = (this.editInfo.id && this.editInfo.remark) ? this.editInfo.remark : ''
+				this.inputNum = (this.editInfo.id && this.editInfo.charge_num) ? this.editInfo.charge_num.toString() : '0'
 				this.cache = ''
 				this.editTag = ''
 				this.pickDate = ''
@@ -119,8 +166,14 @@
 			close() {
 				this.showCalculator = false
 				this.init()
+				this.editInfo = {
+					charge_num: 0,
+					id: 0,
+					remark: ''
+				}
 			},
-			show() {
+			show(edit: boolean = false) {
+				this.ifEdit = edit
 				this.showCalculator = true
 				this.init()
 			},
@@ -263,12 +316,48 @@
 						title: '金额不能为0',
 						icon: 'none'
 					})
-				} else {
-					uni.showToast({
-						title: 'submit',
-						icon: 'none'
-					})
-					this.close()
+				} else if(this.editInfo.id) {
+					this.switchType === 'personal' ?
+						changePersonalChargeAction(this.editInfo.id,{
+							charge_num: Number(this.inputNum),
+							remark: this.inputNote || undefined
+						}).then(res=>{
+							(this as any).$toast(res.message || '更新成功')
+							this.$emit('ok')
+							this.close()
+						}) : changeTeamChargeAction(this.editInfo.id,{
+							charge_num: Number(this.inputNum),
+							remark: this.inputNote || undefined
+						}).then(res=>{
+							(this as any).$toast(res.message || '更新成功')
+							this.$emit('ok')
+							this.close()
+						})
+					
+				} else{
+					this.switchType === 'personal' ?
+						addPersonalChargeAction({
+							charge_num: Number(this.inputNum),
+							created_by: this.userInfo.id,
+							charge_type: this.chooseInfo.id,
+							balance_type: this.showType === 'spend' ? 0 : 1,
+							remark: this.inputNote || undefined
+						}).then(res=>{
+							(this as any).$toast(res.message || '添加成功')
+							this.$emit('ok')
+							this.close()
+						}) : addTeamChargeAction({
+							charge_num: Number(this.inputNum),
+							created_by: this.userInfo.id,
+							charge_type: this.chooseInfo.id,
+							balance_type: this.showType === 'spend' ? 0 : 1,
+							remark: this.inputNote || undefined,
+							team_id: this.userInfo.team_id
+						}).then(res=>{
+							(this as any).$toast(res.message || '添加成功')
+							this.$emit('ok')
+							this.close()
+						})
 				}
 			}
 		}

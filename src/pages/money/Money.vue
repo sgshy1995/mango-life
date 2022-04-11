@@ -4,11 +4,15 @@
 			<view class="money-body-top">
 				<view @click="changeChargeType" v-if="switchType === 'personal'" class="top-switch">
 					<image src="../../static/images/home/个人.png"></image>
-					<view class="text"><image src="../../static/images/home/切换.png"></image>个人记账</view>
+					<view class="text">
+						<image src="../../static/images/home/切换.png"></image>个人记账
+					</view>
 				</view>
 				<view @click="changeChargeType" v-else class="top-switch">
 					<image src="../../static/images/home/团队.png"></image>
-					<view class="text"><image src="../../static/images/home/切换.png">团队/家庭记账</view>
+					<view class="text">
+						<image src="../../static/images/home/切换.png">团队/家庭记账
+					</view>
 				</view>
 				<u-subsection style="width: 260rpx;color: #333 !important" :list="titleList" activeColor="#ffbb00"
 					inactiveColor="#333" mode="subsection" @change="sectionChange" bgColor="#ffbb00" :current="curNow">
@@ -16,10 +20,31 @@
 				<u-button @click="handleShowAnalysis" type="primary" size="mini" color="#ffbb00" text="分析"
 					:customStyle="buttonStyle" icon="grid-fill" iconColor="#333"></u-button>
 			</view>
-			<swiper @change="swiperChange" :current="swiperCurrent">
+			
+			<swiper @change="swiperChange" :current="swiperCurrent" v-if="switchType === 'personal'">
 				<swiper-item>
 					<view class="money-body-icons">
-						<view class="money-body-icon" v-for="(u,index) in iconsListSpend" :key="u.id"
+						<view class="money-body-icon" v-for="(u,index) in iconsListSpendPersonal" :key="u.id"
+							@click="handleShowCalendar(u)">
+							<image :src="u.src"></image>
+							<text>{{ u.name + '\n' + u.money }}</text>
+						</view>
+					</view>
+				</swiper-item>
+				<swiper-item>
+					<view class="money-body-icons">
+						<view class="money-body-icon" v-for="(u,index) in iconsListIncomePersonal" :key="u.id"
+							@click="handleShowCalendar(u)">
+							<image :src="u.src"></image>
+							<text>{{ u.name + '\n' + u.money }}</text>
+						</view>
+					</view>
+				</swiper-item>
+			</swiper>
+			<swiper @change="swiperChange" :current="swiperCurrent" v-else>
+				<swiper-item>
+					<view class="money-body-icons">
+						<view class="money-body-icon" v-for="(u,index) in iconsListSpendTeam" :key="u.id"
 							@click="handleShowCalendar(u)">
 							<image :src="u.src"></image>
 							<text>{{ u.name + ': ' + u.money }}</text>
@@ -28,7 +53,7 @@
 				</swiper-item>
 				<swiper-item>
 					<view class="money-body-icons">
-						<view class="money-body-icon" v-for="(u,index) in iconsListIncome" :key="u.id"
+						<view class="money-body-icon" v-for="(u,index) in iconsListIncomeTeam" :key="u.id"
 							@click="handleShowCalendar(u)">
 							<image :src="u.src"></image>
 							<text>{{ u.name + ': ' + u.money }}</text>
@@ -39,9 +64,15 @@
 
 			<view class="money-body-bottom">
 				<image src="../../static/back-money-people.jpg"></image>
-				<view class="today">
+				<view class="today" v-if="switchType==='personal'">
 					<text>今日总<text>{{ curNow===0 ? '支出' : '收入' }}</text> ：<br> <text
-							style="color: #ffbb00">{{ !showSwitch ? '***' : curNow===0 ? todaySpendMoney : todayIncomeMoney }}</text></text>
+							style="color: #ffbb00">{{ !showSwitch ? '***' : curNow === 0 ? todayTotalPersonal.spend : todayTotalPersonal.income }}</text></text>
+					<u-switch style="margin-top: 20rpx;" v-model="showSwitch" size="20" activeColor="#ffbb00">
+					</u-switch>
+				</view>
+				<view class="today" v-else>
+					<text>今日总<text>{{ curNow===0 ? '支出' : '收入' }}</text> ：<br> <text
+							style="color: #ffbb00">{{ !showSwitch ? '***' : curNow === 0 ? todayTotalTeam.spend : todayTotalTeam.income }}</text></text>
 					<u-switch style="margin-top: 20rpx;" v-model="showSwitch" size="20" activeColor="#ffbb00">
 					</u-switch>
 				</view>
@@ -54,13 +85,16 @@
 			<u-tabbar-item text="备忘" icon="calendar-fill"></u-tabbar-item>
 			<u-tabbar-item text="我的" icon="account-fill"></u-tabbar-item>
 		</u-tabbar>
-		<CalendarWrapper ref="CalendarWrapper"></CalendarWrapper>
+		<CalendarWrapper @ok="handleOkCalendar" :switchType="switchType" :userInfo="userInfo" ref="CalendarWrapper"></CalendarWrapper>
 		<AnalysisWrapper ref="AnalysisWrapper"></AnalysisWrapper>
-		<u-modal :show="showModal" @confirm="showModal=false" confirmColor="#ffbb00" content="您暂未拥有团队或家庭，无法切换至团队/家庭记账模式。请在个人中心创建或由其他成员邀请后使用。"></u-modal>
+		<u-modal :show="showModal" @confirm="showModal=false" confirmColor="#ffbb00"
+			content="您暂未拥有团队或家庭，无法切换至团队/家庭记账模式。请在个人中心创建或由其他成员邀请后使用。"></u-modal>
 		<u-overlay zIndex="1000" :show="showOverlay">
 			<view class="warp" @tap.stop>
 				<text>您还未登录，请前往登录</text>
-				<u-button :customStyle="{width: '180rpx', background: 'transparent', height: '60rpx', marginTop: '40rpx'}" :plain="true" color="#ffbb00" type="primary" text="前往登录" @click="handleGotoLogin"></u-button>
+				<u-button
+					:customStyle="{width: '180rpx', background: 'transparent', height: '60rpx', marginTop: '40rpx'}"
+					:plain="true" color="#ffbb00" type="primary" text="前往登录" @click="handleGotoLogin"></u-button>
 			</view>
 		</u-overlay>
 	</view>
@@ -71,8 +105,11 @@
 	import AnalysisWrapper from './AnalysisWrapper.vue'
 	import CalendarWrapper from './CalendarWrapper.vue'
 	import {
-		getUserInfoByUsernameAction
+		getUserInfoByUsernameAction,
+		getDatePersonalChargeAction,
+		getDateTeamChargeAction
 	} from '@/service/service'
+	import moment from 'moment';
 	export default Vue.extend({
 		components: {
 			CalendarWrapper,
@@ -105,8 +142,10 @@
 					color: '#333',
 					fontSize: '12px !important'
 				},
-				iconsListIncome: [],
-				iconsListSpend: [],
+				iconsListIncomePersonal: [],
+				iconsListIncomeTeam: [],
+				iconsListSpendPersonal: [],
+				iconsListSpendTeam: [],
 				userInfo: {
 					username: '',
 					nickname: '',
@@ -117,11 +156,25 @@
 					avatar: '',
 					team_id: 0,
 					team_name: ''
+				},
+				todayListPersonal: [],
+				todayTotalPersonal: {
+					spend: 0,
+					income: 0
+				},
+				todayListTeam: [],
+				todayTotalTeam: {
+					spend: 0,
+					income: 0
 				}
 			};
 		},
 		created() {
-			this.iconsListIncome = require('@/static/json/default_icons.json').iconsListIncome.map((item: {
+			const switchHistory = uni.getStorageSync('SYS_SWITCH_TYPE')
+			if(switchHistory && switchHistory === 'personal' || switchHistory === 'team'){
+				this.switchType = switchHistory
+			}
+			this.iconsListIncomePersonal = require('@/static/json/default_icons.json').iconsListIncome.map((item: {
 				id: string,
 				name: string,
 				src ? : string,
@@ -133,7 +186,8 @@
 					money: 0
 				}
 			})
-			this.iconsListSpend = require('@/static/json/default_icons.json').iconsListSpend.map((item: {
+			this.iconsListIncomeTeam = JSON.parse(JSON.stringify(this.iconsListIncomePersonal))
+			this.iconsListSpendPersonal = require('@/static/json/default_icons.json').iconsListSpend.map((item: {
 				id: string,
 				name: string,
 				src ? : string,
@@ -145,41 +199,138 @@
 					money: 0
 				}
 			})
+			this.iconsListSpendTeam = JSON.parse(JSON.stringify(this.iconsListSpendPersonal))
 		},
 		watch: {
-			userInfo:{
-				handler(){
+			userInfo: {
+				handler() {
 					this.showOverlay = !this.userInfo.id
+					if (this.userInfo.id) {
+						console.log('this.userInfo.id', this.userInfo.id)
+
+					}
 				},
 				deep: true
+			},
+			switchType: {
+				handler(){
+					console.log('switchType change',this.switchType)
+					this.switchType === 'personal' ? this.getTodayPersonalInfo() : this.getTodayTeamInfo()
+				}
 			}
 		},
 		onHide() {
 			this.selected = 1
 		},
-		onLoad(){
-			if (uni.getStorageSync('SYS_USER_INFO') && uni.getStorageSync('SYS_USER_INFO').id) {			
+		onLoad() {
+			if (uni.getStorageSync('SYS_USER_INFO') && uni.getStorageSync('SYS_USER_INFO').id) {
 				this.userInfo = uni.getStorageSync('SYS_USER_INFO')
-				console.log('this.userInfo',this.userInfo)
+				console.log('this.userInfo', this.userInfo)
 				this.getUserInfo(this.userInfo)
-			}else{
+			} else {
 				this.userInfo.username = '1'
 			}
 		},
 		methods: {
-			handleGotoLogin(){
+			handleOkCalendar(){
+				this.switchType === 'personal' ? this.getTodayPersonalInfo() : this.getTodayTeamInfo()
+			},
+			handleGotoLogin() {
 				uni.navigateTo({
-				    url: "/pages/mine/Mine"
+					url: "/pages/mine/Mine"
 				})
 			},
-			getUserInfo(userInfo:Record<string,any>){
-				return new Promise((reslove,reject)=>{
+			getTodayPersonalInfo() {
+				getDatePersonalChargeAction({
+					charge_time: moment(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD') + ' 00:00:00',
+					created_by: this.userInfo.id
+				}).then(res1 => {
+					this.todayListPersonal = res1.data.summary.items
+					this.todayTotalPersonal = res1.data.summary.total
+					this.iconsListSpendPersonal.forEach((item: {
+						id: string,
+						money: number
+					}) => {
+						const itemFind: {
+							charge_type: string,
+							money: number
+						} | undefined = this.todayListPersonal.find((itemIn: {
+							charge_type: string,
+							money: number
+						}) => itemIn.charge_type === item.id)
+						if (itemFind) {
+							// @ts-ignore
+							item.money = itemFind.money
+						}
+					})
+					this.iconsListIncomePersonal.forEach((item: {
+						id: string,
+						money: number
+					}) => {
+						const itemFind: {
+							charge_type: string,
+							money: number
+						} | undefined = this.todayListPersonal.find((itemIn: {
+							charge_type: string,
+							money: number
+						}) => itemIn.charge_type === item.id)
+						if (itemFind) {
+							// @ts-ignore
+							item.money = itemFind.money
+						}
+					})
+				})
+			},
+			getTodayTeamInfo(){
+				getDateTeamChargeAction({
+					charge_time: moment(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD') + ' 00:00:00',
+					team_id: this.userInfo.team_id
+				}).then(res1 => {
+					this.todayListTeam = res1.data.summary.items
+					this.todayTotalTeam = res1.data.summary.total
+					this.iconsListSpendTeam.forEach((item: {
+						id: string,
+						money: number
+					}) => {
+						const itemFind: {
+							charge_type: string,
+							money: number
+						} | undefined = this.todayListTeam.find((itemIn: {
+							charge_type: string,
+							money: number
+						}) => itemIn.charge_type === item.id)
+						if (itemFind) {
+							// @ts-ignore
+							item.money = itemFind.money
+						}
+					})
+					this.iconsListIncomeTeam.forEach((item: {
+						id: string,
+						money: number
+					}) => {
+						const itemFind: {
+							charge_type: string,
+							money: number
+						} | undefined = this.todayListTeam.find((itemIn: {
+							charge_type: string,
+							money: number
+						}) => itemIn.charge_type === item.id)
+						if (itemFind) {
+							// @ts-ignore
+							item.money = itemFind.money
+						}
+					})
+				})
+			},
+			getUserInfo(userInfo: Record < string, any > ) {
+				return new Promise((reslove, reject) => {
 					getUserInfoByUsernameAction(userInfo).then(res => {
 						//this.close()
 						uni.setStorageSync('SYS_USER_INFO', res.data)
+						this.switchType === 'personal' ? this.getTodayPersonalInfo() : this.getTodayTeamInfo()
 						this.userInfo = res.data
 						reslove()
-					}).catch(()=>{
+					}).catch(() => {
 						this.userInfo = {
 							username: '',
 							nickname: '',
@@ -199,9 +350,9 @@
 			changeChargeType() {
 				switch (this.switchType) {
 					case 'personal': {
-						if(!this.userInfo.team_id){
+						if (!this.userInfo.team_id) {
 							this.showModal = true;
-						}else{
+						} else {
 							this.switchType = 'team'
 						}
 						break;
@@ -211,6 +362,7 @@
 						break;
 					};
 				}
+				uni.setStorageSync('SYS_SWITCH_TYPE',this.switchType)
 			},
 			handleShowAnalysis() {
 				(this.$refs.AnalysisWrapper as any).showType = this.curNow === 0 ? 'spend' : 'income';
@@ -230,7 +382,7 @@
 				this.swiperCurrent = index;
 			},
 			handleShowCalendar(record: {
-				id: string,
+				id: number,
 				name: string,
 				src ? : string,
 				money ? : number
@@ -258,15 +410,15 @@
 
 <style lang="scss">
 	.warp {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			height: 100%;
-			flex-direction: column;
-			color: #fff;
-			font-size: 14px;
-		}
-		
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100%;
+		flex-direction: column;
+		color: #fff;
+		font-size: 14px;
+	}
+
 	.money-view {
 		width: 100vw;
 		height: 100vh;
@@ -300,7 +452,7 @@
 				flex-direction: column;
 				transform: scale(0.8);
 
-				> image {
+				>image {
 					width: 44rpx;
 					height: 44rpx;
 					background: #e8e8e8;
@@ -312,8 +464,8 @@
 					color: #333;
 					display: flex;
 					align-items: center;
-					
-					> image{
+
+					>image {
 						width: 24rpx;
 						height: 24rpx;
 						margin-right: 6rpx;

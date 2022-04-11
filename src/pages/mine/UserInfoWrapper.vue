@@ -125,6 +125,7 @@
 					this.showModal = false
 					uni.removeStorageSync('SYS_USER_INFO')
 					uni.removeStorageSync('SYS_AUTH_TOKEN_KEY')
+					uni.removeStorageSync('SYS_SWITCH_TYPE')
 					this.$emit('change')
 					this.close()
 				}).catch(err => {
