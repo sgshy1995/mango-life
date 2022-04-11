@@ -160,8 +160,8 @@
 				(this.$refs.Calculator as any).editInfo.id = id;
 				(this.$refs.Calculator as any).editInfo.charge_num = charge_num;
 				(this.$refs.Calculator as any).editInfo.remark = remark;
-				(this.$refs.Calculator as any).pickDate = this.pickDate;
 				(this.$refs.Calculator as any).show(true);
+				(this.$refs.Calculator as any).pickDate = this.pickDate;
 			},
 			close() {
 				this.showPopup = false

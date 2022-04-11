@@ -47,7 +47,7 @@
 						<view class="money-body-icon" v-for="(u,index) in iconsListSpendTeam" :key="u.id"
 							@click="handleShowCalendar(u)">
 							<image :src="u.src"></image>
-							<text>{{ u.name + ': ' + u.money }}</text>
+							<text>{{ u.name + '\n' + u.money }}</text>
 						</view>
 					</view>
 				</swiper-item>
@@ -56,7 +56,7 @@
 						<view class="money-body-icon" v-for="(u,index) in iconsListIncomeTeam" :key="u.id"
 							@click="handleShowCalendar(u)">
 							<image :src="u.src"></image>
-							<text>{{ u.name + ': ' + u.money }}</text>
+							<text>{{ u.name + '\n' + u.money }}</text>
 						</view>
 					</view>
 				</swiper-item>
