@@ -236,7 +236,7 @@
 				this.switchType === 'personal' ? this.getTodayPersonalInfo() : this.getTodayTeamInfo()
 			},
 			handleGotoLogin() {
-				uni.navigateTo({
+				uni.redirectTo({
 					url: "/pages/mine/Mine"
 				})
 			},
@@ -396,7 +396,7 @@
 			handleChangeIndex(index: number) {
 				console.log('12', index)
 				this.selected = index
-				uni.navigateTo({
+				uni.redirectTo({
 					url: this.urls[index],
 					fail: (e) => {
 
@@ -435,7 +435,7 @@
 		overflow: hidden;
 
 		.money-body-top {
-			height: 220rpx;
+			height: 250rpx;
 			width: 100%;
 			border-bottom: 1px solid #ffbb00;
 			position: relative;
@@ -445,7 +445,7 @@
 			
 			.u-subsection{
 				width: 300rpx !important;
-				margin-top: 90rpx;
+				margin-top: 150rpx;
 			}
 
 			.top-switch {

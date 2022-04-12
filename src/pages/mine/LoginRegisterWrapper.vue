@@ -156,7 +156,6 @@
 				return errorMessage
 			},
 			changeShowType(showType: string) {
-				(this.$refs.Form!as any).resetFields()
 				this.tapCaptcha();
 				this.showType = showType
 				this.showPassword = false

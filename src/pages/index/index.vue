@@ -130,7 +130,7 @@
 			handleChangeIndex(index: number) {
 				console.log('12', index)
 				this.selected = index
-				uni.navigateTo({
+				uni.redirectTo({
 					url: this.urls[index],
 					fail: (e) => {
 

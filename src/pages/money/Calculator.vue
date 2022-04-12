@@ -479,7 +479,7 @@
 				border-top: none;
 			}
 
-			&.handle-submit {
+			&.col-confirm {
 				background: #ffbb00;
 			}
 			
