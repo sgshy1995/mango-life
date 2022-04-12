@@ -1,87 +1,130 @@
 <template>
 	<u-popup :overlay="true" :overlayStyle="{zIndex: 20000}" zIndex="20000" :show="showCalculator" @close="close"
 		class="calculator">
-		<u-row justify="flex-start" class="calculator-info">
-			<u-col class="note" textAlign="center" align="center" justify="center" span="6">
-				<image src="../../static/images/home/备注.png" style="width: 18px;height: 18px;margin-right: 10rpx;">
-				</image>
-				<u--input maxlength="12" placeholder="请输入备注..." border="none" v-model="inputNote"></u--input>
-			</u-col>
-			<u-col class="money-num" textAlign="center" align="flex-end" justify="center" span="6">
-				{{ inputNum }}
-			</u-col>
-		</u-row>
-		<u-row justify="flex-start">
-			<u-col @click="handleInputNumber('7')" textAlign="center" align="center" justify="center" span="3">
-				7
-			</u-col>
-			<u-col @click="handleInputNumber('8')" textAlign="center" align="center" justify="center" span="3">
-				8
-			</u-col>
-			<u-col @click="handleInputNumber('9')" textAlign="center" align="center" justify="center" span="3">
-				9
-			</u-col>
-			<u-col textAlign="center" align="center" justify="center" span="3">
-				<view class="choose">
-					<image src="../../static/images/home/日历.png" style="width: 18px;height: 18px;"></image>
-					<text>{{ pickDate === todayDate ? '今日' : pickDate }}</text>
-				</view>
-				<view class="choose" style="border-top: 1rpx solid #999999;margin-top: 2px;padding-top: 2px;">
-					<image :src="chooseInfo.src" style="width: 18px;height: 18px;"></image>
-					<text>{{chooseInfo.name}}</text>
-				</view>
-			</u-col>
-		</u-row>
-		<u-row justify="flex-start">
-			<u-col @click="handleInputNumber('4')" textAlign="center" align="center" justify="center" span="3">
-				4
-			</u-col>
-			<u-col @click="handleInputNumber('5')" textAlign="center" align="center" justify="center" span="3">
-				5
-			</u-col>
-			<u-col @click="handleInputNumber('6')" textAlign="center" align="center" justify="center" span="3">
-				6
-			</u-col>
-			<u-col @click="handleAdd" textAlign="center" align="center" justify="center" span="3">
-				+
-			</u-col>
-		</u-row>
-		<u-row justify="flex-start">
-			<u-col @click="handleInputNumber('1')" textAlign="center" align="center" justify="center" span="3">
-				1
-			</u-col>
-			<u-col @click="handleInputNumber('2')" textAlign="center" align="center" justify="center" span="3">
-				2
-			</u-col>
-			<u-col @click="handleInputNumber('3')" textAlign="center" align="center" justify="center" span="3">
-				3
-			</u-col>
-			<u-col @click="handleReduce" textAlign="center" align="center" justify="center" span="3">
-				-
-			</u-col>
-		</u-row>
-		<u-row justify="flex-start">
-			<u-col @click="handleInputPoint" textAlign="center" align="center" justify="center" span="3">
-				.
-			</u-col>
-			<u-col @click="handleInputNumber('0')" textAlign="center" align="center" justify="center" span="3">
-				0
-			</u-col>
-			<u-col textAlign="center" align="center" justify="center" span="3" @click="handleDelete">
-				<image src="../../static/images/home/键盘回退.png" style="width: 18px;height: 18px;"></image>
-			</u-col>
-			<u-col v-if="cache" @click="handleEqual" textAlign="center" align="center" justify="center" span="3">
-				=
-			</u-col>
-			<u-col v-else-if="editInfo.id" @click="handleOk" class="handle-submit" textAlign="center" align="center" justify="center"
-				span="3">
-				{{ showType === 'spend' ? '修改支出' : '修改收入' }}
-			</u-col>
-			<u-col v-else @click="handleOk" class="handle-submit" textAlign="center" align="center" justify="center"
-				span="3">
-				{{ showType === 'spend' ? '确认支出' : '确认收入' }}
-			</u-col>
-		</u-row>
+		<view class="calculator">
+			<u-row justify="flex-start">
+				<u-col class="note" textAlign="center" align="center" justify="center" span="6">
+					<view class="calculator-info">
+						<image src="../../static/images/home/备注.png">
+						</image>
+						<u--input maxlength="12" placeholder="请输入备注..." border="none" v-model="inputNote"></u--input>
+					</view>
+				</u-col>
+				<u-col textAlign="center" align="flex-end" justify="center" span="6">
+					<view class="money-num">
+						{{ inputNum }}
+					</view>
+				</u-col>
+			</u-row>
+			
+			<u-row justify="flex-start">
+				<u-col @click="handleInputNumber('7')" textAlign="center" align="center" justify="center" span="3">
+					<view class="u-custom-col col-7">
+						7
+					</view>
+				</u-col>
+				<u-col @click="handleInputNumber('8')" textAlign="center" align="center" justify="center" span="3">
+					<view class="u-custom-col col-8">
+						8
+					</view>
+				</u-col>
+				<u-col @click="handleInputNumber('9')" textAlign="center" align="center" justify="center" span="3">
+					<view class="u-custom-col col-9">
+						9
+					</view>
+				</u-col>
+				<u-col textAlign="center" align="center" justify="center" span="3">
+					<view class="u-custom-col col-info">
+						<view class="choose">
+							<image src="../../static/images/home/日历.png" style="width: 18px;height: 18px;"></image>
+							<text>{{ pickDate === todayDate ? '今日' : pickDate }}</text>
+						</view>
+						<view class="choose choose-bottom">
+							<image :src="chooseInfo.src" style="width: 18px;height: 18px;"></image>
+							<text>{{chooseInfo.name}}</text>
+						</view>
+					</view>
+				</u-col>
+			</u-row>
+			<u-row justify="flex-start">
+				<u-col @click="handleInputNumber('4')" textAlign="center" align="center" justify="center" span="3">
+					<view class="u-custom-col col-4">
+						4
+					</view>
+				</u-col>
+				<u-col @click="handleInputNumber('5')" textAlign="center" align="center" justify="center" span="3">
+					<view class="u-custom-col col-5">
+						5
+					</view>
+				</u-col>
+				<u-col @click="handleInputNumber('6')" textAlign="center" align="center" justify="center" span="3">
+					<view class="u-custom-col col-6">
+						6
+					</view>
+				</u-col>
+				<u-col @click="handleAdd" textAlign="center" align="center" justify="center" span="3">
+					<view class="u-custom-col col-plus">
+						+
+					</view>
+				</u-col>
+			</u-row>
+			<u-row justify="flex-start">
+				<u-col @click="handleInputNumber('1')" textAlign="center" align="center" justify="center" span="3">
+					<view class="u-custom-col col-1">
+						1
+					</view>
+				</u-col>
+				<u-col @click="handleInputNumber('2')" textAlign="center" align="center" justify="center" span="3">
+					<view class="u-custom-col col-2">
+						2
+					</view>
+				</u-col>
+				<u-col @click="handleInputNumber('3')" textAlign="center" align="center" justify="center" span="3">
+					<view class="u-custom-col col-3">
+						3
+					</view>
+				</u-col>
+				<u-col @click="handleReduce" textAlign="center" align="center" justify="center" span="3">
+					<view class="u-custom-col col-reduce">
+						-
+					</view>
+				</u-col>
+			</u-row>
+			<u-row justify="flex-start">
+				<u-col @click="handleInputPoint" textAlign="center" align="center" justify="center" span="3">
+					<view class="u-custom-col col-point">
+						.
+					</view>
+				</u-col>
+				<u-col @click="handleInputNumber('0')" textAlign="center" align="center" justify="center" span="3">
+					<view class="u-custom-col col-0">
+						0
+					</view>
+				</u-col>
+				<u-col textAlign="center" align="center" justify="center" span="3" @click="handleDelete">
+					<view class="u-custom-col col-back">
+						<image src="../../static/images/home/键盘回退.png" class="col-back"></image>
+					</view>
+				</u-col>
+				<u-col v-if="cache" @click="handleEqual" textAlign="center" align="center" justify="center" span="3">
+					<view class="u-custom-col col-equal">
+						=
+					</view>
+				</u-col>
+				<u-col v-else-if="editInfo.id" @click="handleOk" class="handle-submit" textAlign="center" align="center" justify="center"
+					span="3">
+					<view class="u-custom-col col-confirm">
+						{{ showType === 'spend' ? '修改支出' : '修改收入' }}
+					</view>
+				</u-col>
+				<u-col v-else @click="handleOk" class="handle-submit" textAlign="center" align="center" justify="center"
+					span="3">
+					<view class="u-custom-col col-confirm">
+						{{ showType === 'spend' ? '确认支出' : '确认收入' }}
+					</view>
+				</u-col>
+			</u-row>
+		</view>
 	</u-popup>
 </template>
 
@@ -366,46 +409,105 @@
 
 <style lang="scss">
 	.calculator {
+		width: 100%;
+		height: 100%;
 
 		.calculator-info {
 			width: 100%;
-			height: 100rpx;
-			background: #f3f3f3;
-
-			.note {
-				padding-left: 20rpx !important;
-				flex-direction: row;
-				display: flex;
-				border-right: none;
+			height: 100rpx !important;
+			background: #f3f3f3 !important;
+			
+			image{
+				width: 18px;
+				height: 18px;
+				margin-right: 10rpx;
 			}
+			
 
-			.money-num {
-				border-left: none;
-				font-size: 18px;
-				padding-right: 20rpx !important;
-			}
+			padding-left: 20rpx !important;
+			flex-direction: row;
+			display: flex;
+			border-right: none;
+			align-items: center;
+			
+		}
+		
+		.money-num {
+			border-left: none;
+			font-size: 18px;
+			height: 100rpx !important;
+			padding-right: 20rpx !important;
+			background: #f3f3f3 !important;
+			width: 100%;
+			text-align: right;
+			line-height: 100rpx !important;
+			box-sizing: border-box;
 		}
 
-		.u-col {
+		.u-custom-col {
 			background: #f3f3f3;
 			box-sizing: border-box;
-			border: 1rpx solid #d0d0d0;
+			border: 0.5rpx solid #d0d0d0;
 			height: 100rpx;
+			width: 100%;
 			font-size: 14px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-direction: column;
+			
+			&.col-7,&.col-8,&.col-9{
+				border-right: none;
+			}
+			
+			&.col-plus,&.col-reduce,&.col-confirm{
+				border-top: none;
+			}
+			
+			&.col-4,&.col-5,&.col-6{
+				border-right: none;
+				border-top: none;
+			}
+			
+			&.col-1,&.col-2,&.col-3{
+				border-right: none;
+				border-top: none;
+			}
+			
+			&.col-point,&.col-0,&.col-back{
+				border-right: none;
+				border-top: none;
+			}
 
 			&.handle-submit {
 				background: #ffbb00;
+			}
+			
+			.col-back{
+				width: 18px;height: 18px;
 			}
 
 			.choose {
 				display: flex;
 				align-items: center;
+				justify-content: center;
 				font-size: 12px;
 				box-sizing: border-box;
 
 				text {
 					padding-left: 4px;
 				}
+				
+				image{
+					width: 18px;
+					height: 18px;
+				}
+			}
+			
+			.choose-bottom{
+				border-top: 1rpx solid #999999;
+				margin-top: 2px;
+				padding-top: 2px;
 			}
 		}
 	}

@@ -133,7 +133,7 @@
 				uni.navigateTo({
 					url: this.urls[index],
 					fail: (e) => {
-						alert(e.errMsg)
+
 					}
 				})
 				console.log('1', index)

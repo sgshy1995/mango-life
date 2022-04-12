@@ -43,7 +43,7 @@ export const doRequestAction = (requestBase: RequestBase): Promise<any> => {
 	    
 	    req.success = (res) => { 
 			console.log(res.statusCode)
-	      if (res && res.data && res.data.code && res.statusCode >= 200 && res.statusCode < 300) { //服务器请求的，就处理
+	      if (res && res.data && res.statusCode >= 200 && res.statusCode < 300) { //服务器请求的，就处理
 			   resolve(res.data)
 	      }else{
 			uni.showToast({title: res.data.message || '请求失败',icon:'none'})

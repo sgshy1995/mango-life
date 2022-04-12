@@ -1,8 +1,7 @@
 <template>
-
 	<u-popup :overlay="true" bgColor="#f7f7f7" :duration="200" mode="right" :customStyle="customStyleIn"
 		:safeAreaInsetTop="true" :show="showPopup" @close="close" @open="open">
-		<view class="mine-popup">
+		<scroll-view scroll-y class="mine-popup">
 			<view class="mine-popup-top">
 				<view class="top-back" @click="close">
 					<u-icon name="arrow-left" color="#333" size="18"></u-icon>
@@ -42,7 +41,7 @@
 			<view class="userinfo-bottom">
 				<u-button color="#ffbb00" type="primary" text="退出登录" @click="handleShowModal"></u-button>
 			</view>
-		</view>
+		</scroll-view>
 		<u-modal :show="showModal" showCancelButton confirmColor="#ffbb00" @confirm="handleLogout"
 			@cancel="showModal=false" content="确定退出登录吗？"></u-modal>
 		<TeamManageModal @ok="$emit('change')" :userInfo="userInfo" ref="TeamManageModal"></TeamManageModal>
@@ -139,6 +138,9 @@
 <style lang="scss">
 	.mine-popup {
 		box-sizing: border-box;
+		width: 100%;
+		height: 100vh;
+		padding-bottom: 40rpx;
 		
 		.user-team{
 			box-sizing: border-box;

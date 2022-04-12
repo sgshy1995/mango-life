@@ -1,33 +1,37 @@
 <template>
 	<u-popup :overlay="true" bgColor="#f7f7f7" :duration="200" mode="right" :customStyle="customStyleIn"
 		:safeAreaInsetTop="true" :show="showPopup" @close="close">
-		<u-navbar placeholder leftIconSize="14" border bgColor="#ffbb00" :title="showType === 'spend' ? '支出分析' : '收入分析'" @leftClick="leftClick"
-			leftText="返回">
-		</u-navbar>
-		<view class="analysis-body">
-			<u-subsection style="width: 100%;color: #333 !important" :list="titleList" activeColor="#ffbb00"
-				inactiveColor="#333" mode="subsection" @change="sectionChange" bgColor="#ffbb00" :current="curNow">
-			</u-subsection>
-			<u-grid style="margin-top: 40rpx;" v-if="showType === 'spend'" :border="true" @click="clickGrid">
-				<u-grid-item v-for="(baseListItem,baseListIndex) in iconsListSpend" :key="baseListIndex">
-					<image class="grid-image" :src="baseListItem.src"></image>
-					<text class="grid-text">{{ baseListItem.name + ': ' + baseListItem.money }}</text>
-				</u-grid-item>
-			</u-grid>
-			<u-grid style="margin-top: 40rpx;" v-else :border="true" @click="clickGrid">
-				<u-grid-item v-for="(baseListItem,baseListIndex) in iconsListIncome" :key="baseListIndex">
-					<image class="grid-image" :src="baseListItem.src"></image>
-					<text class="grid-text">{{ baseListItem.name + ': ' + baseListItem.money }}</text>
-				</u-grid-item>
-			</u-grid>
-			<u-divider text="图表统计"></u-divider>
-			<view class="analysis-wrapper">
-				<view class="charts-box">
-					<qiun-data-charts type="line" :chartData="chartData" :loadingType="5" :disableScroll="true"
-						background="none" :ontouch="true" />
+		<scroll-view scroll-y class="analysis-box">
+			<u-navbar placeholder leftIconSize="14" border bgColor="#ffbb00" :title="showType === 'spend' ? '支出分析' : '收入分析'" @leftClick="leftClick"
+				leftText="返回">
+			</u-navbar>
+			<view class="analysis-body">
+				<view class="u-subsection-wrapper">
+					<u-subsection :list="titleList" activeColor="#ffbb00"
+						inactiveColor="#333" mode="subsection" @change="sectionChange" bgColor="#ffbb00" :current="curNow">
+					</u-subsection>
+				</view>
+				<u-grid v-if="showType === 'spend'" :border="true" @click="clickGrid">
+					<u-grid-item v-for="(baseListItem,baseListIndex) in iconsListSpend" :key="baseListIndex">
+						<image class="grid-image" :src="baseListItem.src"></image>
+						<text class="grid-text">{{ baseListItem.name + ': ' + baseListItem.money }}</text>
+					</u-grid-item>
+				</u-grid>
+				<u-grid v-else :border="true" @click="clickGrid">
+					<u-grid-item v-for="(baseListItem,baseListIndex) in iconsListIncome" :key="baseListIndex">
+						<image class="grid-image" :src="baseListItem.src"></image>
+						<text class="grid-text">{{ baseListItem.name + ': ' + baseListItem.money }}</text>
+					</u-grid-item>
+				</u-grid>
+				<u-divider text="图表统计"></u-divider>
+				<view class="analysis-wrapper">
+					<view class="charts-box">
+						<qiun-data-charts type="line" :reshow="showPopup" :chartData="chartData" :loadingType="5" :disableScroll="false"
+							background="none" :ontouch="true" />
+					</view>
 				</view>
 			</view>
-		</view>
+		</scroll-view>
 	</u-popup>
 </template>
 
@@ -112,11 +116,24 @@
 		height: 100%;
 		overflow: auto;
 	}
+	
+	.analysis-box{
+		width: 100%;
+		height: 100vh;
+		padding-bottom: 60rpx;
+		box-sizing: border-box;
+	}
 
 	.analysis-body {
 		width: 100%;
 		box-sizing: border-box;
 		padding: 30rpx 50rpx;
+		
+		.u-subsection-wrapper{
+			width: 100% !important;
+			color: #333 !important;
+			margin-bottom: 40rpx !important;
+		}
 	}
 
 	.charts-box {

@@ -5,24 +5,21 @@
 			<u-navbar placeholder leftIconSize="14" border bgColor="#ffbb00"
 				:title="`${chooseInfo.name} / ${showType==='spend'?'支出':'收入'}`" @leftClick="close" leftText="返回">
 			</u-navbar>
-			<view style="padding: 20rpx;font-size: 12px;color: #909399;background: #f4f4f4;">
+			<view class="calendar-tip">
 				选择日期以查看记录，点击 "+" 添加新纪录
 			</view>
 			<view class="calendar-in">
-				<vue-hash-calendar :themeColor="themeColor" :disabled-date="disabledDate" @click="clickDate"
-					pickerType="date" :visible.sync="visible">
-					<template v-slot:day="scope">
-						<view class="lunar-content">
-							<view>{{ scope.date.day }}</view>
-							<view class="lunar">{{ showLunar(scope.date) }}</view>
-						</view>
-					</template>
-				</vue-hash-calendar>
-				<u-icon class="calendar-in-icon" @click="showCalculator" bold name="plus" color="#ffbb00" size="26"></u-icon>
+				<uni-calendar 
+					:insert="true"
+					:lunar="true"
+					@change="clickDate"
+					:end-date="timeToday"
+					 />
+				<image class="calendar-in-icon" @click="showCalculator" src="../../static/images/添加.png"></u-icon>
 			</view>
 			<u-divider text="历史纪录" textSize="12"></u-divider>
 			<view class="history-list">
-				<view style="font-size: 12px;color: #909399;padding: 0 20rpx 40rpx 20rpx;">
+				<view class="history-title">
 					<text>{{ pickDate }}</text><text>{{ ` ${chooseInfo.name} ${showType==='spend'?'总支出: ':'总收入: '}` }}</text><text>{{ todayMoney }}</text>
 				</view>
 				<u-cell-group v-if="historyList.length">
@@ -70,6 +67,7 @@
 				themeColor: {
 					'main-color': '#ffbb00'
 				},
+				timeToday: moment(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD'),
 				pickDate: moment(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD'),
 				showType: 'spend',
 				chooseInfo: {
@@ -177,8 +175,8 @@
 				}
 				this.showPopup = true
 			},
-			clickDate(date: string) {
-				this.pickDate = moment(date, 'YYYY-MM-DD').format('YYYY-MM-DD');
+			clickDate(e: {fulldate: string}) {
+				this.pickDate = e.fulldate;
 			},
 			showCalculator(){
 				(this.$refs.Calculator as any).show();
@@ -207,23 +205,31 @@
 </script>
 
 <style lang="scss">
+	
+	.calendar-tip{
+		padding: 20rpx;
+		font-size: 12px;
+		color: #909399;
+		background: #f4f4f4;
+	}
+
 	.calendar-in{
 		position: relative;
 		z-index: 1;
 		width: 100%;
 		margin-bottom: 44rpx;
+		background: #2C405A;
 		
 		.calendar-in-icon{
-			box-sizing: border-box;
-			padding: 10rpx;
-			position: absolute;
-			z-index: 2;
-			bottom: 0;
-			left: 50%;
-			transform: translate(-50%,70%);
-			border: 4rpx dashed #7e7e7e;
-			border-radius: 12rpx;
-			background: #fff;
+			width: 76rpx;
+			height: 76rpx;
+			box-sizing: border-box !important;
+			position: absolute !important;
+			z-index: 2 !important;
+			bottom: 0 !important;
+			left: 50% !important;
+			transform: translate(-50%,79%) !important;
+			background: #fff !important;
 		}
 	}
 	
@@ -244,5 +250,11 @@
 		width: 100%;
 		box-sizing: border-box;
 		padding: 30rpx;
+		
+		.history-title{
+			font-size: 12px;
+			color: #909399;
+			padding: 0 20rpx 40rpx 20rpx;
+		}
 	}
 </style>

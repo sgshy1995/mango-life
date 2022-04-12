@@ -1,5 +1,5 @@
 {
-    "name" : "mango-life",
+    "name" : "ddd",
     "appid" : "__UNI__19A3BB7",
     "description" : "",
     "versionName" : "1.0.0",
@@ -82,9 +82,10 @@
     "mp-weixin" : {
         /* 小程序特有相关 */
         "usingComponents" : true,
-        "appid" : "",
+        "appid" : "wx106c927279819058",
         "setting" : {
-            "urlCheck" : true
+            "urlCheck" : true,
+            "minified" : true
         }
     },
     "mp-alipay" : {

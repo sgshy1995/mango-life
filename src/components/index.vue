@@ -210,7 +210,6 @@
 			},
 			open() {
 				console.log('open')
-				alert('open')
 				this.visible = true
 			},
 			close() {

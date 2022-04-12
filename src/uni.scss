@@ -15,7 +15,7 @@
 /* 颜色变量 */
 
 /* 行为相关颜色 */
-$uni-color-primary: #007aff;
+$uni-color-primary: #ffbb00;
 $uni-color-success: #4cd964;
 $uni-color-warning: #f0ad4e;
 $uni-color-error: #dd524d;
@@ -78,8 +78,14 @@ $uni-font-size-paragraph:30rpx;
 /* uni.scss */
 @import 'uview-ui/theme.scss';
 uni-swiper .uni-swiper-wrapper{
-	overflow: unset;
+	overflow: auto !important;
 }
 uni-swiper-item{
-	overflow: unset;
+	overflow: auto !important;
+}
+swiper{
+	height: 100vh;
+}
+swiper-item{
+	overflow: auto !important;
 }

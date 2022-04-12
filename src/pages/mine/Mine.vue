@@ -3,12 +3,12 @@
 		<view class="mine-top">
 			<view class="mine-top-one">
 				<view v-if="userInfo.id" class="left" @click="handleShowUserInfo">
-					<u-avatar style="border: 2px solid #fff;margin-right: 14rpx;background: #fff !important;" color="#ccc" :src="baseUrl + '/' + userInfo.avatar"
+					<u-avatar class="user-avatar" color="#ccc" :src="baseUrl + '/' + userInfo.avatar"
 						size="44" fontSize="36" bg-color="#f6f6f6"></u-avatar>
 					<text>{{ userInfo.nickname }}</text>
 				</view>
 				<view v-else class="left" @click="handleLoginOrRegister">
-					<u-avatar style="border: 2px solid #fff;margin-right: 14rpx;" color="#ccc" icon="account-fill"
+					<u-avatar class="user-avatar" color="#ccc" icon="account-fill"
 						size="44" fontSize="36" bg-color="#f6f6f6"></u-avatar>
 					<text>登录 / 注册</text>
 				</view>
@@ -139,8 +139,10 @@
 <style lang="scss">
 	.mine-top {
 		width: 100%;
-		height: 300rpx;
+		height: 340rpx;
 		background: #ffbb00;
+		padding-top: 100rpx;
+		box-sizing: border-box;
 
 		.mine-top-one {
 			box-sizing: border-box;
@@ -154,6 +156,12 @@
 			.left {
 				display: flex;
 				align-items: center;
+				
+				.u-avatar{
+					border: 2px solid #fff !important;
+					margin-right: 14rpx !important;
+					background: #fff !important;
+				}
 
 				text {
 					color: #333;

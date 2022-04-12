@@ -70,7 +70,6 @@
     "uview-ui": "^2.0.29",
     "vue": "^2.6.11",
     "vue-class-component": "^6.3.2",
-    "vue-hash-calendar": "^1.4.15",
     "vue-property-decorator": "^8.0.0",
     "vuex": "^3.2.0"
   },
@@ -95,7 +94,7 @@
     "cross-env": "^7.0.2",
     "jest": "^25.4.0",
     "mini-types": "*",
-    "miniprogram-api-typings": "*",
+    "miniprogram-api-typings": "^3.4.6",
     "postcss-comment": "^2.0.0",
     "sass": "^1.49.9",
     "sass-loader": "10",

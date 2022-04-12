@@ -2,6 +2,17 @@ import {Result} from "./service.d";
 import {doRequestAction,NoTokenJsonHeader,doUploadAction} from "./request";
 
 // 注册
+const captureUrl = '/auth/capture'
+export const captureAction = (device_id: string): Promise<Record<string,any>> => {
+  return doRequestAction({
+    url: captureUrl,
+    method: 'GET',
+    header: NoTokenJsonHeader,
+	data: {device_id}
+  })
+}
+
+// 注册
 const registerUrl = '/user'
 export const registerAction = (user: Record<string,any>): Promise<Record<string,any>> => {
   return doRequestAction({
