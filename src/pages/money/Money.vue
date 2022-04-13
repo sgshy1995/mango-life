@@ -14,20 +14,25 @@
 						<image src="../../static/images/home/切换.png">团队/家庭记账
 					</view>
 				</view>
-				<u-subsection :list="titleList" activeColor="#ffbb00"
-					inactiveColor="#333" mode="subsection" @change="sectionChange" bgColor="#ffbb00" :current="curNow">
+				<u-subsection :list="titleList" activeColor="#ffbb00" inactiveColor="#333" mode="subsection"
+					@change="sectionChange" bgColor="#ffbb00" :current="curNow">
 				</u-subsection>
 				<u-button @click="handleShowAnalysis" type="primary" size="mini" color="#ffbb00" text="分析"
 					:customStyle="buttonStyle" icon="grid-fill" iconColor="#333"></u-button>
 			</view>
-			
-			<swiper active-class="money-swiper" changing-class="money-swiper" @change="swiperChange" :current="swiperCurrent" v-if="switchType === 'personal'">
+
+			<swiper active-class="money-swiper" changing-class="money-swiper" @change="swiperChange"
+				:current="swiperCurrent" v-if="switchType === 'personal'">
 				<swiper-item>
 					<view class="money-body-icons">
 						<view class="money-body-icon" v-for="(u,index) in iconsListSpendPersonal" :key="u.id"
 							@click="handleShowCalendar(u)">
 							<image :src="u.src"></image>
 							<text>{{ u.name + '\n' + u.money }}</text>
+						</view>
+						<view class="money-body-icon icon-manage" @click="handleShowManage">
+							<image src="../../static/images/home/其他.png"></image>
+							<text>{{ '管理' + '\n\n' }}</text>
 						</view>
 					</view>
 				</swiper-item>
@@ -37,6 +42,10 @@
 							@click="handleShowCalendar(u)">
 							<image :src="u.src"></image>
 							<text>{{ u.name + '\n' + u.money }}</text>
+						</view>
+						<view class="money-body-icon icon-manage" @click="handleShowManage">
+							<image src="../../static/images/home/其他.png"></image>
+							<text>{{ '管理' + '\n\n' }}</text>
 						</view>
 					</view>
 				</swiper-item>
@@ -49,6 +58,10 @@
 							<image :src="u.src"></image>
 							<text>{{ u.name + '\n' + u.money }}</text>
 						</view>
+						<view class="money-body-icon icon-manage" @click="handleShowManage">
+							<image src="../../static/images/home/其他.png"></image>
+							<text>{{ '管理' + '\n\n' }}</text>
+						</view>
 					</view>
 				</swiper-item>
 				<swiper-item>
@@ -57,6 +70,10 @@
 							@click="handleShowCalendar(u)">
 							<image :src="u.src"></image>
 							<text>{{ u.name + '\n' + u.money }}</text>
+						</view>
+						<view class="money-body-icon icon-manage" @click="handleShowManage">
+							<image src="../../static/images/home/其他.png"></image>
+							<text>{{ '管理' + '\n\n' }}</text>
 						</view>
 					</view>
 				</swiper-item>
@@ -85,8 +102,12 @@
 			<u-tabbar-item text="备忘" icon="calendar-fill"></u-tabbar-item>
 			<u-tabbar-item text="我的" icon="account-fill"></u-tabbar-item>
 		</u-tabbar>
-		<CalendarWrapper @ok="handleOkCalendar" :switchType="switchType" :userInfo="userInfo" ref="CalendarWrapper"></CalendarWrapper>
+		<CalendarWrapper @ok="handleOkCalendar" :switchType="switchType" :userInfo="userInfo" ref="CalendarWrapper">
+		</CalendarWrapper>
 		<AnalysisWrapper ref="AnalysisWrapper"></AnalysisWrapper>
+		<ManageTypesWrapper @ok="handleOkManage" :userInfo="userInfo" :iconsListIncomePersonal="iconsListIncomePersonal"
+			:iconsListIncomeTeam="iconsListIncomeTeam" :iconsListSpendPersonal="iconsListSpendPersonal"
+			:iconsListSpendTeam="iconsListSpendTeam" ref="ManageTypesWrapper"></ManageTypesWrapper>
 		<u-modal :show="showModal" @confirm="showModal=false" confirmColor="#ffbb00"
 			content="您暂未拥有团队或家庭，无法切换至团队/家庭记账模式。请在个人中心创建或由其他成员邀请后使用。"></u-modal>
 		<u-overlay zIndex="1000" :show="showOverlay">
@@ -104,16 +125,20 @@
 	import Vue from 'vue';
 	import AnalysisWrapper from './AnalysisWrapper.vue'
 	import CalendarWrapper from './CalendarWrapper.vue'
+	import ManageTypesWrapper from './ManageTypesWrapper.vue'
 	import {
 		getUserInfoByUsernameAction,
 		getDatePersonalChargeAction,
-		getDateTeamChargeAction
+		getDateTeamChargeAction,
+		getPersonalChargeTypesAction,
+		getTeamChargeTypesAction
 	} from '@/service/service'
 	import moment from 'moment';
 	export default Vue.extend({
 		components: {
 			CalendarWrapper,
-			AnalysisWrapper
+			AnalysisWrapper,
+			ManageTypesWrapper
 		},
 		data() {
 			return {
@@ -142,10 +167,65 @@
 					color: '#333',
 					fontSize: '12px !important'
 				},
-				iconsListIncomePersonal: [],
-				iconsListIncomeTeam: [],
-				iconsListSpendPersonal: [],
-				iconsListSpendTeam: [],
+				iconsListIncomePersonal: require('@/static/json/default_icons.json').iconsListIncome.map((item: {
+					origin_id: number,
+					id: string,
+					name: string,
+					src ? : string,
+					money ? : number,
+					created_type?: string,
+				}) => {
+					return {
+						...item,
+						src: require(`@/static/images/home/${item.name}.png`),
+						money: 0
+					}
+				}),
+				iconsListIncomeTeam: require('@/static/json/default_icons.json').iconsListIncome.map((item: {
+					origin_id: number,
+					id: string,
+					name: string,
+					src ? : string,
+					money ? : number,
+					created_type?: string
+				}) => {
+					return {
+						...item,
+						src: require(`@/static/images/home/${item.name}.png`),
+						money: 0,
+						created_type: 'default'
+					}
+				}),
+				iconsListSpendPersonal: require('@/static/json/default_icons.json').iconsListSpend.map((item: {
+					origin_id: number,
+					id: string,
+					name: string,
+					src ? : string,
+					money ? : number,
+					created_type?: string
+				}) => {
+					return {
+						...item,
+						src: require(`@/static/images/home/${item.name}.png`),
+						money: 0,
+						created_type: 'default'
+					}
+				}),
+				iconsListSpendTeam: require('@/static/json/default_icons.json').iconsListSpend.map((item: {
+					origin_id: number,
+					id: string,
+					name: string,
+					src ? : string,
+					money ? : number,
+					created_type?: string
+				}) => {
+					return {
+						...item,
+						src: require(`@/static/images/home/${item.name}.png`),
+						money: 0,
+						created_type: 'default'
+					}
+				}),
 				userInfo: {
 					username: '',
 					nickname: '',
@@ -171,35 +251,10 @@
 		},
 		created() {
 			const switchHistory = uni.getStorageSync('SYS_SWITCH_TYPE')
-			if(switchHistory && switchHistory === 'personal' || switchHistory === 'team'){
+			if (switchHistory && switchHistory === 'personal' || switchHistory === 'team') {
 				this.switchType = switchHistory
 			}
-			this.iconsListIncomePersonal = require('@/static/json/default_icons.json').iconsListIncome.map((item: {
-				id: string,
-				name: string,
-				src ? : string,
-				money ? : number
-			}) => {
-				return {
-					...item,
-					src: require(`@/static/images/home/${item.name}.png`),
-					money: 0
-				}
-			})
-			this.iconsListIncomeTeam = JSON.parse(JSON.stringify(this.iconsListIncomePersonal))
-			this.iconsListSpendPersonal = require('@/static/json/default_icons.json').iconsListSpend.map((item: {
-				id: string,
-				name: string,
-				src ? : string,
-				money ? : number
-			}) => {
-				return {
-					...item,
-					src: require(`@/static/images/home/${item.name}.png`),
-					money: 0
-				}
-			})
-			this.iconsListSpendTeam = JSON.parse(JSON.stringify(this.iconsListSpendPersonal))
+			console.log('created end')
 		},
 		watch: {
 			userInfo: {
@@ -207,16 +262,21 @@
 					this.showOverlay = !this.userInfo.id
 					if (this.userInfo.id) {
 						console.log('this.userInfo.id', this.userInfo.id)
-
 					}
 				},
 				deep: true
 			},
 			switchType: {
-				handler(){
-					console.log('switchType change',this.switchType)
-					this.switchType === 'personal' ? this.getTodayPersonalInfo() : this.getTodayTeamInfo()
+				handler() {
+					console.log('switchType change', this.switchType)
+					this.switchType === 'personal' ? this.getPersonalTypes() : this.getTeamTypes()
 				}
+			},
+			iconsListSpendPersonal: {
+				handler() {
+					console.log('iconsListSpendPersonal change', this.iconsListSpendPersonal)
+				},
+				deep: true
 			}
 		},
 		onHide() {
@@ -232,12 +292,135 @@
 			}
 		},
 		methods: {
-			handleOkCalendar(){
-				this.switchType === 'personal' ? this.getTodayPersonalInfo() : this.getTodayTeamInfo()
+			loadDefaultIcons() {
+				this.iconsListIncomePersonal = require('@/static/json/default_icons.json').iconsListIncome.map((
+					item: {
+						origin_id: number,
+						id: string,
+						name: string,
+						src ? : string,
+						money ? : number,
+						created_type?: string
+					}) => {
+					return {
+						...item,
+						src: require(`@/static/images/home/${item.name}.png`),
+						money: 0,
+						created_type: 'default'
+					}
+				})
+				this.iconsListIncomeTeam = JSON.parse(JSON.stringify(this.iconsListIncomePersonal))
+				this.iconsListSpendPersonal = require('@/static/json/default_icons.json').iconsListSpend.map((
+					item: {
+						origin_id: number,
+						id: string,
+						name: string,
+						src ? : string,
+						money ? : number,
+						created_type?: string
+					}) => {
+					return {
+						...item,
+						src: require(`@/static/images/home/${item.name}.png`),
+						money: 0,
+						created_type: 'default'
+					}
+				})
+				this.iconsListSpendTeam = JSON.parse(JSON.stringify(this.iconsListSpendPersonal))
+			},
+			handleOkCalendar() {
+				this.switchType === 'personal' ? this.getPersonalTypes() : this.getTeamTypes()
+			},
+			handleOkManage(){
+				this.switchType === 'personal' ? this.getPersonalTypes() : this.getTeamTypes()
 			},
 			handleGotoLogin() {
 				uni.redirectTo({
 					url: "/pages/mine/Mine"
+				})
+			},
+			getPersonalTypes() {
+				console.log('get data start')
+				getPersonalChargeTypesAction({
+					balance_type: this.curNow,
+					created_by: this.userInfo.id
+				}).then(res => {
+					this.curNow === 1 ? this.iconsListIncomePersonal = res.data.map((item: {
+						id: number,
+						realname: string,
+						name: string,
+						icon: string,
+						created_type: string
+					}) => {
+						return {
+							origin_id: item.id,
+							id: item.realname,
+							name: item.name,
+							src: require(`@/static/images/home/${item.icon}`),
+							money: 0,
+							created_type: item.created_type
+						}
+					}) : this.iconsListSpendPersonal = res.data.map((item: {
+						id: number,
+						realname: string,
+						name: string,
+						icon: string,
+						created_type: string
+					}) => {
+						return {
+							origin_id: item.id,
+							id: item.realname,
+							name: item.name,
+							src: require(`@/static/images/home/${item.icon}`),
+							money: 0,
+							created_type: item.created_type
+						}
+					})
+				})
+				setTimeout(() => {
+					this.getTodayPersonalInfo()
+				}, 0)
+			},
+			getTeamTypes() {
+				console.log('get data start')
+				getTeamChargeTypesAction({
+					balance_type: this.curNow,
+					team_id: this.userInfo.team_id
+				}).then(res => {
+					this.curNow ? this.iconsListIncomeTeam = res.data.map((item: {
+						id: number,
+						realname: string,
+						name: string,
+						icon: string,
+						created_type: string
+					}) => {
+						return {
+							origin_id: item.id,
+							id: item.realname,
+							name: item.name,
+							src: require(`@/static/images/home/${item.icon}`),
+							money: 0,
+							created_type: item.created_type
+						}
+					}) : this.iconsListSpendTeam = res.data.map((item: {
+						id: number,
+						realname: string,
+						name: string,
+						icon: string,
+						created_type: string
+					}) => {
+						return {
+							origin_id: item.id,
+							id: item.realname,
+							name: item.name,
+							src: require(`@/static/images/home/${item.icon}`),
+							money: 0,
+							created_type: item.created_type
+						}
+					})
+					setTimeout(() => {
+						this.getTodayTeamInfo()
+					}, 0)
 				})
 			},
 			getTodayPersonalInfo() {
@@ -259,8 +442,10 @@
 							money: number
 						}) => itemIn.charge_type === item.id)
 						if (itemFind) {
+							console.log('itemFind find-------------', itemFind)
 							// @ts-ignore
-							item.money = itemFind.money
+							this.$set(item, 'money', itemFind.money)
+							//item.money = itemFind.money
 						}
 					})
 					this.iconsListIncomePersonal.forEach((item: {
@@ -275,13 +460,14 @@
 							money: number
 						}) => itemIn.charge_type === item.id)
 						if (itemFind) {
+							console.log('itemFind find-------------', itemFind)
 							// @ts-ignore
-							item.money = itemFind.money
+							this.$set(item, 'money', itemFind.money)
 						}
 					})
 				})
 			},
-			getTodayTeamInfo(){
+			getTodayTeamInfo() {
 				getDateTeamChargeAction({
 					charge_time: moment(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD') + ' 00:00:00',
 					team_id: this.userInfo.team_id
@@ -300,8 +486,9 @@
 							money: number
 						}) => itemIn.charge_type === item.id)
 						if (itemFind) {
+							console.log('itemFind find-------------', itemFind)
 							// @ts-ignore
-							item.money = itemFind.money
+							this.$set(item, 'money', itemFind.money)
 						}
 					})
 					this.iconsListIncomeTeam.forEach((item: {
@@ -316,8 +503,9 @@
 							money: number
 						}) => itemIn.charge_type === item.id)
 						if (itemFind) {
+							console.log('itemFind find-------------', itemFind)
 							// @ts-ignore
-							item.money = itemFind.money
+							this.$set(item, 'money', itemFind.money)
 						}
 					})
 				})
@@ -327,7 +515,8 @@
 					getUserInfoByUsernameAction(userInfo).then(res => {
 						//this.close()
 						uni.setStorageSync('SYS_USER_INFO', res.data)
-						this.switchType === 'personal' ? this.getTodayPersonalInfo() : this.getTodayTeamInfo()
+						this.switchType === 'personal' ? this.getPersonalTypes() : this
+							.getTeamTypes()
 						this.userInfo = res.data
 						reslove()
 					}).catch(() => {
@@ -357,16 +546,21 @@
 						}
 						break;
 					};
-					case 'team': {
-						this.switchType = 'personal'
-						break;
-					};
+				case 'team': {
+					this.switchType = 'personal'
+					break;
+				};
 				}
-				uni.setStorageSync('SYS_SWITCH_TYPE',this.switchType)
+				uni.setStorageSync('SYS_SWITCH_TYPE', this.switchType)
 			},
 			handleShowAnalysis() {
 				(this.$refs.AnalysisWrapper as any).showType = this.curNow === 0 ? 'spend' : 'income';
 				(this.$refs.AnalysisWrapper as any).show();
+			},
+			handleShowManage(){
+				(this.$refs.ManageTypesWrapper as any).showType = this.curNow === 0 ? 'spend' : 'income';
+				(this.$refs.ManageTypesWrapper as any).curNow = 0;
+				(this.$refs.ManageTypesWrapper as any).show();
 			},
 			swiperChange(evt: {
 				detail: {
@@ -442,8 +636,8 @@
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			
-			.u-subsection{
+
+			.u-subsection {
 				width: 300rpx !important;
 				margin-top: 150rpx;
 			}
@@ -513,6 +707,15 @@
 				text {
 					text-align: center;
 				}
+
+				&.icon-manage image {
+					background: rgba(255, 255, 255, 0.4);
+					border-radius: 20rpx;
+				}
+
+				&.icon-manage text {
+					color: #ffbb00;
+				}
 			}
 		}
 
@@ -547,12 +750,12 @@
 				display: flex;
 				flex-direction: column;
 				justify-content: center;
-				
-				.u-switch{
+
+				.u-switch {
 					margin-top: 10rpx;
 				}
-				
-				text{
+
+				text {
 					flex-shrink: 0;
 				}
 			}

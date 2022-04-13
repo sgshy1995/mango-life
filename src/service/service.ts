@@ -161,3 +161,79 @@ export const changeTeamChargeAction = (id: number, teamRecord: Record<string,any
 	  data: teamRecord
 	})
 }
+
+// 个人分类
+const personalChargeTypeUrl = (id?:number | string)=>`/personal_charge_type${id ? ('/'+id) : ''}`
+
+// 个人分类查询
+export const getPersonalChargeTypesAction = (findOptions: Record<string,any>): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: personalChargeTypeUrl(),
+	  method: 'GET',
+	  data: findOptions
+	})
+}
+
+// 个人分类删除
+export const deletePersonalChargeTypeAction = (id: number): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: personalChargeTypeUrl(id),
+	  method: 'DELETE'
+	})
+}
+
+// 个人分类更新
+export const updatePersonalChargeTypeAction = (id: number, chargeType: Record<string,any>): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: personalChargeTypeUrl(id),
+	  method: 'PUT',
+	  data: chargeType
+	})
+}
+
+// 个人分类新建
+export const createPersonalChargeTypeAction = (chargeType: Record<string,any>): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: personalChargeTypeUrl(),
+	  method: 'POST',
+	  data: chargeType
+	})
+}
+
+// 团队分类
+const teamChargeTypeUrl = (id?:number | string)=>`/team_charge_type${id ? ('/'+id) : ''}`
+
+// 团队分类查询
+export const getTeamChargeTypesAction = (findOptions: Record<string,any>): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: teamChargeTypeUrl(),
+	  method: 'GET',
+	  data: findOptions
+	})
+}
+
+// 团队分类删除
+export const deleteTeamChargeTypeAction = (id: number): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: teamChargeTypeUrl(id),
+	  method: 'DELETE'
+	})
+}
+
+// 团队分类更新
+export const updateTeamChargeTypeAction = (id: number, chargeType: Record<string,any>): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: teamChargeTypeUrl(id),
+	  method: 'PUT',
+	  data: chargeType
+	})
+}
+
+// 团队分类新建
+export const createTeamChargeTypeAction = (chargeType: Record<string,any>): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: teamChargeTypeUrl(),
+	  method: 'POST',
+	  data: chargeType
+	})
+}
