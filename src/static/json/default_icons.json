@@ -3,26 +3,31 @@
 		{
 			"id": "salary",
 			"name": "工资",
+			"icon": "工资.png",
 			"origin_id": 0
 		},
 		{
 			"id": "management",
 			"name": "理财",
+			"icon": "理财.png",
 			"origin_id": 0
 		},
 		{
 			"id": "bonus",
 			"name": "礼金",
+			"icon": "礼金.png",
 			"origin_id": 0
 		},
 		{
 			"id": "concurrent",
 			"name": "兼职",
+			"icon": "兼职.png",
 			"origin_id": 0
 		},
 		{
 			"id": "unearned",
 			"name": "白嫖",
+			"icon": "白嫖.png",
 			"origin_id": 0
 		}
 	],
@@ -30,56 +35,67 @@
 		{
 			"id": "food",
 			"name": "餐饮",
+			"icon": "餐饮.png",
 			"origin_id": 0
 		},
 		{
 			"id": "vegetable",
 			"name": "果蔬",
+			"icon": "果蔬.png",
 			"origin_id": 0
 		},
 		{
 			"id": "clothes",
 			"name": "衣服",
+			"icon": "衣服.png",
 			"origin_id": 0
 		},
 		{
 			"id": "car",
 			"name": "汽车",
+			"icon": "汽车.png",
 			"origin_id": 0
 		},
 		{
 			"id": "taobao",
 			"name": "淘宝",
+			"icon": "淘宝.png",
 			"origin_id": 0
 		},
 		{
 			"id": "supermarket",
 			"name": "超市",
+			"icon": "超市.png",
 			"origin_id": 0
 		},
 		{
 			"id": "payment",
 			"name": "缴费",
+			"icon": "缴费.png",
 			"origin_id": 0
 		},
 		{
 			"id": "beautify",
 			"name": "美容",
+			"icon": "美容.png",
 			"origin_id": 0
 		},
 		{
 			"id": "convenience",
 			"name": "便利店",
+			"icon": "便利店.png",
 			"origin_id": 0
 		},
 		{
 			"id": "traffic",
 			"name": "交通",
+			"icon": "交通.png",
 			"origin_id": 0
 		},
 		{
 			"id": "gift",
 			"name": "礼物",
+			"icon": "礼物.png",
 			"origin_id": 0
 		}
 	]

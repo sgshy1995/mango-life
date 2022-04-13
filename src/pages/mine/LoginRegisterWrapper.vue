@@ -183,7 +183,7 @@
 						this.close()
 						//this.getUserInfo(this.formModel)
 					}).catch(err => {
-						//this.tapCaptcha();
+						this.tapCaptcha();
 					})
 				}
 			},
@@ -210,7 +210,7 @@
 						this.close()
 						//this.getUserInfo(this.formModel)
 					}).catch(err => {
-						//this.tapCaptcha();
+						this.tapCaptcha();
 					})
 				}
 			},

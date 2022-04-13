@@ -11,7 +11,7 @@
 			<scroll-view scroll-y class="manage-item-box">
 				<u-grid col="5" :border="false" @click="clickGrid">
 					<u-grid-item v-for="(baseListItem,baseListIndex) in iconsList" :key="baseListIndex">
-						<image class="grid-image" :class="{selected: selectedId===baseListItem.id}" :src="baseListItem.src"></image>
+						<image class="grid-image" :class="{selected: selectedInfo.id===baseListItem.id}" :src="baseListItem.src"></image>
 					</u-grid-item>
 				</u-grid>
 			</scroll-view>
@@ -20,8 +20,12 @@
 					<view class="manage-tips">输入类型名称，不可重复</view>
 					<u--input maxlength="6" fontSize="14" placeholder="请输入名称..." border="bottom" v-model="inputName"></u--input>
 				</view>
-				<view class="right">
-					<u-button @click="handleConfirm" type="primary" color="#ffbb00" text="确定"
+				<view class="right" v-if="showType==='add'">
+					<u-button @click="handleCreate" type="primary" color="#ffbb00" text="确定"
+						:customStyle="buttonStyle" icon="checkbox-mark" iconColor="#fff"></u-button>
+				</view>
+				<view class="right" v-else>
+					<u-button @click="handleEdit" type="primary" color="#ffbb00" text="确定"
 						:customStyle="buttonStyle" icon="checkbox-mark" iconColor="#fff"></u-button>
 				</view>
 			</view>
@@ -53,7 +57,11 @@
 					width: '100vw'
 				},
 				inputName: '',
-				selectedId: '',
+				selectedInfo: {
+					id: '',
+					name: '',
+					icon: ''
+				},
 				showModal: false,
 				iconsList: require('@/static/json/default_icons.json').iconsListSpend.map((item: {
 					origin_id: number,
@@ -62,6 +70,7 @@
 					src ? : string,
 					money ? : number,
 					created_type ? : string,
+					icon ? : string
 				}) => {
 					return {
 						...item,
@@ -75,6 +84,7 @@
 					src ? : string,
 					money ? : number,
 					created_type ? : string,
+					icon ? : string
 				}) => {
 					return {
 						...item,
@@ -85,7 +95,11 @@
 			};
 		},
 		created(){
-			this.selectedId = this.iconsList[0].id
+			this.selectedInfo = {
+				id: this.iconsList[0].id,
+				name: this.iconsList[0].name,
+				icon: this.iconsList[0].icon
+			}
 		},
 		props: {
 			userInfo: {
@@ -115,15 +129,72 @@
 						origin_id: 0
 					}
 				}
+			},
+			balanceType: {
+				type: String,
+				default: 'spend'
+			},
+			existType: {
+				type: String,
+				default: 'personal'
 			}
 		},
 		methods: {
-			handleConfirm(){
-				
+			handleCreate(){
+				if(this.existType === 'personal'){
+					createPersonalChargeTypeAction({
+						name: this.inputName,
+						icon: this.selectedInfo.icon,
+						created_by: this.userInfo.id,
+						balance_type: this.balanceType === 'spend' ? 0 : 1
+					}).then(res=>{
+						(this as any).$toast(res.message || '创建成功');
+						this.$emit('ok');
+						this.close();
+					})
+				}else{
+					createTeamChargeTypeAction({
+						name: this.inputName,
+						icon: this.selectedInfo.icon,
+						created_by: this.userInfo.id,
+						team_id: this.userInfo.team_id,
+						balance_type: this.balanceType === 'spend' ? 0 : 1
+					}).then(res=>{
+						(this as any).$toast(res.message || '创建成功');
+						this.$emit('ok');
+						this.close();
+					})
+				}
+			},
+			handleEdit(){
+				if(this.existType === 'personal'){
+					updatePersonalChargeTypeAction(this.pickInfo.origin_id, {
+						name: this.inputName,
+						icon: this.selectedInfo.icon
+					}).then(res=>{
+						(this as any).$toast(res.message || '创建成功');
+						this.$emit('ok');
+						this.close();
+					})
+				}else{
+					updateTeamChargeTypeAction(this.pickInfo.origin_id, {
+						name: this.inputName,
+						icon: this.selectedInfo.icon
+					}).then(res=>{
+						(this as any).$toast(res.message || '创建成功');
+						this.$emit('ok');
+						this.close();
+					})
+				}
 			},
 			close() {
 				this.showPopup = false
 				this.inputName = ''
+				this.selectedInfo = {
+					id:'',
+					name: '',
+					icon: ''
+				}
 			},
 			show() {
 				if(this.showType === 'edit'){
@@ -136,7 +207,11 @@
 			},
 			clickGrid(index: number) {
 				console.log('name click',index)
-				this.selectedId = this.iconsList[index].id
+				this.selectedInfo = {
+					id: this.iconsList[index].id,
+					name: this.iconsList[index].name,
+					icon: this.iconsList[index].icon
+				}
 			}
 		}
 	})
