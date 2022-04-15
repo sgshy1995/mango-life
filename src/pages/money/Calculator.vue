@@ -384,7 +384,8 @@
 							created_by: this.userInfo.id,
 							charge_type: this.chooseInfo.id,
 							balance_type: this.showType === 'spend' ? 0 : 1,
-							remark: this.inputNote || undefined
+							remark: this.inputNote || undefined,
+							charge_time: this.pickDate
 						}).then(res=>{
 							(this as any).$toast(res.message || '添加成功')
 							this.$emit('ok')
@@ -395,6 +396,7 @@
 							charge_type: this.chooseInfo.id,
 							balance_type: this.showType === 'spend' ? 0 : 1,
 							remark: this.inputNote || undefined,
+							charge_time: this.pickDate,
 							team_id: this.userInfo.team_id
 						}).then(res=>{
 							(this as any).$toast(res.message || '添加成功')

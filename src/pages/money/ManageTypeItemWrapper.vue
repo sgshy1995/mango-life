@@ -1,6 +1,6 @@
 <template>
 	<u-popup :overlay="true" bgColor="#f7f7f7" :duration="200" mode="right" :customStyle="customStyleIn"
-		:safeAreaInsetTop="true" :show="showPopup" @close="close">
+		:safeAreaInsetTop="false" :safeAreaInsetBottom="true" :show="showPopup" @close="close">
 		<u-navbar placeholder leftIconSize="14" border bgColor="#ffbb00"
 			:title="showType === 'add' ? '添加类型' : '编辑类型'" @leftClick="leftClick" leftText="返回">
 		</u-navbar>
@@ -11,13 +11,12 @@
 			<scroll-view scroll-y class="manage-item-box">
 				<u-grid col="5" :border="false" @click="clickGrid">
 					<u-grid-item v-for="(baseListItem,baseListIndex) in iconsList" :key="baseListIndex">
-						<image class="grid-image" :class="{selected: selectedInfo.id===baseListItem.id}" :src="baseListItem.src"></image>
+						<image class="grid-image" :class="{selected: selectedInfo.icon===baseListItem.icon}" :src="baseListItem.src"></image>
 					</u-grid-item>
 				</u-grid>
 			</scroll-view>
 			<view class="manage-item-bottom">
 				<view class="left">
-					<view class="manage-tips">输入类型名称，不可重复</view>
 					<u--input maxlength="6" fontSize="14" placeholder="请输入名称..." border="bottom" v-model="inputName"></u--input>
 				</view>
 				<view class="right" v-if="showType==='add'">
@@ -29,6 +28,7 @@
 						:customStyle="buttonStyle" icon="checkbox-mark" iconColor="#fff"></u-button>
 				</view>
 			</view>
+			<u-safe-bottom></u-safe-bottom>
 		</view>
 	</u-popup>
 </template>
@@ -74,7 +74,7 @@
 				}) => {
 					return {
 						...item,
-						src: require(`@/static/images/home/${item.name}.png`),
+						src: require(`@/static/images/home/${item.icon}`),
 						money: 0
 					}
 				}).concat(require('@/static/json/default_icons.json').iconsListIncome.map((item: {
@@ -88,7 +88,21 @@
 				}) => {
 					return {
 						...item,
-						src: require(`@/static/images/home/${item.name}.png`),
+						src: require(`@/static/images/home/${item.icon}`),
+						money: 0
+					}
+				})).concat(require('@/static/json/default_icons.json').iconsListDefault.map((item: {
+					origin_id: number,
+					id: string,
+					name: string,
+					src ? : string,
+					money ? : number,
+					created_type ? : string,
+					icon ? : string
+				}) => {
+					return {
+						...item,
+						src: require(`@/static/images/home/${item.icon}`),
 						money: 0
 					}
 				}))
@@ -139,6 +153,14 @@
 				default: 'personal'
 			}
 		},
+		watch: {
+			pickInfo:{
+				handler(){
+					console.log('pickInfo change',JSON.stringify(this.pickInfo))
+				},
+				deep: true
+			}
+		},
 		methods: {
 			handleCreate(){
 				if(this.existType === 'personal'){
@@ -172,7 +194,7 @@
 						name: this.inputName,
 						icon: this.selectedInfo.icon
 					}).then(res=>{
-						(this as any).$toast(res.message || '创建成功');
+						(this as any).$toast(res.message || '更新成功');
 						this.$emit('ok');
 						this.close();
 					})
@@ -181,7 +203,7 @@
 						name: this.inputName,
 						icon: this.selectedInfo.icon
 					}).then(res=>{
-						(this as any).$toast(res.message || '创建成功');
+						(this as any).$toast(res.message || '更新成功');
 						this.$emit('ok');
 						this.close();
 					})
@@ -198,6 +220,11 @@
 			},
 			show() {
 				if(this.showType === 'edit'){
+					this.selectedInfo = {
+						id: this.pickInfo.id,
+						name: this.pickInfo.name,
+						icon: this.pickInfo.icon
+					}
 					this.inputName = this.pickInfo.name
 				}
 				this.showPopup = true
@@ -220,30 +247,38 @@
 <style lang="scss">
 	.manage-item-wrapper {
 		width: 100%;
-		height: 100vh;
-		
-		.manage-tips{
-			padding: 20rpx 20rpx 0 20rpx;
-			font-size: 12px;
-			color: #909399;
-		}
+		height: calc(100vh - 88rpx);
+		display: flex;
+		flex-direction: column;
+	}
+	
+	.manage-tips{
+		padding: 0 20rpx;
+		font-size: 12px;
+		color: #909399;
+		height: 60rpx;
+		line-height: 60rpx;
+		flex-shrink: 0;
 	}
 
 
 	.manage-item-box {
 		width: 100%;
-		height: calc(100% - 276rpx);
-		padding-bottom: 60rpx;
+		flex-grow: 1;
+		padding-bottom: 30rpx;
 		box-sizing: border-box;
+		overflow-y: auto;
 	}
 
 	.manage-item-bottom {
 		width: 100%;
-		height: 140rpx;
+		height: 170rpx;
 		box-sizing: border-box;
 		border-top: 1px solid #333;
 		background: #fff;
 		display: flex;
+		padding-bottom: 30rpx;
+		flex-shrink: 0;
 		
 		.left{
 			width: 70%;

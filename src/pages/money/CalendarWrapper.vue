@@ -163,6 +163,7 @@
 			},
 			close() {
 				this.showPopup = false
+				this.pickDate = moment(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD')
 			},
 			show(record: {
 				id: number,

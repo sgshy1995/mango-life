@@ -29,8 +29,7 @@
 					</u-form-item>
 					<u-form-item required labelWidth="70" label="验证码" prop="code">
 						<view class="form-item-code">
-							<u--input maxlength="4" placeholder="请输入验证码" v-model="formModel.capture" border="none">
-							</u--input>
+							<u-code-input v-model="formModel.capture" :maxlength="4" size="24" fontSize="14"></u-code-input>
 							<image :src="captureCode" @tap="tapCaptcha"></image>
 						</view>
 					</u-form-item>
@@ -183,6 +182,7 @@
 						this.close()
 						//this.getUserInfo(this.formModel)
 					}).catch(err => {
+						this.formModel.capture = '';
 						this.tapCaptcha();
 					})
 				}
@@ -210,6 +210,7 @@
 						this.close()
 						//this.getUserInfo(this.formModel)
 					}).catch(err => {
+						this.formModel.capture = '';
 						this.tapCaptcha();
 					})
 				}

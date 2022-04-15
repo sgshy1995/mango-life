@@ -35,25 +35,25 @@
 		{
 			"id": "food",
 			"name": "餐饮",
-			"icon": "餐饮.png",
+			"icon": "汉堡.png",
 			"origin_id": 0
 		},
 		{
 			"id": "vegetable",
 			"name": "果蔬",
-			"icon": "果蔬.png",
+			"icon": "荔枝.png",
 			"origin_id": 0
 		},
 		{
 			"id": "clothes",
 			"name": "衣服",
-			"icon": "衣服.png",
+			"icon": "裙子.png",
 			"origin_id": 0
 		},
 		{
 			"id": "car",
 			"name": "汽车",
-			"icon": "汽车.png",
+			"icon": "奥迪.png",
 			"origin_id": 0
 		},
 		{
@@ -65,7 +65,7 @@
 		{
 			"id": "supermarket",
 			"name": "超市",
-			"icon": "超市.png",
+			"icon": "购物车.png",
 			"origin_id": 0
 		},
 		{
@@ -83,19 +83,231 @@
 		{
 			"id": "convenience",
 			"name": "便利店",
-			"icon": "便利店.png",
+			"icon": "商店.png",
 			"origin_id": 0
 		},
 		{
 			"id": "traffic",
 			"name": "交通",
-			"icon": "交通.png",
+			"icon": "行李.png",
 			"origin_id": 0
 		},
 		{
 			"id": "gift",
 			"name": "礼物",
 			"icon": "礼物.png",
+			"origin_id": 0
+		}
+	],
+	"iconsListDefault": [
+		{
+			"id": "d1",
+			"name": "汽车",
+			"icon": "汽车.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d2",
+			"name": "汽车维修",
+			"icon": "汽车维修.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d3",
+			"name": "饮料",
+			"icon": "饮料.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d4",
+			"name": "化妆品",
+			"icon": "化妆品.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d5",
+			"name": "美容",
+			"icon": "美容.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d6",
+			"name": "水",
+			"icon": "水.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d7",
+			"name": "闪电",
+			"icon": "闪电.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d8",
+			"name": "红包",
+			"icon": "红包.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d9",
+			"name": "私人服务",
+			"icon": "私人服务.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d10",
+			"name": "美发",
+			"icon": "美发.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d11",
+			"name": "地图",
+			"icon": "地图.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d12",
+			"name": "地铁",
+			"icon": "地铁.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d13",
+			"name": "置换",
+			"icon": "置换.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d14",
+			"name": "投资",
+			"icon": "投资.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d15",
+			"name": "摩托车",
+			"icon": "摩托车.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d16",
+			"name": "拼多多",
+			"icon": "拼多多.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d17",
+			"name": "股票",
+			"icon": "股票.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d18",
+			"name": "日用品",
+			"icon": "日用品.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d19",
+			"name": "T恤",
+			"icon": "T恤.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d20",
+			"name": "京东",
+			"icon": "京东.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d21",
+			"name": "孩子",
+			"icon": "孩子.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d22",
+			"name": "娱乐",
+			"icon": "娱乐.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d23",
+			"name": "医疗",
+			"icon": "医疗.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d24",
+			"name": "肉脯",
+			"icon": "肉脯.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d25",
+			"name": "数码",
+			"icon": "数码.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d26",
+			"name": "住房",
+			"icon": "住房.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d27",
+			"name": "彩票",
+			"icon": "彩票.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d28",
+			"name": "学习",
+			"icon": "学习.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d29",
+			"name": "快递",
+			"icon": "快递.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d30",
+			"name": "烟酒",
+			"icon": "烟酒.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d31",
+			"name": "运动",
+			"icon": "运动.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d32",
+			"name": "宠物",
+			"icon": "宠物.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d33",
+			"name": "信用卡",
+			"icon": "信用卡.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d34",
+			"name": "电车",
+			"icon": "电车.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d35",
+			"name": "地图",
+			"icon": "地图.png",
 			"origin_id": 0
 		}
 	]

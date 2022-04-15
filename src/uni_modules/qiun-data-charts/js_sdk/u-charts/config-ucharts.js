@@ -263,10 +263,16 @@ const cfu = {
 	    "background": "#fff",
 	    "animation": true,
 	    "timing": "easeOut",
-	    "duration": 1000,
+	    "duration": 300,
 	    "color": [
 	        "#666"
 	    ],
+		"padding": [
+		    20,
+		    10,
+		    10,
+		    10
+		],
 	    "rotate": false,
 	    "errorReload": true,
 	    "fontSize": 12,

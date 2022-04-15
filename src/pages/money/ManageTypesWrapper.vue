@@ -1,6 +1,6 @@
 <template>
 	<u-popup :overlay="true" bgColor="#f7f7f7" :duration="200" mode="right" :customStyle="customStyleIn"
-		:safeAreaInsetTop="true" :show="showPopup" @close="close">
+		:safeAreaInsetTop="true" :safeAreaInsetBottom="true" :show="showPopup" @close="close">
 		<scroll-view scroll-y class="manage-box">
 			<u-navbar placeholder leftIconSize="14" border bgColor="#ffbb00"
 				:title="showType === 'spend' ? '支出类型管理' : '收入类型管理'" @leftClick="leftClick" leftText="返回">
@@ -125,7 +125,8 @@
 					id: '',
 					src: '',
 					created_type: '',
-					origin_id: 0
+					origin_id: 0,
+					icon: ''
 				},
 				swiperOptions: [{
 					icon: 'edit-pen-fill',
@@ -218,7 +219,8 @@
 					id: '',
 					src: '',
 					created_type: '',
-					origin_id: 0
+					origin_id: 0,
+					icon: ''
 				}
 			},
 			deleteTypeData() {
@@ -242,7 +244,8 @@
 				id: string,
 				src: string,
 				created_type: string,
-				origin_id: number
+				origin_id: number,
+				icon: string
 			}) {
 				console.log('click info', info)
 				console.log('click record', record)

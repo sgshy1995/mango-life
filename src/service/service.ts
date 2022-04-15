@@ -109,6 +109,16 @@ export const getDatePersonalChargeAction = (findOptions: Record<string,any>): Pr
 	})
 }
 
+// 单个个人记账自定义时间查询
+const personalChargeCustomTimeUrl = '/personal_charge/time/find'
+export const getDatePersonalChargeCustomTimeAction = (findOptions: Record<string,any>): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: personalChargeCustomTimeUrl,
+	  method: 'GET',
+	  data: findOptions
+	})
+}
+
 // 个人记账删除
 export const deletePersonalChargeAction = (id: number): Promise<Record<string,any>> => {
 	return doRequestAction({
@@ -140,6 +150,16 @@ export const addTeamChargeAction = (teamRecord: Record<string,any>): Promise<Rec
 export const getDateTeamChargeAction = (findOptions: Record<string,any>): Promise<Record<string,any>> => {
 	return doRequestAction({
 	  url: teamChargeUrl(),
+	  method: 'GET',
+	  data: findOptions
+	})
+}
+
+// 团队个人记账自定义时间查询
+const teamChargeCustomTimeUrl = '/team_charge/time/find'
+export const getDateTeamChargeCustomTimeAction = (findOptions: Record<string,any>): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: teamChargeCustomTimeUrl,
 	  method: 'GET',
 	  data: findOptions
 	})

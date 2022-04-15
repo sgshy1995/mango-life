@@ -17,67 +17,71 @@
 				<u-subsection :list="titleList" activeColor="#ffbb00" inactiveColor="#333" mode="subsection"
 					@change="sectionChange" bgColor="#ffbb00" :current="curNow">
 				</u-subsection>
-				<u-button @click="handleShowAnalysis" type="primary" size="mini" color="#ffbb00" text="分析"
+				<u-button @click="handleShowAnalysis" type="primary" size="mini" color="#ffbb00" text="统计"
 					:customStyle="buttonStyle" icon="grid-fill" iconColor="#333"></u-button>
 			</view>
+			
+			<view class="money-swiper">
+				<swiper @change="swiperChange"
+					:current="swiperCurrent" v-if="switchType === 'personal'">
+					<swiper-item>
+						<view class="money-body-icons">
+							<view class="money-body-icon" v-for="(u,index) in iconsListSpendPersonal" :key="u.id"
+								@click="handleShowCalendar(u)">
+								<image :src="u.src"></image>
+								<text>{{ u.name + '\n' + u.money }}</text>
+							</view>
+							<view class="money-body-icon icon-manage" @click="handleShowManage">
+								<image src="../../static/images/home/其他.png"></image>
+								<text>{{ '管理' + '\n\n' }}</text>
+							</view>
+						</view>
+					</swiper-item>
+					<swiper-item>
+						<view class="money-body-icons">
+							<view class="money-body-icon" v-for="(u,index) in iconsListIncomePersonal" :key="u.id"
+								@click="handleShowCalendar(u)">
+								<image :src="u.src"></image>
+								<text>{{ u.name + '\n' + u.money }}</text>
+							</view>
+							<view class="money-body-icon icon-manage" @click="handleShowManage">
+								<image src="../../static/images/home/其他.png"></image>
+								<text>{{ '管理' + '\n\n' }}</text>
+							</view>
+						</view>
+					</swiper-item>
+				</swiper>
+				<swiper @change="swiperChange" :current="swiperCurrent" v-else>
+					<swiper-item>
+						<view class="money-body-icons">
+							<view class="money-body-icon" v-for="(u,index) in iconsListSpendTeam" :key="u.id"
+								@click="handleShowCalendar(u)">
+								<image :src="u.src"></image>
+								<text>{{ u.name + '\n' + u.money }}</text>
+							</view>
+							<view class="money-body-icon icon-manage" @click="handleShowManage">
+								<image src="../../static/images/home/其他.png"></image>
+								<text>{{ '管理' + '\n\n' }}</text>
+							</view>
+						</view>
+					</swiper-item>
+					<swiper-item>
+						<view class="money-body-icons">
+							<view class="money-body-icon" v-for="(u,index) in iconsListIncomeTeam" :key="u.id"
+								@click="handleShowCalendar(u)">
+								<image :src="u.src"></image>
+								<text>{{ u.name + '\n' + u.money }}</text>
+							</view>
+							<view class="money-body-icon icon-manage" @click="handleShowManage">
+								<image src="../../static/images/home/其他.png"></image>
+								<text>{{ '管理' + '\n\n' }}</text>
+							</view>
+						</view>
+					</swiper-item>
+				</swiper>
+			</view>
 
-			<swiper active-class="money-swiper" changing-class="money-swiper" @change="swiperChange"
-				:current="swiperCurrent" v-if="switchType === 'personal'">
-				<swiper-item>
-					<view class="money-body-icons">
-						<view class="money-body-icon" v-for="(u,index) in iconsListSpendPersonal" :key="u.id"
-							@click="handleShowCalendar(u)">
-							<image :src="u.src"></image>
-							<text>{{ u.name + '\n' + u.money }}</text>
-						</view>
-						<view class="money-body-icon icon-manage" @click="handleShowManage">
-							<image src="../../static/images/home/其他.png"></image>
-							<text>{{ '管理' + '\n\n' }}</text>
-						</view>
-					</view>
-				</swiper-item>
-				<swiper-item>
-					<view class="money-body-icons">
-						<view class="money-body-icon" v-for="(u,index) in iconsListIncomePersonal" :key="u.id"
-							@click="handleShowCalendar(u)">
-							<image :src="u.src"></image>
-							<text>{{ u.name + '\n' + u.money }}</text>
-						</view>
-						<view class="money-body-icon icon-manage" @click="handleShowManage">
-							<image src="../../static/images/home/其他.png"></image>
-							<text>{{ '管理' + '\n\n' }}</text>
-						</view>
-					</view>
-				</swiper-item>
-			</swiper>
-			<swiper @change="swiperChange" :current="swiperCurrent" v-else>
-				<swiper-item>
-					<view class="money-body-icons">
-						<view class="money-body-icon" v-for="(u,index) in iconsListSpendTeam" :key="u.id"
-							@click="handleShowCalendar(u)">
-							<image :src="u.src"></image>
-							<text>{{ u.name + '\n' + u.money }}</text>
-						</view>
-						<view class="money-body-icon icon-manage" @click="handleShowManage">
-							<image src="../../static/images/home/其他.png"></image>
-							<text>{{ '管理' + '\n\n' }}</text>
-						</view>
-					</view>
-				</swiper-item>
-				<swiper-item>
-					<view class="money-body-icons">
-						<view class="money-body-icon" v-for="(u,index) in iconsListIncomeTeam" :key="u.id"
-							@click="handleShowCalendar(u)">
-							<image :src="u.src"></image>
-							<text>{{ u.name + '\n' + u.money }}</text>
-						</view>
-						<view class="money-body-icon icon-manage" @click="handleShowManage">
-							<image src="../../static/images/home/其他.png"></image>
-							<text>{{ '管理' + '\n\n' }}</text>
-						</view>
-					</view>
-				</swiper-item>
-			</swiper>
+			
 
 			<view class="money-body-bottom">
 				<image src="../../static/back-money-people.jpg"></image>
@@ -94,6 +98,7 @@
 					</u-switch>
 				</view>
 			</view>
+			<u-safe-bottom></u-safe-bottom>
 		</view>
 		<u-tabbar zIndex="1001" :value="selected" :fixed="true" :placeholder="true" @change="handleChangeIndex"
 			:safeAreaInsetBottom="true" activeColor="#ffbb00" inactiveColor="#333">
@@ -104,7 +109,7 @@
 		</u-tabbar>
 		<CalendarWrapper @ok="handleOkCalendar" :switchType="switchType" :userInfo="userInfo" ref="CalendarWrapper">
 		</CalendarWrapper>
-		<AnalysisWrapper ref="AnalysisWrapper"></AnalysisWrapper>
+		<AnalysisWrapper ref="AnalysisWrapper" :iconsList="iconsList" :userInfo="userInfo"></AnalysisWrapper>
 		<ManageTypesWrapper @ok="handleOkManage" :userInfo="userInfo" :iconsListIncomePersonal="iconsListIncomePersonal"
 			:iconsListIncomeTeam="iconsListIncomeTeam" :iconsListSpendPersonal="iconsListSpendPersonal"
 			:iconsListSpendTeam="iconsListSpendTeam" ref="ManageTypesWrapper"></ManageTypesWrapper>
@@ -174,10 +179,11 @@
 					src ? : string,
 					money ? : number,
 					created_type?: string,
+					icon?: string
 				}) => {
 					return {
 						...item,
-						src: require(`@/static/images/home/${item.name}.png`),
+						src: require(`@/static/images/home/${item.icon}`),
 						money: 0
 					}
 				}),
@@ -187,11 +193,12 @@
 					name: string,
 					src ? : string,
 					money ? : number,
-					created_type?: string
+					created_type?: string,
+					icon?: string
 				}) => {
 					return {
 						...item,
-						src: require(`@/static/images/home/${item.name}.png`),
+						src: require(`@/static/images/home/${item.icon}`),
 						money: 0,
 						created_type: 'default'
 					}
@@ -202,11 +209,12 @@
 					name: string,
 					src ? : string,
 					money ? : number,
-					created_type?: string
+					created_type?: string,
+					icon?: string
 				}) => {
 					return {
 						...item,
-						src: require(`@/static/images/home/${item.name}.png`),
+						src: require(`@/static/images/home/${item.icon}`),
 						money: 0,
 						created_type: 'default'
 					}
@@ -217,11 +225,12 @@
 					name: string,
 					src ? : string,
 					money ? : number,
-					created_type?: string
+					created_type?: string,
+					icon?: string
 				}) => {
 					return {
 						...item,
-						src: require(`@/static/images/home/${item.name}.png`),
+						src: require(`@/static/images/home/${item.icon}`),
 						money: 0,
 						created_type: 'default'
 					}
@@ -249,12 +258,23 @@
 				}
 			};
 		},
+		computed: {
+			iconsList(){
+				if(this.switchType === 'personal'){
+					// @ts-ignore
+					return this.curNow === 0 ? this.iconsListSpendPersonal : this.iconsListIncomePersonal
+				}else{
+					// @ts-ignore
+					return this.curNow === 0 ? this.iconsListSpendTeam : this.iconsListIncomeTeam
+				}
+			}
+		},
 		created() {
 			const switchHistory = uni.getStorageSync('SYS_SWITCH_TYPE')
 			if (switchHistory && switchHistory === 'personal' || switchHistory === 'team') {
 				this.switchType = switchHistory
 			}
-			console.log('created end')
+			this.showSwitch = uni.getStorageSync('SYS_INFO_SHOW_SWITCH') || false
 		},
 		watch: {
 			userInfo: {
@@ -280,6 +300,11 @@
 					console.log('iconsListSpendPersonal change', this.iconsListSpendPersonal)
 				},
 				deep: true
+			},
+			showSwitch: {
+				handler(){
+					uni.setStorageSync('SYS_INFO_SHOW_SWITCH',this.showSwitch)
+				}
 			}
 		},
 		onHide() {
@@ -303,11 +328,12 @@
 						name: string,
 						src ? : string,
 						money ? : number,
-						created_type?: string
+						created_type?: string,
+						icon?: string
 					}) => {
 					return {
 						...item,
-						src: require(`@/static/images/home/${item.name}.png`),
+						src: require(`@/static/images/home/${item.icon}`),
 						money: 0,
 						created_type: 'default'
 					}
@@ -320,11 +346,12 @@
 						name: string,
 						src ? : string,
 						money ? : number,
-						created_type?: string
+						created_type?: string,
+						icon?: string
 					}) => {
 					return {
 						...item,
-						src: require(`@/static/images/home/${item.name}.png`),
+						src: require(`@/static/images/home/${item.icon}`),
 						money: 0,
 						created_type: 'default'
 					}
@@ -367,7 +394,8 @@
 							name: item.name,
 							src: require(`@/static/images/home/${item.icon}`),
 							money: 0,
-							created_type: item.created_type
+							created_type: item.created_type,
+							icon: item.icon
 						}
 					}) : this.iconsListSpendPersonal = res.data.map((item: {
 						id: number,
@@ -382,7 +410,8 @@
 							name: item.name,
 							src: require(`@/static/images/home/${item.icon}`),
 							money: 0,
-							created_type: item.created_type
+							created_type: item.created_type,
+							icon: item.icon
 						}
 					})
 				})
@@ -409,7 +438,8 @@
 							name: item.name,
 							src: require(`@/static/images/home/${item.icon}`),
 							money: 0,
-							created_type: item.created_type
+							created_type: item.created_type,
+							icon: item.icon
 						}
 					}) : this.iconsListSpendTeam = res.data.map((item: {
 						id: number,
@@ -424,7 +454,8 @@
 							name: item.name,
 							src: require(`@/static/images/home/${item.icon}`),
 							money: 0,
-							created_type: item.created_type
+							created_type: item.created_type,
+							icon: item.icon
 						}
 					})
 					setTimeout(() => {
@@ -565,6 +596,7 @@
 				uni.setStorageSync('SYS_SWITCH_TYPE', this.switchType)
 			},
 			handleShowAnalysis() {
+				(this.$refs.AnalysisWrapper as any).switchType = this.switchType;
 				(this.$refs.AnalysisWrapper as any).showType = this.curNow === 0 ? 'spend' : 'income';
 				(this.$refs.AnalysisWrapper as any).show();
 			},
@@ -642,6 +674,8 @@
 		background-size: cover;
 		position: relative;
 		overflow: hidden;
+		display: flex;
+		flex-direction: column;
 
 		.money-body-top {
 			height: 250rpx;
@@ -654,7 +688,10 @@
 
 			.u-subsection {
 				width: 300rpx !important;
-				margin-top: 150rpx;
+				position: absolute;
+				left: 50%;
+				bottom: 30rpx;
+				transform: translateX(-50%);
 			}
 
 			.top-switch {
@@ -692,6 +729,13 @@
 				font-size: 12px !important;
 			}
 		}
+		
+		.money-swiper{
+			width: 100%;
+			margin-top: 0;
+			overflow: hidden;
+			flex: 1;
+		}
 
 
 
@@ -723,11 +767,6 @@
 					text-align: center;
 				}
 
-				&.icon-manage image {
-					background: rgba(255, 255, 255, 0.4);
-					border-radius: 20rpx;
-				}
-
 				&.icon-manage text {
 					color: #ffbb00;
 				}
@@ -735,24 +774,23 @@
 		}
 
 		.money-body-bottom {
-			position: absolute;
-			width: 100vw;
-			bottom: 0;
-			left: 0;
-			height: 500rpx;
+			width: 100%;
 			display: flex;
 			justify-content: space-between;
+			align-items: flex-end;
+			margin-bottom: 100rpx;
 
 			image {
-				width: 360rpx;
-				height: 360rpx;
+				width: 200rpx;
+				height: 200rpx;
 				border-radius: 50%;
-				margin-top: 10rpx;
+				margin-bottom: 30rpx;
 				margin-left: 30rpx;
 			}
 
 			.today {
-				margin-top: 100rpx;
+				margin-top: 38rpx;
+				margin-bottom: 20rpx;
 				margin-right: 40rpx;
 				padding: 20rpx;
 				box-sizing: border-box;
@@ -765,6 +803,7 @@
 				display: flex;
 				flex-direction: column;
 				justify-content: center;
+				align-items: center;
 
 				.u-switch {
 					margin-top: 10rpx;

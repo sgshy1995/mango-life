@@ -20,7 +20,7 @@
 				<u-divider text="成员信息"></u-divider>
 				<view class="members">
 					<view class="members-item" v-for="(u,index) in teamInfo.members_detail" :key="index">
-						<u-avatar :src="baseUrl + '/' + u.avatar" size="20"></u-avatar>
+						<u-avatar @click="showAvatarView(u.avatar)" :src="baseUrl + '/' + u.avatar" size="20"></u-avatar>
 						<view class="member-info">
 							<text style="font-size: 14px;">{{ u.nickname }}</text>
 							<view class="member-owner" v-if="u.id === teamInfo.owner">所有者</view>
@@ -112,6 +112,15 @@
 			}
 		},
 		methods: {
+			showAvatarView(url: string) {
+				// 预览图片
+				if(url){
+					uni.previewImage({
+						urls: [this.baseUrl + '/' + url],
+						indicator: 'none'
+					});
+				}
+			},
 			show(){
 				this.showModal = true
 				if(this.userInfo.team_id){

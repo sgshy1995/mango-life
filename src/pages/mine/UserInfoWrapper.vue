@@ -13,8 +13,11 @@
 				<view class="left">
 					<u-icon name="photo-fill" color="#606266" size="22"></u-icon>用户头像
 				</view>
-				<image v-if="userInfo.avatar" class="right" @click="uploadImage" :src="baseUrl + '/' + userInfo.avatar">
-				</image>
+				<view class="right" v-if="userInfo.avatar">
+					<u-icon name="camera-fill" color="#606266" @click="uploadImage" size="30"></u-icon>
+					<image v-if="userInfo.avatar" @click="showAvatarView" :src="baseUrl + '/' + userInfo.avatar">
+					</image>
+				</view>
 				<u-avatar v-else icon="camera-fill" @click="uploadImage" fontSize="20"></u-avatar>
 			</view>
 			<u-divider text="团队/家庭"></u-divider>
@@ -23,7 +26,9 @@
 					<u-cell icon="home-fill" title="家庭/团队">
 						<view slot="value" class="user-team-value" @click="showTeamModal">
 							<text class="team-info">{{ userInfo.team_name || '暂无信息，请创建或邀请' }}</text>
-							<view class="manage"><u-icon name="list-dot" color="#606266" size="16"></u-icon></view>
+							<view class="manage">
+								<u-icon name="list-dot" color="#606266" size="16"></u-icon>
+							</view>
 						</view>
 					</u-cell>
 				</u-cell-group>
@@ -45,6 +50,8 @@
 		<u-modal :show="showModal" showCancelButton confirmColor="#ffbb00" @confirm="handleLogout"
 			@cancel="showModal=false" content="确定退出登录吗？"></u-modal>
 		<TeamManageModal @ok="$emit('change')" :userInfo="userInfo" ref="TeamManageModal"></TeamManageModal>
+		<image-cropper :crop-width="200" :crop-height="200" :show-reset-btn="false" :show-rotate-btn="false"
+			:src="tempFilePath" @confirm="confirm" @cancel="cancel"></image-cropper>
 	</u-popup>
 </template>
 
@@ -54,10 +61,12 @@
 		avatarUploadAction,
 		logoutAction
 	} from '@/service/service'
-	import TeamManageModal from './TeamManageModal.vue'
+	import TeamManageModal from './TeamManageModal.vue';
+	import ImageCropper from "@/components/invinbg-image-cropper/invinbg-image-cropper.vue";
 	export default Vue.extend({
 		components: {
-			TeamManageModal
+			TeamManageModal,
+			ImageCropper
 		},
 		data() {
 			return {
@@ -66,7 +75,9 @@
 					width: '100vw'
 				},
 				showPopup: false,
-				baseUrl: process.env.VUE_APP_API_BASE_URL
+				baseUrl: process.env.VUE_APP_API_BASE_URL,
+				tempFilePath: '',
+				cropFilePath: ''
 			}
 		},
 		props: {
@@ -95,8 +106,15 @@
 			open() {
 
 			},
-			showTeamModal(){
+			showTeamModal() {
 				(this.$refs.TeamManageModal as any).show();
+			},
+			showAvatarView() {
+				// 预览图片
+				uni.previewImage({
+					urls: [this.baseUrl + '/' + this.userInfo.avatar],
+					indicator: 'none'
+				});
 			},
 			uploadImage() {
 				const that = this
@@ -107,14 +125,27 @@
 					success: function(result: any) {
 						console.log('result path', result.tempFilePaths)
 						const imgUrl = result.tempFilePaths[0]
-						avatarUploadAction(imgUrl).then(res => {
-							console.log('res', res)
-							that.$emit('change')
-						}).catch(err => {
-							console.log('err', err)
-						})
+						that.tempFilePath = imgUrl
 					}.bind(this)
 				})
+			},
+			confirm(e: {
+				detail: {
+					tempFilePath: string
+				}
+			}) {
+				this.tempFilePath = ''
+				this.cropFilePath = e.detail.tempFilePath
+				avatarUploadAction(this.cropFilePath).then(res => {
+					console.log('res', res)
+					this.cropFilePath = ''
+					this.$emit('change')
+				}).catch(err => {
+					console.log('err', err)
+				})
+			},
+			cancel() {
+				this.tempFilePath = ''
 			},
 			handleShowModal() {
 				this.showModal = true
@@ -141,21 +172,21 @@
 		width: 100%;
 		height: 100vh;
 		padding-bottom: 40rpx;
-		
-		.user-team{
+
+		.user-team {
 			box-sizing: border-box;
 			width: 100%;
-			
-			.user-team-value{
+
+			.user-team-value {
 				display: flex;
 				align-items: center;
-				
-				.team-info{
+
+				.team-info {
 					font-size: 14px;
 					color: #999999;
 				}
-				
-				.manage{
+
+				.manage {
 					display: flex;
 					align-items: center;
 					font-size: 12px;
@@ -185,9 +216,15 @@
 			}
 
 			.right {
-				width: 76rpx;
-				height: 76rpx;
-				border-radius: 50%;
+				display: flex;
+				align-items: center;
+				image{
+					width: 76rpx;
+					height: 76rpx;
+					border-radius: 50%;
+					flex-shrink: 0;
+					margin-left: 30rpx;
+				}
 			}
 		}
 
