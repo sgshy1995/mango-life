@@ -30,7 +30,7 @@
 				</view>
 				<u-divider text="选择分类统计"></u-divider>
 				<u-grid col="4" :border="true" @click="clickGrid">
-					<u-grid-item v-for="(baseListItem,baseListIndex) in iconsList" :key="baseListIndex">
+					<u-grid-item v-for="(baseListItem,baseListIndex) in iconsListLocal" :key="baseListIndex">
 						<view class="grid-wrapper" :class="{selected: baseListItem.id === chooseInfo.id}">
 							<image class="grid-image" :src="baseListItem.src"></image>
 							<text class="grid-text">{{ baseListItem.name + '\n' + baseListItem.money }}</text>
@@ -56,6 +56,7 @@
 	export default Vue.extend({
 		data() {
 			return {
+				iconsListLocal: [],
 				showPicker: false,
 				loading: false,
 				showType: 'spend',
@@ -120,6 +121,15 @@
 				default: () => {
 					return [];
 				}
+			}
+		},
+		watch: {
+			iconsList: {
+				handler(){
+					this.iconsListLocal = JSON.parse(JSON.stringify(this.iconsList))
+				},
+				deep: true,
+				immediate: true
 			}
 		},
 		methods: {
@@ -191,8 +201,8 @@
 					// @ts-ignore
 					this.baseData = res.data
 					// @ts-ignore
-					this.iconsList.map(item=>item.money=0)
-					this.iconsList.forEach((item:any)=>{
+					this.iconsListLocal.map(item=>item.money=0)
+					this.iconsListLocal.forEach((item:any)=>{
 						// @ts-ignore
 						Object.keys(this.baseData.items).map(key=>{
 							if(item.id === key){
@@ -226,8 +236,8 @@
 					// @ts-ignore
 					this.baseData = res.data
 					// @ts-ignore
-					this.iconsList.map(item=>item.money=0)
-					this.iconsList.forEach((item:any)=>{
+					this.iconsListLocal.map(item=>item.money=0)
+					this.iconsListLocal.forEach((item:any)=>{
 						// @ts-ignore
 						Object.keys(this.baseData.items).map(key=>{
 							if(item.id === key){
@@ -281,9 +291,9 @@
 			clickGrid(index: number) {	
 				this.chooseInfo = {
 					// @ts-ignore
-					icon: this.iconsList[index].icon,
+					icon: this.iconsListLocal[index].icon,
 					// @ts-ignore
-					id: this.iconsList[index].id
+					id: this.iconsListLocal[index].id
 				}
 				console.log('index',index)
 				console.log('chooseInfo',this.chooseInfo)

@@ -414,10 +414,11 @@
 							icon: item.icon
 						}
 					})
+				}).finally(()=>{
+					this.$nextTick(() => {
+						this.getTodayPersonalInfo()
+					})
 				})
-				setTimeout(() => {
-					this.getTodayPersonalInfo()
-				}, 0)
 			},
 			getTeamTypes() {
 				console.log('get data start')
@@ -457,10 +458,11 @@
 							created_type: item.created_type,
 							icon: item.icon
 						}
+					}).finally(()=>{
+						this.$nextTick(() => {
+							this.getTodayTeamInfo()
+						})
 					})
-					setTimeout(() => {
-						this.getTodayTeamInfo()
-					}, 0)
 				})
 			},
 			getTodayPersonalInfo() {
