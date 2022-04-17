@@ -89,3 +89,20 @@ swiper{
 swiper-item{
 	overflow: auto !important;
 }
+
+.uni-calendar-item__weeks-box-item{
+	width: 80rpx !important;
+	height: 80rpx !important;
+}
+
+.uni-calendar__weeks-day{
+	height: 70rpx !important;
+}
+
+.uni-calendar__header{
+	height: 70rpx !important;
+}
+
+.uni-calendar__backtoday{
+	top: 12rpx !important;
+}

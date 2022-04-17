@@ -306,8 +306,32 @@
 		},
 		{
 			"id": "d35",
-			"name": "地图",
-			"icon": "地图.png",
+			"name": "游乐园",
+			"icon": "游乐园.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d36",
+			"name": "综艺",
+			"icon": "综艺.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d37",
+			"name": "游戏",
+			"icon": "游戏.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d38",
+			"name": "跑步",
+			"icon": "跑步.png",
+			"origin_id": 0
+		},
+		{
+			"id": "d39",
+			"name": "打靶",
+			"icon": "打靶.png",
 			"origin_id": 0
 		}
 	]

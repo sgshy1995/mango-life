@@ -414,14 +414,13 @@
 							icon: item.icon
 						}
 					})
-				}).finally(()=>{
-					this.$nextTick(() => {
+					
+					setTimeout(() => {
 						this.getTodayPersonalInfo()
-					})
+					},200)
 				})
 			},
 			getTeamTypes() {
-				console.log('get data start')
 				getTeamChargeTypesAction({
 					balance_type: this.curNow,
 					team_id: this.userInfo.team_id
@@ -458,11 +457,11 @@
 							created_type: item.created_type,
 							icon: item.icon
 						}
-					}).finally(()=>{
-						this.$nextTick(() => {
-							this.getTodayTeamInfo()
-						})
 					})
+					
+					setTimeout(() => {
+						this.getTodayTeamInfo()
+					},100)
 				})
 			},
 			getTodayPersonalInfo() {
