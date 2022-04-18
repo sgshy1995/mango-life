@@ -36,12 +36,40 @@
 			<u-divider text="用户信息"></u-divider>
 			<u-cell-group>
 				<u-cell icon="info-circle-fill" title="用户名" :value="userInfo.username"></u-cell>
-				<u-cell icon="account-fill" title="昵称" :value="userInfo.nickname"></u-cell>
 				<u-cell icon="lock-fill" title="私钥" :value="userInfo.primary_key"></u-cell>
-				<u-cell icon="phone-fill" title="手机" :value="userInfo.phone"></u-cell>
-				<u-cell icon="email-fill" title="邮箱" :value="userInfo.email"></u-cell>
-				<u-cell icon="man-add-fill" title="性别" :value="userInfo.gender"></u-cell>
-				<u-cell icon="gift-fill" title="生日" :value="userInfo.birthday"></u-cell>
+				<u-cell icon="account-fill" title="昵称">
+					<view slot="value" class="user-info-item" @click="handleShowNickname">
+						<text class="in-text"
+							:class="{empty: !userInfo.nickname}">{{ userInfo.nickname || '未填写' }}</text>
+						<text class="in-icon">></text>
+					</view>
+				</u-cell>
+				<u-cell icon="phone-fill" title="手机">
+					<view slot="value" class="user-info-item" @click="handleShowPhone">
+						<text class="in-text" :class="{empty: !userInfo.phone}">{{ userInfo.phone || '未填写' }}</text>
+						<text class="in-icon">></text>
+					</view>
+				</u-cell>
+				<u-cell icon="email-fill" title="邮箱" @click="handleShowEmail">
+					<view slot="value" class="user-info-item">
+						<text class="in-text" :class="{empty: !userInfo.email}">{{ userInfo.email || '未填写' }}</text>
+						<text class="in-icon">></text>
+					</view>
+				</u-cell>
+				<u-cell icon="man-add-fill" title="性别">
+					<view slot="value" class="user-info-item" @click="handleShowPickerGender">
+						<text class="in-text"
+							:class="{empty: !userInfo.hasOwnProperty('gender')}">{{ !userInfo.hasOwnProperty('gender') ? '未设置' : userInfo.gender === 0 ? '男' : '女' }}</text>
+						<text class="in-icon">></text>
+					</view>
+				</u-cell>
+				<u-cell icon="gift-fill" title="生日">
+					<view slot="value" class="user-info-item" @click="handleShowPickerBirthday">
+						<text class="in-text"
+							:class="{empty: !userInfo.birthday}">{{ (userInfo.birthday && moment(userInfo.birthday, 'YYYY-MM-DD').format('YYYY-MM-DD')) || '未设置' }}</text>
+						<text class="in-icon">></text>
+					</view>
+				</u-cell>
 			</u-cell-group>
 			<view class="userinfo-bottom">
 				<u-button color="#ffbb00" type="primary" text="退出登录" @click="handleShowModal"></u-button>
@@ -52,6 +80,21 @@
 		<TeamManageModal @ok="$emit('change')" :userInfo="userInfo" ref="TeamManageModal"></TeamManageModal>
 		<image-cropper :crop-width="200" :crop-height="200" :show-reset-btn="false" :show-rotate-btn="false"
 			:src="tempFilePath" @confirm="confirm" @cancel="cancel"></image-cropper>
+		<u-modal title="昵称" :show="showModalNickname" showCancelButton confirmColor="#ffbb00"
+			@confirm="handleUpdateNickname" @cancel="showModalNickname=false">
+			<u--input placeholder="请输入昵称" border="bottom" maxlength="12" v-model="nickname"></u--input>
+		</u-modal>
+		<u-modal title="手机号" :show="showModalPhone" showCancelButton confirmColor="#ffbb00" @confirm="handleUpdatePhone"
+			@cancel="showModalPhone=false">
+			<u--input type="number" placeholder="请输入手机号" maxlength="11" border="bottom" v-model="phone"></u--input>
+		</u-modal>
+		<u-modal title="邮箱" :show="showModalEmail" showCancelButton confirmColor="#ffbb00" @confirm="handleUpdateEmail"
+			@cancel="showModalEmail=false">
+			<u--input placeholder="请输入邮箱" border="bottom" v-model="email"></u--input>
+		</u-modal>
+		<u-picker @cancel="showPickerGender=false" @confirm="handleUpdateGender" :singleIndex="singleIndex"
+			:show="showPickerGender" confirmColor="#ffbb00" :columns="columnsGender"></u-picker>
+		<u-datetime-picker :key="refreshKey" @cancel="showPickerBirthday=false" :show="showPickerBirthday" @confirm="handleUpdateBirthday" v-model="birthday" mode="date"></u-datetime-picker>
 	</u-popup>
 </template>
 
@@ -59,10 +102,12 @@
 	import Vue from 'vue';
 	import {
 		avatarUploadAction,
-		logoutAction
+		logoutAction,
+		updateUserAction
 	} from '@/service/service'
 	import TeamManageModal from './TeamManageModal.vue';
 	import ImageCropper from "@/components/invinbg-image-cropper/invinbg-image-cropper.vue";
+	import moment from 'moment';
 	export default Vue.extend({
 		components: {
 			TeamManageModal,
@@ -70,14 +115,29 @@
 		},
 		data() {
 			return {
+				moment: moment,
 				showModal: false,
+				showModalNickname: false,
+				showModalPhone: false,
+				showModalEmail: false,
+				showPickerGender: false,
+				showPickerBirthday: false,
 				customStyleIn: {
 					width: '100vw'
 				},
 				showPopup: false,
 				baseUrl: process.env.VUE_APP_API_BASE_URL,
 				tempFilePath: '',
-				cropFilePath: ''
+				cropFilePath: '',
+				nickname: '',
+				phone: '',
+				email: '',
+				columnsGender: [
+					['男', '女']
+				],
+				singleIndex: 0,
+				birthday: Number(new Date()),
+				refreshKey: 0
 			}
 		},
 		props: {
@@ -98,7 +158,91 @@
 				}
 			}
 		},
+		watch: {
+			birthday: {
+				handler(){
+					console.log('birthday change', this.birthday)
+				},
+				immediate: true
+			}
+		},
 		methods: {
+			handleShowPickerBirthday(){
+				this.birthday = this.userInfo.birthday ? Number(new Date(this.userInfo.birthday)) : Number(new Date())
+				this.refreshKey ++
+				this.$nextTick(()=>{
+					this.showPickerBirthday = true
+				})
+			},
+			handleUpdateBirthday(s: {value: number}){
+				this.birthday = s.value
+				updateUserAction({
+					id: this.userInfo.id,
+					birthday: moment(new Date(s.value), 'YYYY-MM-DD').format('YYYY-MM-DD') + ' 00:00:00'
+				}).then(res => {
+					(this as any).$toast(res.message || '保存成功');
+					this.$emit('change')
+					this.showPickerBirthday = false
+				})
+			},
+			handleShowPickerGender() {
+				this.showPickerGender = true
+				this.singleIndex = this.userInfo.gender || 0
+			},
+			handleUpdateGender(e: {
+				indexs: number[]
+			}) {
+				updateUserAction({
+					id: this.userInfo.id,
+					gender: e.indexs[0]
+				}).then(res => {
+					(this as any).$toast(res.message || '保存成功');
+					this.$emit('change')
+					this.showPickerGender = false
+				})
+			},
+			handleUpdateNickname() {
+				updateUserAction({
+					id: this.userInfo.id,
+					nickname: this.nickname
+				}).then(res => {
+					(this as any).$toast(res.message || '保存成功');
+					this.$emit('change')
+					this.showModalNickname = false
+				})
+			},
+			handleShowNickname() {
+				this.nickname = this.userInfo.nickname
+				this.showModalNickname = true
+			},
+			handleUpdatePhone() {
+				updateUserAction({
+					id: this.userInfo.id,
+					phone: this.phone
+				}).then(res => {
+					(this as any).$toast(res.message || '保存成功');
+					this.$emit('change')
+					this.showModalPhone = false
+				})
+			},
+			handleShowPhone() {
+				this.phone = this.userInfo.phone
+				this.showModalPhone = true
+			},
+			handleUpdateEmail() {
+				updateUserAction({
+					id: this.userInfo.id,
+					email: this.email
+				}).then(res => {
+					(this as any).$toast(res.message || '保存成功');
+					this.$emit('change')
+					this.showModalEmail = false
+				})
+			},
+			handleShowEmail() {
+				this.email = this.userInfo.email
+				this.showModalEmail = true
+			},
 			close() {
 				if (!this.showPopup) return
 				this.showPopup = false;
@@ -218,7 +362,8 @@
 			.right {
 				display: flex;
 				align-items: center;
-				image{
+
+				image {
 					width: 76rpx;
 					height: 76rpx;
 					border-radius: 50%;
@@ -273,6 +418,24 @@
 					padding-left: 2rpx;
 				}
 			}
+		}
+	}
+
+	.user-info-item {
+		display: flex;
+		align-items: center;
+
+		.in-text {
+			color: #333;
+
+			&.empty {
+				color: #bec4c9;
+			}
+		}
+
+		.in-icon {
+			color: #bec4c9;
+			padding-left: 20rpx;
 		}
 	}
 

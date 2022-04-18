@@ -51,6 +51,16 @@ export const avatarUploadAction = (path:string): Promise<Record<string,any>> => 
 	},path)
 }
 
+// 更新用户信息
+const updateUserUrl = (id:number)=>`/user/${id}`
+export const updateUserAction = (user: Record<string,any>): Promise<Record<string,any>> => {
+  return doRequestAction({
+    url: updateUserUrl(user.id),
+    method: 'PUT',
+	data: user
+  })
+}
+
 // 退出登录
 const logoutUrl = '/user/logout'
 export const logoutAction = (user: Record<string,any>): Promise<Record<string,any>> => {
