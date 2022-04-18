@@ -63,13 +63,6 @@
 						<text class="in-icon">></text>
 					</view>
 				</u-cell>
-				<u-cell icon="gift-fill" title="生日">
-					<view slot="value" class="user-info-item" @click="handleShowPickerBirthday">
-						<text class="in-text"
-							:class="{empty: !userInfo.birthday}">{{ (userInfo.birthday && moment(userInfo.birthday, 'YYYY-MM-DD').format('YYYY-MM-DD')) || '未设置' }}</text>
-						<text class="in-icon">></text>
-					</view>
-				</u-cell>
 			</u-cell-group>
 			<view class="userinfo-bottom">
 				<u-button color="#ffbb00" type="primary" text="退出登录" @click="handleShowModal"></u-button>
@@ -94,7 +87,6 @@
 		</u-modal>
 		<u-picker @cancel="showPickerGender=false" @confirm="handleUpdateGender" :singleIndex="singleIndex"
 			:show="showPickerGender" confirmColor="#ffbb00" :columns="columnsGender"></u-picker>
-		<u-datetime-picker :key="refreshKey" @cancel="showPickerBirthday=false" :show="showPickerBirthday" @confirm="handleUpdateBirthday" v-model="birthday" mode="date"></u-datetime-picker>
 	</u-popup>
 </template>
 
@@ -121,7 +113,6 @@
 				showModalPhone: false,
 				showModalEmail: false,
 				showPickerGender: false,
-				showPickerBirthday: false,
 				customStyleIn: {
 					width: '100vw'
 				},
@@ -136,8 +127,6 @@
 					['男', '女']
 				],
 				singleIndex: 0,
-				birthday: Number(new Date()),
-				refreshKey: 0
 			}
 		},
 		props: {
@@ -158,33 +147,7 @@
 				}
 			}
 		},
-		watch: {
-			birthday: {
-				handler(){
-					console.log('birthday change', this.birthday)
-				},
-				immediate: true
-			}
-		},
 		methods: {
-			handleShowPickerBirthday(){
-				this.birthday = this.userInfo.birthday ? Number(new Date(this.userInfo.birthday)) : Number(new Date())
-				this.refreshKey ++
-				this.$nextTick(()=>{
-					this.showPickerBirthday = true
-				})
-			},
-			handleUpdateBirthday(s: {value: number}){
-				this.birthday = s.value
-				updateUserAction({
-					id: this.userInfo.id,
-					birthday: moment(new Date(s.value), 'YYYY-MM-DD').format('YYYY-MM-DD') + ' 00:00:00'
-				}).then(res => {
-					(this as any).$toast(res.message || '保存成功');
-					this.$emit('change')
-					this.showPickerBirthday = false
-				})
-			},
 			handleShowPickerGender() {
 				this.showPickerGender = true
 				this.singleIndex = this.userInfo.gender || 0
