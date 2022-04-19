@@ -172,18 +172,21 @@
 						icon: 'none'
 					})
 				} else {
+					(this as any).$loadingOn();
 					registerAction({
 						...this.formModel,
 						device_id: this.device_id
 					}).then(res => {
-						console.log('res', res)
-						uni.setStorageSync('SYS_AUTH_TOKEN_KEY', res.data.token)
-						this.$emit('ok', this.formModel)
-						this.close()
+						console.log('res', res);
+						uni.setStorageSync('SYS_AUTH_TOKEN_KEY', res.data.token);
+						this.$emit('ok', this.formModel);
+						this.close();
+						(this as any).$loadingOff();
 						//this.getUserInfo(this.formModel)
 					}).catch(err => {
 						this.formModel.capture = '';
 						this.tapCaptcha();
+						(this as any).$loadingOff();
 					})
 				}
 			},
@@ -200,18 +203,21 @@
 						icon: 'none'
 					})
 				} else {
+					(this as any).$loadingOn();
 					loginAction({
 						...this.formModel,
 						device_id: this.device_id
 					}).then(res => {
-						console.log('res', res)
-						uni.setStorageSync('SYS_AUTH_TOKEN_KEY', res.data.token)
-						this.$emit('ok', this.formModel)
-						this.close()
+						console.log('res', res);
+						uni.setStorageSync('SYS_AUTH_TOKEN_KEY', res.data.token);
+						this.$emit('ok', this.formModel);
+						this.close();
+						(this as any).$loadingOff();
 						//this.getUserInfo(this.formModel)
 					}).catch(err => {
 						this.formModel.capture = '';
 						this.tapCaptcha();
+						(this as any).$loadingOff();
 					})
 				}
 			},
@@ -219,8 +225,14 @@
 				if (!this.showPopup) return
 				this.showPopup = false;
 				setTimeout(() => {
-					(this.$refs.Form!as any).resetFields()
-					this.showPassword = false
+					(this.$refs.Form!as any).resetFields();
+					this.showPassword = false;
+					this.formModel = {
+						username: '',
+						nickname: '',
+						password: '',
+						capture: ''
+					}
 				}, 200)
 			},
 			open() {

@@ -53,5 +53,40 @@
 				"query": "" //启动参数，在页面的onLoad函数里面得到
 			}
 		]
+	},
+	"tabBar" : {
+		"color": "#333333",
+		"selectedColor": "#ffbb00",
+		"backgroundColor": "#ffffff",
+		"borderStyle": "#ccc",
+		"iconWidth": "18rpx",
+		"fontSize": "12px",
+		"spacing": "6rpx",
+		"list": [
+			{
+				"text": "首页",
+				"pagePath": "pages/index/Index",
+				"iconPath": "static/images/tab/首页.png",
+				"selectedIconPath": "static/images/tab/首页-激活.png"
+			},
+			{
+				"text": "记账",
+				"pagePath": "pages/money/Money",
+				"iconPath": "static/images/tab/记账本.png",
+				"selectedIconPath": "static/images/tab/记账本-激活.png"
+			},
+			{
+				"text": "备忘",
+				"pagePath": "pages/memo/Memo",
+				"iconPath": "static/images/tab/备忘.png",
+				"selectedIconPath": "static/images/tab/备忘-激活.png"
+			},
+			{
+				"text": "我的",
+				"pagePath": "pages/mine/Mine",
+				"iconPath": "static/images/tab/我的.png",
+				"selectedIconPath": "static/images/tab/我的-激活.png"
+			}
+		]
 	}
 }

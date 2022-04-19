@@ -26,13 +26,6 @@
 			</u-scroll-list>
 		</view>
 	
-		<u-tabbar :value="selected" :fixed="true" :placeholder="true" @change="handleChangeIndex"
-			:safeAreaInsetBottom="true" activeColor="#ffbb00" inactiveColor="#333">
-			<u-tabbar-item text="首页" icon="home-fill"></u-tabbar-item>
-			<u-tabbar-item text="记账" icon="red-packet-fill"></u-tabbar-item>
-			<u-tabbar-item text="备忘" icon="calendar-fill"></u-tabbar-item>
-			<u-tabbar-item text="我的" icon="account-fill"></u-tabbar-item>
-		</u-tabbar>
 	</view>
 </template>
 
@@ -44,17 +37,10 @@
 			return {
 				menuBaseUrl: 'https://cdn.uviewui.com/uview/menu/',
 				title: 'Hello',
-				selected: 0,
 				list3: [
 					'https://cdn.uviewui.com/uview/swiper/swiper3.png',
 					'https://cdn.uviewui.com/uview/swiper/swiper2.png',
 					'https://cdn.uviewui.com/uview/swiper/swiper1.png',
-				],
-				urls: [
-					'/pages/index/Index',
-					'/pages/money/Money',
-					'/pages/memo/Memo',
-					'/pages/mine/Mine'
 				],
 				menuArr: [
 					[{
@@ -123,21 +109,7 @@
 		onLoad() {
 
 		},
-		onHide() {
-			this.selected = 0
-		},
 		methods: {
-			handleChangeIndex(index: number) {
-				console.log('12', index)
-				this.selected = index
-				uni.redirectTo({
-					url: this.urls[index],
-					fail: (e) => {
-
-					}
-				})
-				console.log('1', index)
-			},
 			left() {
 				console.log('left');
 			},

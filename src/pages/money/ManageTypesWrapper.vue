@@ -224,16 +224,23 @@
 				}
 			},
 			deleteTypeData() {
+				(this as any).$loadingOn();
 				this.curNow === 0 ? deletePersonalChargeTypeAction(this.pickInfo.origin_id).then(res => {
 					(this as any).$toast(res.message || '删除成功');
 					this.$emit('ok');
 					this.clearPick();
 					this.showModal = false;
+					(this as any).$loadingOff();
+				}).catch(err=>{
+					(this as any).$loadingOff();
 				}) : deleteTeamChargeTypeAction(this.pickInfo.origin_id).then(res => {
 					(this as any).$toast(res.message || '删除成功');
 					this.$emit('ok');
 					this.clearPick();
 					this.showModal = false;
+					(this as any).$loadingOff();
+				}).catch(err=>{
+					(this as any).$loadingOff();
 				})
 			},
 			handleClickIcon(info: {

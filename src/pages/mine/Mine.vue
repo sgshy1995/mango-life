@@ -21,13 +21,6 @@
 			</view>
 			<view class="mine-top-two"></view>
 		</view>
-		<u-tabbar :value="selected" :fixed="true" :placeholder="true" @change="handleChangeIndex"
-			:safeAreaInsetBottom="true" activeColor="#ffbb00" inactiveColor="#333">
-			<u-tabbar-item text="首页" icon="home-fill"></u-tabbar-item>
-			<u-tabbar-item text="记账" icon="red-packet-fill"></u-tabbar-item>
-			<u-tabbar-item text="备忘" icon="calendar-fill"></u-tabbar-item>
-			<u-tabbar-item text="我的" icon="account-fill"></u-tabbar-item>
-		</u-tabbar>
 		<LoginRegisterWrapper @ok="handleSuccess" ref="LoginRegisterWrapper"></LoginRegisterWrapper>
 		<UserInfoWrapper @change="getUserInfo(userInfo)" ref="UserInfoWrapper" :userInfo="userInfo"></UserInfoWrapper>
 	</view>
@@ -47,13 +40,6 @@
 			return {
 				baseUrl: process.env.VUE_APP_API_BASE_URL,
 				showType: 'login',
-				selected: 3,
-				urls: [
-					'/pages/index/Index',
-					'/pages/money/Money',
-					'/pages/memo/Memo',
-					'/pages/mine/Mine'
-				],
 				showPopup: false,
 				userInfo: {
 					username: '',
@@ -72,7 +58,7 @@
 			LoginRegisterWrapper,
 			UserInfoWrapper
 		},
-		onLoad() {
+		onShow() {
 			//(this.$refs.Form! as any).setRules(this.formRules)
 			if (uni.getStorageSync('SYS_USER_INFO') && uni.getStorageSync('SYS_USER_INFO').id) {
 				
@@ -80,9 +66,6 @@
 				console.log('this.userInfo',this.userInfo)
 				this.getUserInfo(this.userInfo)
 			}
-		},
-		onHide() {
-			this.selected = 3
 		},
 		methods: {
 			handleSuccess(userInfo:Record<string,any>){
@@ -119,18 +102,7 @@
 				(this.$refs.LoginRegisterWrapper as any).showPopup = true;
 				(this.$refs.LoginRegisterWrapper as any).tapCaptcha();
 				uni.removeStorageSync('SYS_AUTH_TOKEN_KEY')
-			},
-			handleChangeIndex(index: number) {
-				console.log('12', index)
-				this.selected = index
-				uni.redirectTo({
-					url: this.urls[index],
-					fail: (e) => {
-						alert(e.errMsg)
-					}
-				})
-				console.log('1', index)
-			},
+			}
 			
 		}
 	})

@@ -100,13 +100,6 @@
 			</view>
 			<u-safe-bottom></u-safe-bottom>
 		</view>
-		<u-tabbar zIndex="1001" :value="selected" :fixed="true" :placeholder="true" @change="handleChangeIndex"
-			:safeAreaInsetBottom="true" activeColor="#ffbb00" inactiveColor="#333">
-			<u-tabbar-item text="首页" icon="home-fill"></u-tabbar-item>
-			<u-tabbar-item text="记账" icon="red-packet-fill"></u-tabbar-item>
-			<u-tabbar-item text="备忘" icon="calendar-fill"></u-tabbar-item>
-			<u-tabbar-item text="我的" icon="account-fill"></u-tabbar-item>
-		</u-tabbar>
 		<CalendarWrapper @ok="handleOkCalendar" :switchType="switchType" :userInfo="userInfo" ref="CalendarWrapper">
 		</CalendarWrapper>
 		<AnalysisWrapper ref="AnalysisWrapper" :iconsList="iconsList" :userInfo="userInfo"></AnalysisWrapper>
@@ -115,7 +108,7 @@
 			:iconsListSpendTeam="iconsListSpendTeam" ref="ManageTypesWrapper"></ManageTypesWrapper>
 		<u-modal :show="showModal" @confirm="showModal=false" confirmColor="#ffbb00"
 			content="您暂未拥有团队或家庭，无法切换至团队/家庭记账模式。请在个人中心创建或由其他成员邀请后使用。"></u-modal>
-		<u-overlay zIndex="1000" :show="showOverlay">
+		<u-overlay zIndex="100" :show="showOverlay">
 			<view class="warp" @tap.stop>
 				<text>您还未登录，请前往登录</text>
 				<u-button
@@ -154,15 +147,8 @@
 				todaySpendMoney: 0,
 				todayIncomeMoney: 0,
 				showSwitch: false,
-				selected: 1,
 				titleList: ['支出', '收入'],
 				curNow: 0,
-				urls: [
-					'/pages/index/Index',
-					'/pages/money/Money',
-					'/pages/memo/Memo',
-					'/pages/mine/Mine'
-				],
 				buttonStyle: {
 					height: '42rpx',
 					width: '50rpx',
@@ -269,13 +255,6 @@
 				}
 			}
 		},
-		created() {
-			const switchHistory = uni.getStorageSync('SYS_SWITCH_TYPE')
-			if (switchHistory && switchHistory === 'personal' || switchHistory === 'team') {
-				this.switchType = switchHistory
-			}
-			this.showSwitch = uni.getStorageSync('SYS_INFO_SHOW_SWITCH') || false
-		},
 		watch: {
 			userInfo: {
 				handler() {
@@ -307,10 +286,12 @@
 				}
 			}
 		},
-		onHide() {
-			this.selected = 1
-		},
-		onLoad() {
+		onShow() {
+			const switchHistory = uni.getStorageSync('SYS_SWITCH_TYPE')
+			if (switchHistory && switchHistory === 'personal' || switchHistory === 'team') {
+				this.switchType = switchHistory
+			}
+			this.showSwitch = uni.getStorageSync('SYS_INFO_SHOW_SWITCH') || false
 			if (uni.getStorageSync('SYS_USER_INFO') && uni.getStorageSync('SYS_USER_INFO').id) {
 				this.userInfo = uni.getStorageSync('SYS_USER_INFO')
 				console.log('this.userInfo', this.userInfo)
@@ -371,12 +352,13 @@
 				}
 			},
 			handleGotoLogin() {
-				uni.redirectTo({
+				console.log('handleGotoLogin')
+				uni.switchTab({
 					url: "/pages/mine/Mine"
 				})
 			},
 			getPersonalTypes() {
-				console.log('get data start')
+				(this as any).$loadingOn();
 				getPersonalChargeTypesAction({
 					balance_type: this.curNow,
 					created_by: this.userInfo.id
@@ -418,9 +400,12 @@
 					setTimeout(() => {
 						this.getTodayPersonalInfo()
 					},200)
+				}).catch(err=>{
+					(this as any).$loadingOff();
 				})
 			},
 			getTeamTypes() {
+				(this as any).$loadingOn();
 				getTeamChargeTypesAction({
 					balance_type: this.curNow,
 					team_id: this.userInfo.team_id
@@ -462,6 +447,8 @@
 					setTimeout(() => {
 						this.getTodayTeamInfo()
 					},100)
+				}).catch(err=>{
+					(this as any).$loadingOff();
 				})
 			},
 			getTodayPersonalInfo() {
@@ -506,6 +493,9 @@
 							this.$set(item, 'money', itemFind.money)
 						}
 					})
+					(this as any).$loadingOff();
+				}).catch(err=>{
+					(this as any).$loadingOff();
 				})
 			},
 			getTodayTeamInfo() {
@@ -549,6 +539,9 @@
 							this.$set(item, 'money', itemFind.money)
 						}
 					})
+					(this as any).$loadingOff();
+				}).catch(err=>{
+					(this as any).$loadingOff();
 				})
 			},
 			getUserInfo(userInfo: Record < string, any > ) {
@@ -634,17 +627,6 @@
 			},
 			changeSwitch() {
 				this.showSwitch = !this.showSwitch
-			},
-			handleChangeIndex(index: number) {
-				console.log('12', index)
-				this.selected = index
-				uni.redirectTo({
-					url: this.urls[index],
-					fail: (e) => {
-
-					}
-				})
-				console.log('1', index)
 			}
 		}
 	})

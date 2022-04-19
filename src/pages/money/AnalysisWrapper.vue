@@ -1,6 +1,6 @@
 <template>
 	<u-popup :overlay="true" bgColor="#f7f7f7" :duration="200" mode="right" :customStyle="customStyleIn"
-		:safeAreaInsetTop="true" :show="showPopup" @close="close">
+		:safeAreaInsetTop="false" :show="showPopup" @close="close">
 		<scroll-view scroll-y class="analysis-box">
 			<u-navbar placeholder leftIconSize="14" border bgColor="#ffbb00"
 				:title="showType === 'spend' ? `${switchType==='personal'?'个人':'团队/家庭'} 支出分析` : `${switchType==='personal'?'个人':'团队/家庭'} 收入分析`"
@@ -182,9 +182,6 @@
 					// @ts-ignore
 					this.columnDataWeek[index] = Object.keys(this.totalWeekInfo[year])
 				})
-				// @ts-ignore
-				console.log('this.columnDataWeek this.columnDataWeek',this.columnDataWeek)
-				console.log('totalWeekInfo', this.totalWeekInfo)
 			},
 			handleShowPicker() {
 				this.showPicker = true

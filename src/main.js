@@ -11,6 +11,17 @@ Vue.prototype.$toast  = function(message,icon){
 	})
 }
 
+Vue.prototype.$loadingOn  = function(){
+	uni.showLoading({
+		title: '',
+		mask: true
+	})
+}
+
+Vue.prototype.$loadingOff  = function(){
+	uni.hideLoading()
+}
+
 Vue.config.productionTip = false
 
 new App().$mount()

@@ -360,24 +360,32 @@
 						icon: 'none'
 					})
 				} else if(this.editInfo.id) {
+					(this as any).$loadingOn();
 					this.switchType === 'personal' ?
 						changePersonalChargeAction(this.editInfo.id,{
 							charge_num: Number(this.inputNum),
 							remark: this.inputNote || undefined
 						}).then(res=>{
-							(this as any).$toast(res.message || '更新成功')
-							this.$emit('ok')
-							this.close()
+							(this as any).$toast(res.message || '更新成功');
+							this.$emit('ok');
+							this.close();
+							(this as any).$loadingOff();
+						}).catch(err=>{
+							(this as any).$loadingOff();
 						}) : changeTeamChargeAction(this.editInfo.id,{
 							charge_num: Number(this.inputNum),
 							remark: this.inputNote || undefined
 						}).then(res=>{
-							(this as any).$toast(res.message || '更新成功')
-							this.$emit('ok')
-							this.close()
+							(this as any).$toast(res.message || '更新成功');
+							this.$emit('ok');
+							this.close();
+							(this as any).$loadingOff();
+						}).catch(err=>{
+							(this as any).$loadingOff();
 						})
 					
 				} else{
+					(this as any).$loadingOn();
 					this.switchType === 'personal' ?
 						addPersonalChargeAction({
 							charge_num: Number(this.inputNum),
@@ -387,9 +395,12 @@
 							remark: this.inputNote || undefined,
 							charge_time: this.pickDate
 						}).then(res=>{
-							(this as any).$toast(res.message || '添加成功')
-							this.$emit('ok')
-							this.close()
+							(this as any).$toast(res.message || '添加成功');
+							this.$emit('ok');
+							this.close();
+							(this as any).$loadingOff();
+						}).catch(err=>{
+							(this as any).$loadingOff();
 						}) : addTeamChargeAction({
 							charge_num: Number(this.inputNum),
 							created_by: this.userInfo.id,
@@ -399,9 +410,12 @@
 							charge_time: this.pickDate,
 							team_id: this.userInfo.team_id
 						}).then(res=>{
-							(this as any).$toast(res.message || '添加成功')
-							this.$emit('ok')
-							this.close()
+							(this as any).$toast(res.message || '添加成功');
+							this.$emit('ok');
+							this.close();
+							(this as any).$loadingOff();
+						}).catch(err=>{
+							(this as any).$loadingOff();
 						})
 				}
 			}

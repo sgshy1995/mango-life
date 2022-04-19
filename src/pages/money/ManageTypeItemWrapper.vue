@@ -163,6 +163,7 @@
 		},
 		methods: {
 			handleCreate(){
+				(this as any).$loadingOn();
 				if(this.existType === 'personal'){
 					createPersonalChargeTypeAction({
 						name: this.inputName,
@@ -173,6 +174,9 @@
 						(this as any).$toast(res.message || '创建成功');
 						this.$emit('ok');
 						this.close();
+						(this as any).$loadingOff();
+					}).catch(err=>{
+						(this as any).$loadingOff();
 					})
 				}else{
 					createTeamChargeTypeAction({
@@ -185,10 +189,14 @@
 						(this as any).$toast(res.message || '创建成功');
 						this.$emit('ok');
 						this.close();
+						(this as any).$loadingOff();
+					}).catch(err=>{
+						(this as any).$loadingOff();
 					})
 				}
 			},
 			handleEdit(){
+				(this as any).$loadingOn();
 				if(this.existType === 'personal'){
 					updatePersonalChargeTypeAction(this.pickInfo.origin_id, {
 						name: this.inputName,
@@ -197,6 +205,8 @@
 						(this as any).$toast(res.message || '更新成功');
 						this.$emit('ok');
 						this.close();
+					}).catch(err=>{
+						(this as any).$loadingOff();
 					})
 				}else{
 					updateTeamChargeTypeAction(this.pickInfo.origin_id, {
@@ -206,6 +216,8 @@
 						(this as any).$toast(res.message || '更新成功');
 						this.$emit('ok');
 						this.close();
+					}).catch(err=>{
+						(this as any).$loadingOff();
 					})
 				}
 			},
