@@ -207,7 +207,7 @@
 						Object.keys(this.baseData.items).map(key=>{
 							if(item.id === key){
 								// @ts-ignore
-								this.showType === 'spend' ? item.money = this.baseData.items[key].spend.reduce((a:number,b:number)=>a+b) : item.money = this.baseData.items[key].income.reduce((a:number,b:number)=>a+b)
+								this.showType === 'spend' ? item.money = Math.round(this.baseData.items[key].spend.reduce((a:number,b:number)=>a+b) * 100) / 100 : item.money = Math.round(this.baseData.items[key].income.reduce((a:number,b:number)=>a+b) * 100) / 100
 							}
 						})
 					})
@@ -242,7 +242,7 @@
 						Object.keys(this.baseData.items).map(key=>{
 							if(item.id === key){
 								// @ts-ignore
-								this.showType === 'spend' ? item.money = this.baseData.items[key].spend.reduce((a:number,b:number)=>a+b) : item.money = this.baseData.items[key].income.reduce((a:number,b:number)=>a+b)
+								this.showType === 'spend' ? item.money = Math.round(this.baseData.items[key].spend.reduce((a:number,b:number)=>a+b) * 100) / 100 : item.money = Math.round(this.baseData.items[key].income.reduce((a:number,b:number)=>a+b) * 100) / 100
 							}
 						})
 					})
