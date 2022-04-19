@@ -15,18 +15,25 @@
 				<view class="analysis-time">
 					<text>当前选择</text>
 					<image src="../../static/images/home/日历.png" style="width: 18px;height: 18px;"></image>
-					<text class="date" @click="handleShowPicker" v-if="curNow === 0">{{yearPick2}} 年 {{monthPick}} 月</text>
-					<text class="date" @click="handleShowPicker" v-if="curNow === 1">{{yearPick3}} 年</text>
+					<text class="date" @click="handleShowPicker" v-if="curNow === 0">{{yearPick1}} 年 第 {{weekPick}} 周</text>
+					<text class="date" @click="handleShowPicker" v-if="curNow === 1">{{yearPick2}} 年 {{monthPick}} 月</text>
+					<text class="date" @click="handleShowPicker" v-if="curNow === 2">{{yearPick3}} 年</text>
+				</view>
+				<view class="analysis-total">
+					<view v-if="curNow === 0">当前周总{{showType === 'spend'?'支出':'收入'}}: {{ totalNumWeek }}</view>
+					<view v-if="curNow === 1">当前月总{{showType === 'spend'?'支出':'收入'}}: {{ totalNumMonth }}</view>
+					<view v-if="curNow === 2">当前年总{{showType === 'spend'?'支出':'收入'}}: {{ totalNumYear }}</view>
 				</view>
 				<u-divider text="图表统计"></u-divider>
 				<view class="analysis-wrapper">
 					<view class="charts-box">
-						<qiun-data-charts :inScrollView="true" type="line" :reshow="showPopup" :chartData="chartData" :loadingType="5"
-							:disableScroll="false" background="none" :ontouch="true" />
+						<qiun-data-charts :inScrollView="true" type="line" :reshow="showPopup" :chartData="chartData"
+							:loadingType="5" :disableScroll="false" background="none" :ontouch="true" />
 					</view>
 				</view>
 				<view class="analysis-back" v-if="chooseInfo.id">
-					<text @click="backToAll"><< 返回全部统计</text>
+					<text @click="backToAll">
+						<< 返回全部统计</text>
 				</view>
 				<u-divider text="选择分类统计"></u-divider>
 				<u-grid col="4" :border="true" @click="clickGrid">
@@ -39,9 +46,17 @@
 				</u-grid>
 			</view>
 		</scroll-view>
-		<u-picker confirmColor="#ffbb00" v-if="curNow === 0" :defaultIndex="defaultIndexMonth" :show="showPicker" ref="uPicker" :loading="loading" :columns="columnsMonth" @confirm="handleConfirmMonthPicker" @cancel="handleClosePicker">
+		<u-picker confirmColor="#ffbb00" v-if="curNow === 0" :defaultIndex="defaultIndexWeek" :show="showPicker"
+			ref="uPicker" :loading="loading" :columns="columnsWeek" @confirm="handleConfirmWeekPicker" @change="changeHandler"
+			@cancel="handleClosePicker">
 		</u-picker>
-		<u-picker confirmColor="#ffbb00" v-if="curNow === 1" :defaultIndex="defaultIndexYear" :show="showPicker" ref="uPicker" :loading="loading" :columns="columnsYear" @confirm="handleConfirmYearPicker" @cancel="handleClosePicker">
+		<u-picker confirmColor="#ffbb00" v-if="curNow === 1" :defaultIndex="defaultIndexMonth" :show="showPicker"
+			:loading="loading" :columns="columnsMonth" @confirm="handleConfirmMonthPicker"
+			@cancel="handleClosePicker">
+		</u-picker>
+		<u-picker confirmColor="#ffbb00" v-if="curNow === 2" :defaultIndex="defaultIndexYear" :show="showPicker"
+			:loading="loading" :columns="columnsYear" @confirm="handleConfirmYearPicker"
+			@cancel="handleClosePicker">
 		</u-picker>
 	</u-popup>
 </template>
@@ -53,16 +68,22 @@
 		getDateTeamChargeCustomTimeAction
 	} from '@/service/service';
 	import moment from 'moment';
+	import {
+		getWeeks
+	} from '@/utils/week'
 	export default Vue.extend({
 		data() {
 			return {
+				totalNumWeek: 0,
+				totalNumMonth: 0,
+				totalNumYear: 0,
 				iconsListLocal: [],
 				showPicker: false,
 				loading: false,
 				showType: 'spend',
 				curNow: 0,
 				switchType: 'personal',
-				titleList: ['月', '年'],
+				titleList: ['周', '月', '年'],
 				showPopup: false,
 				customStyleIn: {
 					width: '100vw'
@@ -70,11 +91,20 @@
 				defaultIndexWeek: [],
 				defaultIndexMonth: [],
 				defaultIndexYear: [],
-				columnsWeek: [[],[]],
+				columnsWeek: [
+					[],
+					[]
+				],
 				columnDataWeek: [],
-				columnsMonth: [[],[]],
+				columnsMonth: [
+					[],
+					[]
+				],
 				columnDataMonth: [],
-				columnsYear: [[],[]],
+				columnsYear: [
+					[],
+					[]
+				],
 				columnDataYear: [],
 				chartData: {
 					categories: [],
@@ -93,10 +123,12 @@
 				yearPick2: 0,
 				yearPick3: 0,
 				monthPick: 0,
+				weekPick: 0,
 				baseData: {
 					total: {},
 					items: {}
-				}
+				},
+				totalWeekInfo: {}
 			};
 		},
 		props: {
@@ -123,9 +155,12 @@
 				}
 			}
 		},
+		created() {
+			this.getTotalWeekInfo()
+		},
 		watch: {
 			iconsList: {
-				handler(){
+				handler() {
 					this.iconsListLocal = JSON.parse(JSON.stringify(this.iconsList))
 				},
 				deep: true,
@@ -133,13 +168,45 @@
 			}
 		},
 		methods: {
-			handleShowPicker(){
+			getTotalWeekInfo() {
+				const year = new Date().getFullYear()
+				const arr = []
+				this.columnsWeek = [[],[]]
+				for (let i = 2000; i <= year; i++) {
+					arr.push(i)
+				}
+				// @ts-ignore
+				this.totalWeekInfo = getWeeks(arr)
+				// @ts-ignore
+				Object.keys(this.totalWeekInfo).map((year,index)=>{
+					// @ts-ignore
+					this.columnDataWeek[index] = Object.keys(this.totalWeekInfo[year])
+				})
+				// @ts-ignore
+				console.log('this.columnDataWeek this.columnDataWeek',this.columnDataWeek)
+				console.log('totalWeekInfo', this.totalWeekInfo)
+			},
+			handleShowPicker() {
 				this.showPicker = true
 			},
-			handleClosePicker(){
+			handleClosePicker() {
 				this.showPicker = false
 			},
-			handleConfirmMonthPicker(e:{indexs: number[], value: number[]}){
+			handleConfirmWeekPicker(e: {
+				indexs: number[],
+				value: number[]
+			}) {
+				// @ts-ignore
+				this.defaultIndexWeek = e.indexs
+				this.yearPick1 = e.value[0]
+				this.weekPick = e.value[1]
+				this.handleClosePicker()
+				this.findData()
+			},
+			handleConfirmMonthPicker(e: {
+				indexs: number[],
+				value: number[]
+			}) {
 				// @ts-ignore
 				this.defaultIndexMonth = e.indexs
 				this.yearPick2 = e.value[0]
@@ -147,14 +214,17 @@
 				this.handleClosePicker()
 				this.findData()
 			},
-			handleConfirmYearPicker(e:{indexs: number[], value: number[]}){
+			handleConfirmYearPicker(e: {
+				indexs: number[],
+				value: number[]
+			}) {
 				// @ts-ignore
 				this.defaultIndexYear = e.indexs
 				this.yearPick3 = e.value[0]
 				this.handleClosePicker()
 				this.findData()
 			},
-			backToAll(){
+			backToAll() {
 				this.chooseInfo = {
 					id: '',
 					icon: ''
@@ -164,14 +234,30 @@
 				// @ts-ignore
 				this.chartData.series[0].data = this.baseData.total[this.showType === 'spend' ? 'spend' : 'income']
 			},
-			renderAllColumns(){
+			renderAllColumns() {
 				const yearNow = new Date().getFullYear()
 				this.yearPick1 = yearNow
 				this.yearPick2 = yearNow
 				this.yearPick3 = yearNow
-				const monthNow  = new Date().getMonth()
+				// 月
+				const monthNow = new Date().getMonth()
 				this.monthPick = monthNow + 1
-				for(let i=2000;i<=yearNow;i++){
+				// 周
+				let weekTodayIndex = 0
+				// @ts-ignore
+				const todayYearInfo = this.totalWeekInfo[new Date().getFullYear().toString()]
+				const todayMoment = moment(new Date(),'YYYY-MM-DD').format('YYYY-MM-DD')
+				// @ts-ignore
+				Object.keys(todayYearInfo).map((key:string)=>{
+					// @ts-ignore
+					if(todayYearInfo[key].days.includes(todayMoment)){
+						// @ts-ignore
+						weekTodayIndex = Number(key)
+					}
+				})
+				this.weekPick = weekTodayIndex
+				//
+				for (let i = 2000; i <= yearNow; i++) {
 					// @ts-ignore
 					this.columnsWeek[0].push(i)
 					// @ts-ignore
@@ -181,90 +267,137 @@
 				}
 				// @ts-ignore
 				this.columnsMonth[1] = []
-				for(let i=1;i<=12;i++){
+				for (let i = 1; i <= 12; i++) {
 					// @ts-ignore
 					this.columnsMonth[1].push(i)
 				}
+				// week
 				// @ts-ignore
-				this.defaultIndexMonth = [this.columnsMonth[0].findIndex((year:number)=>year===yearNow),monthNow]
+				this.columnsWeek[1] = Object.keys(this.totalWeekInfo[yearNow.toString()]).map(i=>Number(i))
 				// @ts-ignore
-				this.defaultIndexYear = [this.columnsYear[0].findIndex((year:number)=>year===yearNow)]
+				this.defaultIndexWeek = [this.columnsWeek[0].findIndex((year: number) => year === yearNow), weekTodayIndex - 1]
+				// @ts-ignore
+				this.defaultIndexMonth = [this.columnsMonth[0].findIndex((year: number) => year === yearNow), monthNow]
+				// @ts-ignore
+				this.defaultIndexYear = [this.columnsYear[0].findIndex((year: number) => year === yearNow)]
 			},
 			findData() {
 				this.switchType === 'personal' ?
-				getDatePersonalChargeCustomTimeAction({
-					year: this.curNow === 0 ? this.yearPick2 : this.yearPick3,
-					created_by: this.userInfo.id,
-					index: this.curNow === 0 ? this.monthPick : 0,
-					time_type: this.curNow === 0 ? 'month' : 'year'
-				}).then(res => {
-					// @ts-ignore
-					this.baseData = res.data
-					// @ts-ignore
-					this.iconsListLocal.map(item=>item.money=0)
-					this.iconsListLocal.forEach((item:any)=>{
+					getDatePersonalChargeCustomTimeAction({
+						year: this.curNow === 0 ? this.yearPick1 : this.curNow === 1 ? this.yearPick2 : this
+							.yearPick3,
+						created_by: this.userInfo.id,
+						index: this.curNow === 0 ? this.weekPick : this.curNow === 1 ? this.monthPick : 0,
+						time_type: this.curNow === 0 ? 'week' : this.curNow === 1 ? 'month' : 'year'
+					}).then(res => {
 						// @ts-ignore
-						Object.keys(this.baseData.items).map(key=>{
-							if(item.id === key){
-								// @ts-ignore
-								this.showType === 'spend' ? item.money = Math.round(this.baseData.items[key].spend.reduce((a:number,b:number)=>a+b) * 100) / 100 : item.money = Math.round(this.baseData.items[key].income.reduce((a:number,b:number)=>a+b) * 100) / 100
-							}
-						})
-					})
-					if(this.chooseInfo.id){
+						this.baseData = res.data
 						// @ts-ignore
-						if(this.baseData.items.hasOwnProperty(this.chooseInfo.id)){
+						this.iconsListLocal.map(item => item.money = 0)
+						this.iconsListLocal.forEach((item: any) => {
 							// @ts-ignore
-							this.chartData.series[0].data = this.baseData.items[this.chooseInfo.id][this.showType === 'spend' ? 'spend' : 'income']
+							Object.keys(this.baseData.items).map(key => {
+								if (item.id === key) {
+									// @ts-ignore
+									this.showType === 'spend' ? item.money = Math.round(this.baseData.items[key].spend.reduce((a: number, b:number) => a + b) * 100) / 100 : item.money = Math.round(this.baseData.items[key].income.reduce((a: number, b: number) => a + b) * 100) / 100
+								}
+							})
+						})
+						
+						if(this.curNow === 0){
+							// @ts-ignore
+							this.totalNumWeek = Math.round(this.iconsListLocal.map(item=>item.money).reduce((a: number, b:number) => a + b) * 100) / 100
+						}else if(this.curNow === 1){
+							// @ts-ignore
+							this.totalNumMonth = Math.round(this.iconsListLocal.map(item=>item.money).reduce((a: number, b:number) => a + b) * 100) / 100
 						}else{
 							// @ts-ignore
-							this.chartData.series[0].data = this.chartData.series[0].data.map(num=>0)
+							this.totalNumYear = Math.round(this.iconsListLocal.map(item=>item.money).reduce((a: number, b:number) => a + b) * 100) / 100
 						}
-					}else{
-						// @ts-ignore
-						this.chartData.categories = this.baseData.total.times
-						// @ts-ignore
-						this.chartData.series[0].data = this.baseData.total[this.showType === 'spend' ? 'spend' : 'income']
-					}
-				}) : getDateTeamChargeCustomTimeAction({
-					year: this.curNow === 0 ? this.yearPick2 : this.yearPick3,
-					team_id: this.userInfo.team_id,
-					index: this.curNow === 0 ? this.monthPick : 0,
-					time_type: this.curNow === 0 ? 'month' : 'year'
-				}).then(res => {
-					console.log('find results res', res)
-					// @ts-ignore
-					this.baseData = res.data
-					// @ts-ignore
-					this.iconsListLocal.map(item=>item.money=0)
-					this.iconsListLocal.forEach((item:any)=>{
-						// @ts-ignore
-						Object.keys(this.baseData.items).map(key=>{
-							if(item.id === key){
-								// @ts-ignore
-								this.showType === 'spend' ? item.money = Math.round(this.baseData.items[key].spend.reduce((a:number,b:number)=>a+b) * 100) / 100 : item.money = Math.round(this.baseData.items[key].income.reduce((a:number,b:number)=>a+b) * 100) / 100
-							}
-						})
-					})
-					if(this.chooseInfo.id){
-						// @ts-ignore
-						if(this.baseData.items.hasOwnProperty(this.chooseInfo.id)){
+						
+						if (this.chooseInfo.id) {
 							// @ts-ignore
-							this.chartData.series[0].data = this.baseData.items[this.chooseInfo.id][this.showType === 'spend' ? 'spend' : 'income']
+							if (this.baseData.items.hasOwnProperty(this.chooseInfo.id)) {
+								// @ts-ignore
+								this.chartData.series[0].data = this.baseData.items[this.chooseInfo.id][this.showType === 'spend' ? 'spend' : 'income']
+							} else {
+								// @ts-ignore
+								this.chartData.series[0].data = this.chartData.series[0].data.map(num => 0)
+							}
+						} else {
+							// @ts-ignore
+							this.chartData.categories = this.baseData.total.times
+							// @ts-ignore
+							this.chartData.series[0].data = this.baseData.total[this.showType === 'spend' ? 'spend' : 'income']
+						}
+					}) : getDateTeamChargeCustomTimeAction({
+						year: this.curNow === 0 ? this.yearPick1 : this.curNow === 1 ? this.yearPick2 : this
+							.yearPick3,
+						team_id: this.userInfo.team_id,
+						index: this.curNow === 0 ? this.weekPick : this.curNow === 1 ? this.monthPick : 0,
+						time_type: this.curNow === 0 ? 'week' : this.curNow === 1 ? 'month' : 'year'
+					}).then(res => {
+						console.log('find results res', res)
+						// @ts-ignore
+						this.baseData = res.data
+						// @ts-ignore
+						this.iconsListLocal.map(item => item.money = 0)
+						this.iconsListLocal.forEach((item: any) => {
+							// @ts-ignore
+							Object.keys(this.baseData.items).map(key => {
+								if (item.id === key) {
+									// @ts-ignore
+									this.showType === 'spend' ? item.money = Math.round(this.baseData.items[key].spend.reduce((a: number, b: number) => a + b) * 100) / 100 : item.money = Math.round(this.baseData.items[key].income.reduce((a: number, b: number) => a + b) * 100) / 100
+								}
+							})
+						})
+						
+						if(this.curNow === 0){
+							// @ts-ignore
+							this.totalNumWeek = Math.round(this.iconsListLocal.map(item=>item.money).reduce((a: number, b:number) => a + b) * 100) / 100
+						}else if(this.curNow === 1){
+							// @ts-ignore
+							this.totalNumMonth = Math.round(this.iconsListLocal.map(item=>item.money).reduce((a: number, b:number) => a + b) * 100) / 100
 						}else{
 							// @ts-ignore
-							this.chartData.series[0].data = this.chartData.series[0].data.map(num=>0)
+							this.totalNumYear = Math.round(this.iconsListLocal.map(item=>item.money).reduce((a: number, b:number) => a + b) * 100) / 100
 						}
-					}else{
-						// @ts-ignore
-						this.chartData.categories = this.baseData.total.times
-						// @ts-ignore
-						this.chartData.series[0].data = this.baseData.total[this.showType === 'spend' ? 'spend' : 'income']
-					}
-				})
+						
+						if (this.chooseInfo.id) {
+							// @ts-ignore
+							if (this.baseData.items.hasOwnProperty(this.chooseInfo.id)) {
+								// @ts-ignore
+								this.chartData.series[0].data = this.baseData.items[this.chooseInfo.id][this.showType === 'spend' ? 'spend' : 'income'
+								]
+							} else {
+								// @ts-ignore
+								this.chartData.series[0].data = this.chartData.series[0].data.map(num => 0)
+							}
+						} else {
+							// @ts-ignore
+							this.chartData.categories = this.baseData.total.times
+							// @ts-ignore
+							this.chartData.series[0].data = this.baseData.total[this.showType === 'spend' ? 'spend' : 'income']
+						}
+					})
 			},
-			changeHandler(e: {columnIndex:number, index: number, picker: any}) {
-				
+			changeHandler(e: {
+				columnIndex: number,
+				index: number,
+				picker: any
+			}) {
+				const {
+				    columnIndex,
+				    index,
+					// 微信小程序无法将picker实例传出来，只能通过ref操作
+					// @ts-ignore
+					picker = this.$refs.uPicker
+				} = e
+				if (columnIndex === 0) {
+				    // 模拟网络请求
+					// @ts-ignore
+				    picker.setColumnValues(1, this.columnDataWeek[index])
+				}
 			},
 			close() {
 				this.showPopup = false
@@ -276,7 +409,7 @@
 			},
 			show() {
 				this.showPopup = true
-				this.$nextTick(()=>{
+				this.$nextTick(() => {
 					this.renderAllColumns()
 					this.findData()
 				})
@@ -288,22 +421,24 @@
 				this.curNow = index;
 				this.findData()
 			},
-			clickGrid(index: number) {	
+			clickGrid(index: number) {
 				this.chooseInfo = {
 					// @ts-ignore
 					icon: this.iconsListLocal[index].icon,
 					// @ts-ignore
 					id: this.iconsListLocal[index].id
 				}
-				console.log('index',index)
-				console.log('chooseInfo',this.chooseInfo)
+				console.log('index', index)
+				console.log('chooseInfo', this.chooseInfo)
 				// @ts-ignore
-				if(this.baseData.items.hasOwnProperty(this.chooseInfo.id)){
+				if (this.baseData.items.hasOwnProperty(this.chooseInfo.id)) {
 					// @ts-ignore
-					this.chartData.series[0].data = this.baseData.items[this.chooseInfo.id][this.showType === 'spend' ? 'spend' : 'income']
-				}else{
+					this.chartData.series[0].data = this.baseData.items[this.chooseInfo.id][this.showType ===
+						'spend' ? 'spend' : 'income'
+					]
+				} else {
 					// @ts-ignore
-					this.chartData.series[0].data = this.chartData.series[0].data.map(num=>0)
+					this.chartData.series[0].data = this.chartData.series[0].data.map(num => 0)
 				}
 			}
 		}
@@ -317,13 +452,13 @@
 		overflow: auto;
 		margin-bottom: 20rpx;
 	}
-	
-	.analysis-back{
+
+	.analysis-back {
 		width: 100%;
 		text-align: right;
 		margin-bottom: 20rpx;
-		
-		text{
+
+		text {
 			font-size: 14px;
 			color: #ffbb00;
 		}
@@ -341,21 +476,31 @@
 		box-sizing: border-box;
 		padding: 30rpx 50rpx;
 		
-		.analysis-time{
+		.analysis-total{
+			width: 100%;
+			text-align: center;
+			font-size: 12px;
+			color: #3A3A3A;
+			padding-top: 20rpx;
+		}
+
+		.analysis-time {
 			font-size: 14px;
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			
-			image{
+
+			image {
 				width: 30rpx;
 				height: 30rpx;
 				margin-left: 20rpx;
 				margin-right: 20rpx;
 			}
-			
-			.date{
+
+			.date {
 				text-decoration: underline;
+				flex-shrink: 0;
+				white-space: nowrap;
 			}
 		}
 
@@ -388,13 +533,14 @@
 		min-width: 100rpx;
 		margin: 20rpx 0;
 		transition: all 0.3s;
-		
-		&.selected{
+
+		&.selected {
 			background: #515a60;
-			.grid-text{
+
+			.grid-text {
 				color: #fff;
 			}
-			
+
 		}
 
 		.grid-text {
