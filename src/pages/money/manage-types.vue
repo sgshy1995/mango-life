@@ -1,14 +1,13 @@
 <template>
-	<u-popup :overlay="true" bgColor="#f7f7f7" :duration="200" mode="right" :customStyle="customStyleIn"
-		:safeAreaInsetTop="true" :safeAreaInsetBottom="true" :show="showPopup" @close="close">
+	<view class="manage-types-wrapper">
 		<scroll-view scroll-y class="manage-box">
 			<u-navbar placeholder leftIconSize="14" border bgColor="#ffbb00"
 				:title="showType === 'spend' ? '支出类型管理' : '收入类型管理'" @leftClick="leftClick" leftText="返回">
 			</u-navbar>
 			<view class="manage-body">
 				<view class="u-subsection-wrapper">
-					<u-subsection :list="titleList" activeColor="#ffbb00" inactiveColor="#333" mode="subsection"
-						@change="sectionChange" bgColor="#ffbb00" :current="curNow">
+					<u-subsection :key="refreshKey" :list="titleList" activeColor="#ffbb00" inactiveColor="#333" mode="subsection"
+						@change="sectionChange" bgColor="#fff" :current="curNow">
 					</u-subsection>
 				</view>
 				<view class="manage-tips">
@@ -87,21 +86,19 @@
 				<text class="delete-warning">⚠️ 警告：所有在该记账类型下的记录都将被删除！</text>
 			</text>
 		</u-modal>
-		<ManageTypeItemWrapper @ok="handleOkItem" ref="ManageTypeItemWrapper" :pickInfo="pickInfo" :userInfo="userInfo"></ManageTypeItemWrapper>
-	</u-popup>
+		<!-- <ManageTypeItemWrapper @ok="handleOkItem" ref="ManageTypeItemWrapper" :pickInfo="pickInfo" :userInfo="userInfo"></ManageTypeItemWrapper> -->
+	</view>
 </template>
 
-<script lang="ts">
+<script>
 	import Vue from 'vue';
 	import {
 		deletePersonalChargeTypeAction,
-		deleteTeamChargeTypeAction
+		deleteTeamChargeTypeAction,
+		getPersonalChargeTypesAction,
+		getTeamChargeTypesAction
 	} from '@/service/service';
-	import ManageTypeItemWrapper from './ManageTypeItemWrapper.vue'
 	export default Vue.extend({
-		components: {
-			ManageTypeItemWrapper
-		},
 		data() {
 			return {
 				showType: 'spend',
@@ -147,14 +144,8 @@
 						marginLeft: '16rpx',
 						padding: '14rpx'
 					}
-				}]
-			};
-		},
-		props: {
-			userInfo: {
-				type: Object,
-				default: () => {
-					return {
+				}],
+				userInfo: {
 						username: '',
 						nickname: '',
 						primary_key: '',
@@ -164,38 +155,50 @@
 						avatar: '',
 						team_id: 0,
 						team_name: ''
-					}
-				}
-			},
-			iconsListIncomePersonal: {
-				type: Array,
-				default: () => {
-					return []
-				}
-			},
-			iconsListIncomeTeam: {
-				type: Array,
-				default: () => {
-					return []
-				}
-			},
-			iconsListSpendPersonal: {
-				type: Array,
-				default: () => {
-					return []
-				}
-			},
-			iconsListSpendTeam: {
-				type: Array,
-				default: () => {
-					return []
-				}
+					},
+					iconsListIncomePersonal: [],
+					iconsListIncomeTeam: [],
+					iconsListSpendPersonal: [],
+					iconsListSpendTeam: [],
+					refreshKey: 0,
+					readyHide: false
+			};
+		},
+		onLoad() {
+			const that = this
+			// #ifdef APP-NVUE
+			const eventChannel = this.$scope.eventChannel; // 兼容APP-NVUE
+			// #endif
+			// #ifndef APP-NVUE
+			const eventChannel = this.getOpenerEventChannel();
+			// #endif
+			eventChannel.on('show', function(data) {
+			    console.log(data)
+				if(data.showType) that.showType = data.showType
+				if(data.userInfo) that.userInfo = data.userInfo
+				if(data.iconsListIncomePersonal) that.iconsListIncomePersonal = data.iconsListIncomePersonal
+				if(data.iconsListIncomeTeam) that.iconsListIncomeTeam = data.iconsListIncomeTeam
+				if(data.iconsListSpendPersonal) that.iconsListSpendPersonal = data.iconsListSpendPersonal
+				if(data.iconsListSpendTeam) that.iconsListSpendTeam = data.iconsListSpendTeam
+				that.$nextTick(() => {
+					
+				})
+			})
+		},
+		onShow(){
+			if(this.readyHide){
+				this.handleOkItem()
+				this.readyHide = false
 			}
+		},
+		onHide(){
+			this.readyHide = true
 		},
 		watch: {
 			userInfo: {
 				handler(){
-					this.titleList = this.userInfo.team_id ? ['个人', '团队'] : ['个人']
+					this.titleList = this.userInfo.team_id ? ['个人', '团队'] : ['个人'],
+					this.refreshKey ++
 				},
 				deep: true,
 				immediate: true
@@ -203,15 +206,93 @@
 		},
 		methods: {
 			handleOkItem(){
-				this.$emit('ok')
+				this.getPersonalTypes()
+				if(this.userInfo.team_id){
+					this.getTeamTypes()
+				}
 			},
-			handleShowItem(type: string){
+			getPersonalTypes() {
+				this.$loadingOn();
+				getPersonalChargeTypesAction({
+					balance_type: this.curNow,
+					created_by: this.userInfo.id
+				}).then(res => {
+					this.curNow === 1 ? this.iconsListIncomePersonal = res.data.map((item) => {
+						return {
+							origin_id: item.id,
+							id: item.realname,
+							name: item.name,
+							src: require(`@/static/images/home/${item.icon}`),
+							money: 0,
+							created_type: item.created_type,
+							icon: item.icon
+						}
+					}) : this.iconsListSpendPersonal = res.data.map((item) => {
+						return {
+							origin_id: item.id,
+							id: item.realname,
+							name: item.name,
+							src: require(`@/static/images/home/${item.icon}`),
+							money: 0,
+							created_type: item.created_type,
+							icon: item.icon
+						}
+					})
+					this.$loadingOff();
+				}).catch(err=>{
+					this.$loadingOff();
+				})
+			},
+			getTeamTypes() {
+				this.$loadingOn();
+				getTeamChargeTypesAction({
+					balance_type: this.curNow,
+					team_id: this.userInfo.team_id
+				}).then(res => {
+					this.curNow ? this.iconsListIncomeTeam = res.data.map((item) => {
+						return {
+							origin_id: item.id,
+							id: item.realname,
+							name: item.name,
+							src: require(`@/static/images/home/${item.icon}`),
+							money: 0,
+							created_type: item.created_type,
+							icon: item.icon
+						}
+					}) : this.iconsListSpendTeam = res.data.map((item) => {
+						return {
+							origin_id: item.id,
+							id: item.realname,
+							name: item.name,
+							src: require(`@/static/images/home/${item.icon}`),
+							money: 0,
+							created_type: item.created_type,
+							icon: item.icon
+						}
+					})
+					this.$loadingOff();
+				}).catch(err=>{
+					this.$loadingOff();
+				})
+			},
+			handleShowItem(type){
 				//balanceType
 				//existType
-				(this.$refs.ManageTypeItemWrapper as any).balanceType = this.showType;
-				(this.$refs.ManageTypeItemWrapper as any).existType = this.curNow ? 'team' : 'personal';
-				(this.$refs.ManageTypeItemWrapper as any).showType = type;
-				(this.$refs.ManageTypeItemWrapper as any).show();
+				const that = this
+				uni.navigateTo({
+					url: "/pages/money/manage-type-item",
+					success: function(res) {
+					    // 通过eventChannel向被打开页面传送数据
+					    res.eventChannel.emit('show', { 
+								balanceType: that.showType, 
+								existType: that.curNow ? 'team' : 'personal', 
+								showType: type,
+								userInfo: that.userInfo,
+								pickInfo: that.pickInfo
+							},
+						)
+					}
+				})
 			},
 			clearPick(){
 				this.pickInfo = {
@@ -224,36 +305,19 @@
 				}
 			},
 			deleteTypeData() {
-				(this as any).$loadingOn();
 				this.curNow === 0 ? deletePersonalChargeTypeAction(this.pickInfo.origin_id).then(res => {
-					(this as any).$toast(res.message || '删除成功');
-					this.$emit('ok');
+					this.$toast(res.message || '删除成功');
+					this.handleOkItem();
 					this.clearPick();
 					this.showModal = false;
-					(this as any).$loadingOff();
-				}).catch(err=>{
-					(this as any).$loadingOff();
 				}) : deleteTeamChargeTypeAction(this.pickInfo.origin_id).then(res => {
-					(this as any).$toast(res.message || '删除成功');
-					this.$emit('ok');
+					this.$toast(res.message || '删除成功');
+					this.handleOkItem();
 					this.clearPick();
 					this.showModal = false;
-					(this as any).$loadingOff();
-				}).catch(err=>{
-					(this as any).$loadingOff();
 				})
 			},
-			handleClickIcon(info: {
-				name: string,
-				index: number
-			}, record: {
-				name: string,
-				id: string,
-				src: string,
-				created_type: string,
-				origin_id: number,
-				icon: string
-			}) {
+			handleClickIcon(info, record) {
 				console.log('click info', info)
 				console.log('click record', record)
 				this.pickInfo = record
@@ -266,8 +330,7 @@
 				}
 			},
 			close() {
-				this.showPopup = false
-				this.curNow = 0
+				uni.navigateBack()
 			},
 			show() {
 				this.showPopup = true
@@ -275,10 +338,10 @@
 			leftClick() {
 				this.close()
 			},
-			sectionChange(index: number) {
+			sectionChange(index) {
 				this.curNow = index;
 			},
-			clickGrid(name: string) {
+			clickGrid(name) {
 
 			}
 		}
@@ -286,6 +349,11 @@
 </script>
 
 <style lang="scss">
+	.manage-types-wrapper{
+		width: 100vw;
+		height: 100vh;
+	}
+	
 	.slot-content{
 		font-size: 15px;
 		color: #606266;

@@ -1,5 +1,5 @@
 <template>
-	<u-modal :showConfirmButton="false" :show="showModal" title="团队/家庭管理">
+	<u-modal :showConfirmButton="false" :overlayStyle="{zIndex: 9000}" zIndex="10000" :show="showModal" title="团队/家庭管理">
 		<view class="team-manage-modal">
 			<u-divider text="团队/家庭信息"></u-divider>
 			<view class="not-exist" v-if="!userInfo.team_id">

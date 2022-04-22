@@ -1,6 +1,5 @@
 <template>
-	<u-popup :overlay="true" bgColor="#f7f7f7" :duration="200" mode="right" :customStyle="customStyleIn"
-		:safeAreaInsetTop="true" :show="showPopup" @close="close" @open="open">
+	<view class="login-register-wrapper">
 		<view class="mine-popup">
 			<view class="mine-popup-top">
 				<view class="top-back" @click="close">
@@ -53,10 +52,10 @@
 					type="primary" text="没有账号,前往注册" @click="changeShowType('register')"></u-button>
 			</view>
 		</view>
-	</u-popup>
+	</view>
 </template>
 
-<script lang="ts">
+<script>
 	import Vue from 'vue';
 	import {
 		registerAction,
@@ -73,7 +72,6 @@
 
 					continue;
 				}
-				// @ts-ignore
 				arr.push(String.fromCharCode(i));
 			}
 			return {
@@ -119,7 +117,7 @@
 			this.tapCaptcha()
 		},
 		methods: {
-			getUserInfo(userInfo: Record < string, any > ) {
+			getUserInfo(userInfo) {
 				return new Promise((reslove, reject) => {
 					getUserInfoByUsernameAction(userInfo).then(res => {
 						this.close()
@@ -154,7 +152,7 @@
 				}
 				return errorMessage
 			},
-			changeShowType(showType: string) {
+			changeShowType(showType) {
 				this.tapCaptcha();
 				this.showType = showType
 				this.showPassword = false
@@ -172,21 +170,20 @@
 						icon: 'none'
 					})
 				} else {
-					(this as any).$loadingOn();
+					this.$loadingOn();
 					registerAction({
 						...this.formModel,
 						device_id: this.device_id
 					}).then(res => {
 						console.log('res', res);
 						uni.setStorageSync('SYS_AUTH_TOKEN_KEY', res.data.token);
-						this.$emit('ok', this.formModel);
-						this.close();
-						(this as any).$loadingOff();
+						this.close(this.formModel);
+						this.$loadingOff();
 						//this.getUserInfo(this.formModel)
 					}).catch(err => {
 						this.formModel.capture = '';
 						this.tapCaptcha();
-						(this as any).$loadingOff();
+						this.$loadingOff();
 					})
 				}
 			},
@@ -203,37 +200,28 @@
 						icon: 'none'
 					})
 				} else {
-					(this as any).$loadingOn();
+					this.$loadingOn();
 					loginAction({
 						...this.formModel,
 						device_id: this.device_id
 					}).then(res => {
 						console.log('res', res);
 						uni.setStorageSync('SYS_AUTH_TOKEN_KEY', res.data.token);
-						this.$emit('ok', this.formModel);
-						this.close();
-						(this as any).$loadingOff();
+						this.close(this.formModel);
+						this.$loadingOff();
 						//this.getUserInfo(this.formModel)
 					}).catch(err => {
 						this.formModel.capture = '';
 						this.tapCaptcha();
-						(this as any).$loadingOff();
+						this.$loadingOff();
 					})
 				}
 			},
-			close() {
-				if (!this.showPopup) return
-				this.showPopup = false;
-				setTimeout(() => {
-					(this.$refs.Form!as any).resetFields();
-					this.showPassword = false;
-					this.formModel = {
-						username: '',
-						nickname: '',
-						password: '',
-						capture: ''
-					}
-				}, 200)
+			close(formModel) {
+				if(formModel){
+					uni.setStorageSync('SYS_SUCCESS_USER_INFO', formModel);
+				}
+				uni.navigateBack()
 			},
 			open() {
 
@@ -251,6 +239,11 @@
 </script>
 
 <style lang="scss">
+	.login-register-wrapper{
+		width: 100vw;
+		height: 100vh;
+	}
+	
 	.user-form {
 		box-sizing: border-box;
 		width: 100%;

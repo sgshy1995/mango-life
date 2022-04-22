@@ -1,10 +1,9 @@
 <template>
-	<u-popup :overlay="false" bgColor="#f7f7f7" :duration="200" mode="right" :customStyle="customStyleIn"
-		:safeAreaInsetTop="false" :show="showPopup" @close="close">
+	<view class="calendar-wrapper">
 		<u-navbar placeholder leftIconSize="14" border bgColor="#ffbb00"
 			:title="`${chooseInfo.name} / ${showType==='spend'?'支出':'收入'}`" @leftClick="close" leftText="返回">
 		</u-navbar>
-		<view class="calendar-wrapper">
+		<view class="calendar-body">
 			<view class="calendar-tip">
 				选择日期以查看记录，点击 "+" 添加新纪录
 			</view>
@@ -36,6 +35,7 @@
 							</view>
 						</u-cell>
 					</u-cell-group>
+					<u-empty text="没有记录,快去记账吧!" :show="!historyList.length" mode="history" icon="http://cdn.uviewui.com/uview/empty/history.png"></u-empty>
 				</scroll-view>
 			</view>
 			<u-safe-bottom></u-safe-bottom>
@@ -43,14 +43,13 @@
 		<u-modal :show="showModal" showCancelButton @cancel="showModal = false;pickId = 0" @confirm="deleteHistoryData" confirmColor="#ffbb00"
 			content="确定删除该记录吗？"></u-modal>
 		<Calculator @ok="handleOk" :switchType="switchType" :chooseInfo="chooseInfo" :userInfo="userInfo" :showType="showType" ref="Calculator"></Calculator>
-	</u-popup>
+	</view>
 	
 </template>
 
-<script lang="ts">
+<script>
 	import Vue from 'vue';
 	import moment from 'moment';
-	// @ts-ignore
 	import {lunar} from "@/utils/lunar";
 	import Calculator from './Calculator.vue';
 	import {
@@ -87,37 +86,47 @@
 				// id date type money remark
 				historyList: [],
 				todayMoney: 0,
-				pickId: 0
+				pickId: 0,
+				userInfo: {
+					username: '',
+					nickname: '',
+					primary_key: '',
+					id: 0,
+					email: '',
+					phone: '',
+					avatar: '',
+					team_id: 0,
+					team_name: ''
+				},
+				switchType: 'personal'
 			}
 		},
-		props: {
-			userInfo: {
-				type: Object,
-				default: () => {
-					return {
-						username: '',
-						nickname: '',
-						primary_key: '',
-						id: 0,
-						email: '',
-						phone: '',
-						avatar: '',
-						team_id: 0,
-						team_name: ''
+		onLoad(){
+			const that = this
+			// #ifdef APP-NVUE
+			const eventChannel = this.$scope.eventChannel; // 兼容APP-NVUE
+			// #endif
+			// #ifndef APP-NVUE
+			const eventChannel = this.getOpenerEventChannel();
+			// #endif
+			eventChannel.on('show', function(data) {
+			    console.log(data)
+				if(data.showType) that.showType = data.showType
+				if(data.switchType) that.switchType = data.switchType
+				if(data.userInfo) that.userInfo = data.userInfo
+				if(data.record) {
+					that.chooseInfo = {
+						...data.record
 					}
 				}
-			},
-			switchType: {
-				type: String,
-				default: 'personal'
+			})
+		},
+		onShow(){
+			if(this.userInfo.id && this.chooseInfo.id){
+				this.getHistoryData({charge_time: this.pickDate + ' 00:00:00', charge_type: this.chooseInfo.id})
 			}
 		},
 		watch: {
-			pickDate: {
-				handler(){
-					this.getHistoryData({charge_time: this.pickDate + ' 00:00:00', charge_type: this.chooseInfo.id})
-				}
-			},
 			chooseInfo: {
 				handler(){
 					if(this.chooseInfo.id){
@@ -128,28 +137,31 @@
 			}
 		},
 		methods: {
-			getHistoryData(findOptions: Record<string,any>){
+			getHistoryData(findOptions){
+				console.log('findOptions----findOptions',findOptions,'this.userInfo.id',this.userInfo.id,'this.userInfo.team_id',this.userInfo.team_id)
 				this.switchType === 'personal' ?
 					getDatePersonalChargeAction({...findOptions, created_by: this.userInfo.id}).then(res=>{
+						console.log('res1',res.data.result)
 						this.historyList = res.data.result
 						this.todayMoney = this.showType === 'spend' ? res.data.summary.total.spend : res.data.summary.total.income
 					}) : getDateTeamChargeAction({...findOptions, team_id: this.userInfo.team_id}).then(res=>{
+						console.log('res2',res.data.result)
 						this.historyList = res.data.result
 						this.todayMoney = this.showType === 'spend' ? res.data.summary.total.spend : res.data.summary.total.income
 					})
 			},
 			deleteHistoryData(){
 				if(!this.pickId) {
-					(this as any).$toast('请选择记录');
+					this.$toast('请选择记录');
 					return
 				}
 				this.switchType === 'personal' ?
 					deletePersonalChargeAction(this.pickId).then(res=>{
-						(this as any).$toast(res.message || '删除成功');
+						this.$toast(res.message || '删除成功');
 						this.handleOk();
 						this.showModal = false
 					}) : deleteTeamChargeAction(this.pickId).then(res=>{
-						(this as any).$toast(res.message || '删除成功');
+						this.$toast(res.message || '删除成功');
 						this.handleOk();
 						this.showModal = false
 					})
@@ -158,51 +170,39 @@
 				this.$emit('ok')
 				this.getHistoryData({charge_time: this.pickDate + ' 00:00:00', charge_type: this.chooseInfo.id});
 			},
-			handleDelete(id: number){
+			handleDelete(id){
 				this.pickId = id
 				this.showModal = true
 			},
-			handleEdit(id: number, charge_num: number, remark: string){
-				(this.$refs.Calculator as any).editInfo.id = id;
-				(this.$refs.Calculator as any).editInfo.charge_num = charge_num;
-				(this.$refs.Calculator as any).editInfo.remark = remark;
-				(this.$refs.Calculator as any).show(true);
-				(this.$refs.Calculator as any).pickDate = this.pickDate;
+			handleEdit(id, charge_num, remark){
+				this.$refs.Calculator.editInfo.id = id;
+				this.$refs.Calculator.editInfo.charge_num = charge_num;
+				this.$refs.Calculator.editInfo.remark = remark;
+				this.$refs.Calculator.show(true);
+				this.$refs.Calculator.pickDate = this.pickDate;
 			},
 			close() {
-				this.showPopup = false
-				this.pickDate = moment(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD')
+				uni.navigateBack()
 			},
-			show(record: {
-				id: number,
-				name: string,
-				src: string,
-				money: number
-			}) {
-				this.chooseInfo = {
-					...record
-				}
+			show(record) {
 				this.showPopup = true
 			},
-			clickDate(e: {fulldate: string}) {
+			clickDate(e) {
 				this.pickDate = e.fulldate;
+				this.getHistoryData({charge_time: this.pickDate + ' 00:00:00', charge_type: this.chooseInfo.id})
 			},
 			showCalculator(){
-				(this.$refs.Calculator as any).show();
-				(this.$refs.Calculator as any).pickDate = this.pickDate;
+				this.$refs.Calculator.show();
+				this.$refs.Calculator.pickDate = this.pickDate;
 			},
-			disabledDate(date: Date) {
+			disabledDate(date) {
 				let timestamp = date.getTime();
 				if (timestamp > new Date().getTime()) {
 					return true
 				}
 				return false
 			},
-			showLunar(date: {
-				year: string,
-				month: string,
-				day: string
-			}) {
+			showLunar(date) {
 				if (!date) return;
 
 				const lunarObj = lunar.solar2lunar(date.year, date.month, date.day);
@@ -216,6 +216,11 @@
 <style lang="scss">
 	
 	.calendar-wrapper{
+		width: 100vw;
+		height: 100vh;
+	}
+	
+	.calendar-body{
 		width: 100%;
 		height: calc(100vh - 200rpx);
 		display: flex;

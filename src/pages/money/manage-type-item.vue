@@ -1,10 +1,9 @@
 <template>
-	<u-popup :overlay="true" bgColor="#f7f7f7" :duration="200" mode="right" :customStyle="customStyleIn"
-		:safeAreaInsetTop="false" :safeAreaInsetBottom="true" :show="showPopup" @close="close">
+	<view class="manage-type-item">
 		<u-navbar placeholder leftIconSize="14" border bgColor="#ffbb00"
 			:title="showType === 'add' ? '添加类型' : '编辑类型'" @leftClick="leftClick" leftText="返回">
 		</u-navbar>
-		<view class="manage-item-wrapper">
+		<view class="manage-item-body">
 			<view class="manage-tips">
 				选择图标
 			</view>
@@ -20,20 +19,20 @@
 					<u--input maxlength="6" fontSize="14" placeholder="请输入名称..." border="bottom" v-model="inputName"></u--input>
 				</view>
 				<view class="right" v-if="showType==='add'">
-					<u-button @click="handleCreate" type="primary" color="#ffbb00" text="确定"
+					<u-button @click="handleCreate" type="primary" color="#ffbb00" text="添加"
 						:customStyle="buttonStyle" icon="checkbox-mark" iconColor="#fff"></u-button>
 				</view>
 				<view class="right" v-else>
-					<u-button @click="handleEdit" type="primary" color="#ffbb00" text="确定"
+					<u-button @click="handleEdit" type="primary" color="#ffbb00" text="修改"
 						:customStyle="buttonStyle" icon="checkbox-mark" iconColor="#fff"></u-button>
 				</view>
 			</view>
 			<u-safe-bottom></u-safe-bottom>
 		</view>
-	</u-popup>
+	</view>
 </template>
 
-<script lang="ts">
+<script>
 	import Vue from 'vue';
 	import {
 		createPersonalChargeTypeAction,
@@ -45,8 +44,8 @@
 		data() {
 			return {
 				buttonStyle: {
-					height: '70rpx',
-					width: '142rpx',
+					height: '60rpx',
+					width: '122rpx',
 					color: '#fff',
 					fontSize: '12px !important',
 					background: '#ffbb00'
@@ -63,107 +62,81 @@
 					icon: ''
 				},
 				showModal: false,
-				iconsList: require('@/static/json/default_icons.json').iconsListSpend.map((item: {
-					origin_id: number,
-					id: string,
-					name: string,
-					src ? : string,
-					money ? : number,
-					created_type ? : string,
-					icon ? : string
-				}) => {
+				iconsList: require('@/static/json/default_icons.json').iconsListSpend.map((item) => {
 					return {
 						...item,
 						src: require(`@/static/images/home/${item.icon}`),
 						money: 0
 					}
-				}).concat(require('@/static/json/default_icons.json').iconsListIncome.map((item: {
-					origin_id: number,
-					id: string,
-					name: string,
-					src ? : string,
-					money ? : number,
-					created_type ? : string,
-					icon ? : string
-				}) => {
+				}).concat(require('@/static/json/default_icons.json').iconsListIncome.map((item) => {
 					return {
 						...item,
 						src: require(`@/static/images/home/${item.icon}`),
 						money: 0
 					}
-				})).concat(require('@/static/json/default_icons.json').iconsListDefault.map((item: {
-					origin_id: number,
-					id: string,
-					name: string,
-					src ? : string,
-					money ? : number,
-					created_type ? : string,
-					icon ? : string
-				}) => {
+				})).concat(require('@/static/json/default_icons.json').iconsListDefault.map((item) => {
 					return {
 						...item,
 						src: require(`@/static/images/home/${item.icon}`),
 						money: 0
 					}
-				}))
+				})),
+				userInfo: {
+					username: '',
+					nickname: '',
+					primary_key: '',
+					id: 0,
+					email: '',
+					phone: '',
+					avatar: '',
+					team_id: 0,
+					team_name: ''
+				},
+				pickInfo: {
+					name: '',
+					id: '',
+					src: '',
+					created_type: '',
+					origin_id: 0
+				},
+				balanceType: 'spend',
+				existType: 'personal'
 			};
 		},
-		created(){
+		onLoad() {
 			this.selectedInfo = {
 				id: this.iconsList[0].id,
 				name: this.iconsList[0].name,
 				icon: this.iconsList[0].icon
 			}
-		},
-		props: {
-			userInfo: {
-				type: Object,
-				default: () => {
-					return {
-						username: '',
-						nickname: '',
-						primary_key: '',
-						id: 0,
-						email: '',
-						phone: '',
-						avatar: '',
-						team_id: 0,
-						team_name: ''
+			const that = this
+			// #ifdef APP-NVUE
+			const eventChannel = this.$scope.eventChannel; // 兼容APP-NVUE
+			// #endif
+			// #ifndef APP-NVUE
+			const eventChannel = this.getOpenerEventChannel();
+			// #endif
+			eventChannel.on('show', function(data) {
+			    console.log(data)
+				if(data.showType) that.showType = data.showType
+				if(data.balanceType) that.balanceType = data.balanceType
+				if(data.existType) that.existType = data.existType
+				if(data.pickInfo) that.pickInfo = data.pickInfo
+				if(data.userInfo) that.userInfo = data.userInfo
+				that.$nextTick(() => {
+					if(that.showType === 'edit'){
+						that.selectedInfo = {
+							id: that.pickInfo.id,
+							name: that.pickInfo.name,
+							icon: that.pickInfo.icon
+						}
+						that.inputName = that.pickInfo.name
 					}
-				}
-			},
-			pickInfo: {
-				type: Object,
-				default: () => {
-					return {
-						name: '',
-						id: '',
-						src: '',
-						created_type: '',
-						origin_id: 0
-					}
-				}
-			},
-			balanceType: {
-				type: String,
-				default: 'spend'
-			},
-			existType: {
-				type: String,
-				default: 'personal'
-			}
-		},
-		watch: {
-			pickInfo:{
-				handler(){
-					console.log('pickInfo change',JSON.stringify(this.pickInfo))
-				},
-				deep: true
-			}
+				})
+			})
 		},
 		methods: {
 			handleCreate(){
-				(this as any).$loadingOn();
 				if(this.existType === 'personal'){
 					createPersonalChargeTypeAction({
 						name: this.inputName,
@@ -171,12 +144,8 @@
 						created_by: this.userInfo.id,
 						balance_type: this.balanceType === 'spend' ? 0 : 1
 					}).then(res=>{
-						(this as any).$toast(res.message || '创建成功');
-						this.$emit('ok');
+						this.$toast(res.message || '创建成功');
 						this.close();
-						(this as any).$loadingOff();
-					}).catch(err=>{
-						(this as any).$loadingOff();
 					})
 				}else{
 					createTeamChargeTypeAction({
@@ -186,65 +155,40 @@
 						team_id: this.userInfo.team_id,
 						balance_type: this.balanceType === 'spend' ? 0 : 1
 					}).then(res=>{
-						(this as any).$toast(res.message || '创建成功');
-						this.$emit('ok');
+						this.$toast(res.message || '创建成功');
 						this.close();
-						(this as any).$loadingOff();
-					}).catch(err=>{
-						(this as any).$loadingOff();
 					})
 				}
 			},
 			handleEdit(){
-				(this as any).$loadingOn();
 				if(this.existType === 'personal'){
 					updatePersonalChargeTypeAction(this.pickInfo.origin_id, {
 						name: this.inputName,
 						icon: this.selectedInfo.icon
 					}).then(res=>{
-						(this as any).$toast(res.message || '更新成功');
-						this.$emit('ok');
+						this.$toast(res.message || '更新成功');
 						this.close();
-					}).catch(err=>{
-						(this as any).$loadingOff();
 					})
 				}else{
 					updateTeamChargeTypeAction(this.pickInfo.origin_id, {
 						name: this.inputName,
 						icon: this.selectedInfo.icon
 					}).then(res=>{
-						(this as any).$toast(res.message || '更新成功');
-						this.$emit('ok');
+						this.$toast(res.message || '更新成功');
 						this.close();
-					}).catch(err=>{
-						(this as any).$loadingOff();
 					})
 				}
 			},
 			close() {
-				this.showPopup = false
-				this.inputName = ''
-				this.selectedInfo = {
-					id:'',
-					name: '',
-					icon: ''
-				}
+				uni.navigateBack()
 			},
 			show() {
-				if(this.showType === 'edit'){
-					this.selectedInfo = {
-						id: this.pickInfo.id,
-						name: this.pickInfo.name,
-						icon: this.pickInfo.icon
-					}
-					this.inputName = this.pickInfo.name
-				}
 				this.showPopup = true
 			},
 			leftClick() {
 				this.close()
 			},
-			clickGrid(index: number) {
+			clickGrid(index) {
 				console.log('name click',index)
 				this.selectedInfo = {
 					id: this.iconsList[index].id,
@@ -257,7 +201,12 @@
 </script>
 
 <style lang="scss">
-	.manage-item-wrapper {
+	.manage-type-item{
+		width: 100vw;
+		height: 100vh;
+	}
+	
+	.manage-item-body {
 		width: 100%;
 		height: calc(100vh - 88rpx);
 		display: flex;
@@ -284,12 +233,12 @@
 
 	.manage-item-bottom {
 		width: 100%;
-		height: 170rpx;
+		height: 200rpx;
 		box-sizing: border-box;
 		border-top: 1px solid #333;
 		background: #fff;
 		display: flex;
-		padding-bottom: 30rpx;
+		padding-bottom: 60rpx;
 		flex-shrink: 0;
 		
 		.left{

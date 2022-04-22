@@ -1,6 +1,5 @@
 <template>
-	<u-popup :overlay="true" bgColor="#f7f7f7" :duration="200" mode="right" :customStyle="customStyleIn"
-		:safeAreaInsetTop="false" :show="showPopup" @close="close">
+	<view class="analysis-wrapper">
 		<scroll-view scroll-y class="analysis-box">
 			<u-navbar placeholder leftIconSize="14" border bgColor="#ffbb00"
 				:title="showType === 'spend' ? `${switchType==='personal'?'个人':'团队/家庭'} 支出分析` : `${switchType==='personal'?'个人':'团队/家庭'} 收入分析`"
@@ -20,14 +19,14 @@
 					<text class="date" @click="handleShowPicker" v-if="curNow === 2">{{yearPick3}} 年</text>
 				</view>
 				<view class="analysis-total">
-					<view v-if="curNow === 0">当前周总{{showType === 'spend'?'支出':'收入'}}: {{ totalNumWeek }}</view>
-					<view v-if="curNow === 1">当前月总{{showType === 'spend'?'支出':'收入'}}: {{ totalNumMonth }}</view>
-					<view v-if="curNow === 2">当前年总{{showType === 'spend'?'支出':'收入'}}: {{ totalNumYear }}</view>
+					<view v-if="curNow === 0">当前周 ({{weekPickFrom}} ~ {{weekPickTo}})<br />总{{showType === 'spend'?'支出':'收入'}}: {{ totalNumWeek }}</view>
+					<view v-if="curNow === 1">当前月 ({{monthPickFrom}} ~ {{monthPickTo}})<br />总{{showType === 'spend'?'支出':'收入'}}: {{ totalNumMonth }}</view>
+					<view v-if="curNow === 2">当前年 ({{yearPickFrom}} ~ {{yearPickTo}})<br />总{{showType === 'spend'?'支出':'收入'}}: {{ totalNumYear }}</view>
 				</view>
 				<u-divider text="图表统计"></u-divider>
-				<view class="analysis-wrapper">
-					<view class="charts-box">
-						<qiun-data-charts :inScrollView="true" type="line" :reshow="showPopup" :chartData="chartData"
+				<view class="analysis-charts" @tap.stop.prevent>
+					<view class="charts-box" @tap.stop.prevent>
+						<qiun-data-charts @tap.stop.prevent :inScrollView="true" type="line" :reshow="showPopup" :chartData="chartData"
 							:loadingType="5" :disableScroll="false" background="none" :ontouch="true" />
 					</view>
 				</view>
@@ -58,10 +57,10 @@
 			:loading="loading" :columns="columnsYear" @confirm="handleConfirmYearPicker"
 			@cancel="handleClosePicker">
 		</u-picker>
-	</u-popup>
+	</view>
 </template>
 
-<script lang="ts">
+<script>
 	import Vue from 'vue';
 	import {
 		getDatePersonalChargeCustomTimeAction,
@@ -128,35 +127,47 @@
 					total: {},
 					items: {}
 				},
-				totalWeekInfo: {}
+				totalWeekInfo: {},
+				weekPickFrom: '',
+				weekPickTo: '',
+				monthPickFrom: '',
+				monthPickTo: '',
+				yearPickFrom: '',
+				yearPickTo: '',
+				iconsList: [],
+				userInfo: {
+					username: '',
+					nickname: '',
+					primary_key: '',
+					id: 0,
+					email: '',
+					phone: '',
+					avatar: '',
+					team_id: 0,
+					team_name: ''
+				}
 			};
 		},
-		props: {
-			userInfo: {
-				type: Object,
-				default: () => {
-					return {
-						username: '',
-						nickname: '',
-						primary_key: '',
-						id: 0,
-						email: '',
-						phone: '',
-						avatar: '',
-						team_id: 0,
-						team_name: ''
-					}
-				}
-			},
-			iconsList: {
-				type: Array,
-				default: () => {
-					return [];
-				}
-			}
-		},
-		created() {
+		onLoad() {
 			this.getTotalWeekInfo()
+			const that = this
+			// #ifdef APP-NVUE
+			const eventChannel = this.$scope.eventChannel; // 兼容APP-NVUE
+			// #endif
+			// #ifndef APP-NVUE
+			const eventChannel = this.getOpenerEventChannel();
+			// #endif
+			eventChannel.on('show', function(data) {
+			    console.log(data)
+				if(data.switchType) that.switchType = data.switchType
+				if(data.showType) that.showType = data.showType
+				if(data.iconsList) that.iconsList = data.iconsList
+				if(data.userInfo) that.userInfo = data.userInfo
+				that.$nextTick(() => {
+					that.renderAllColumns()
+					that.findData()
+				})
+			})
 		},
 		watch: {
 			iconsList: {
@@ -165,6 +176,15 @@
 				},
 				deep: true,
 				immediate: true
+			},
+			showPopup(){
+				if(this.showPopup){
+					uni.hideTabBar()
+				}else{
+					this.$nextTick(()=>{
+						uni.showTabBar()
+					})
+				}
 			}
 		},
 		methods: {
@@ -175,11 +195,8 @@
 				for (let i = 2000; i <= year; i++) {
 					arr.push(i)
 				}
-				// @ts-ignore
 				this.totalWeekInfo = getWeeks(arr)
-				// @ts-ignore
 				Object.keys(this.totalWeekInfo).map((year,index)=>{
-					// @ts-ignore
 					this.columnDataWeek[index] = Object.keys(this.totalWeekInfo[year])
 				})
 			},
@@ -189,35 +206,30 @@
 			handleClosePicker() {
 				this.showPicker = false
 			},
-			handleConfirmWeekPicker(e: {
-				indexs: number[],
-				value: number[]
-			}) {
-				// @ts-ignore
+			handleConfirmWeekPicker(e) {
 				this.defaultIndexWeek = e.indexs
 				this.yearPick1 = e.value[0]
 				this.weekPick = e.value[1]
+				const todayYearInfo = this.totalWeekInfo[this.yearPick1.toString()]
+				this.weekPickFrom = todayYearInfo[this.weekPick.toString()].from
+				this.weekPickTo = todayYearInfo[this.weekPick.toString()].to
 				this.handleClosePicker()
 				this.findData()
 			},
-			handleConfirmMonthPicker(e: {
-				indexs: number[],
-				value: number[]
-			}) {
-				// @ts-ignore
+			handleConfirmMonthPicker(e) {
 				this.defaultIndexMonth = e.indexs
 				this.yearPick2 = e.value[0]
 				this.monthPick = e.value[1]
+				this.monthPickFrom = moment(`${this.yearPick2}-${this.monthPick}-01`, 'YYYY-MM-DD').format('YYYY-MM-DD')
+				this.monthPickTo = moment(`${this.yearPick2}-${this.monthPick}-${[1,3,5,7,8,10,12].includes(this.monthPick) ? 31 : [4,6,9,11].includes(this.monthPick) ? 30 : this.yearPick2 / 4 ? 28 : 29}`, 'YYYY-MM-DD').format('YYYY-MM-DD')
 				this.handleClosePicker()
 				this.findData()
 			},
-			handleConfirmYearPicker(e: {
-				indexs: number[],
-				value: number[]
-			}) {
-				// @ts-ignore
+			handleConfirmYearPicker(e) {
 				this.defaultIndexYear = e.indexs
 				this.yearPick3 = e.value[0]
+				this.yearPickFrom = moment(`${this.yearPick3}-01`, 'YYYY-MM').format('YYYY-MM')
+				this.yearPickTo = moment(`${this.yearPick3}-12`, 'YYYY-MM').format('YYYY-MM')
 				this.handleClosePicker()
 				this.findData()
 			},
@@ -226,9 +238,7 @@
 					id: '',
 					icon: ''
 				}
-				// @ts-ignore
 				this.chartData.categories = this.baseData.total.times
-				// @ts-ignore
 				this.chartData.series[0].data = this.baseData.total[this.showType === 'spend' ? 'spend' : 'income']
 			},
 			renderAllColumns() {
@@ -236,49 +246,47 @@
 				this.yearPick1 = yearNow
 				this.yearPick2 = yearNow
 				this.yearPick3 = yearNow
+				this.yearPickFrom = moment(`${this.yearPick3}-01`, 'YYYY-MM').format('YYYY-MM')
+				this.yearPickTo = moment(`${this.yearPick3}-12`, 'YYYY-MM').format('YYYY-MM')
 				// 月
 				const monthNow = new Date().getMonth()
 				this.monthPick = monthNow + 1
+				this.monthPickFrom = moment(`${this.yearPick2}-${this.monthPick}-01`, 'YYYY-MM-DD').format('YYYY-MM-DD')
+				this.monthPickTo = moment(`${this.yearPick2}-${this.monthPick}-${[1,3,5,7,8,10,12].includes(this.monthPick) ? 31 : [4,6,9,11].includes(this.monthPick) ? 30 : this.yearPick2 / 4 ? 28 : 29}`, 'YYYY-MM-DD').format('YYYY-MM-DD')
 				// 周
 				let weekTodayIndex = 0
-				// @ts-ignore
+				let weekTodayStart = ''
+				let weekTodayEnd = ''
 				const todayYearInfo = this.totalWeekInfo[new Date().getFullYear().toString()]
 				const todayMoment = moment(new Date(),'YYYY-MM-DD').format('YYYY-MM-DD')
-				// @ts-ignore
-				Object.keys(todayYearInfo).map((key:string)=>{
-					// @ts-ignore
+				Object.keys(todayYearInfo).map((key)=>{
 					if(todayYearInfo[key].days.includes(todayMoment)){
-						// @ts-ignore
 						weekTodayIndex = Number(key)
+						weekTodayStart = todayYearInfo[key].from
+						weekTodayEnd = todayYearInfo[key].to
 					}
 				})
 				this.weekPick = weekTodayIndex
+				this.weekPickFrom = weekTodayStart
+				this.weekPickTo = weekTodayEnd
 				//
 				for (let i = 2000; i <= yearNow; i++) {
-					// @ts-ignore
 					this.columnsWeek[0].push(i)
-					// @ts-ignore
 					this.columnsMonth[0].push(i)
-					// @ts-ignore
 					this.columnsYear[0].push(i)
 				}
-				// @ts-ignore
 				this.columnsMonth[1] = []
 				for (let i = 1; i <= 12; i++) {
-					// @ts-ignore
 					this.columnsMonth[1].push(i)
 				}
 				// week
-				// @ts-ignore
 				this.columnsWeek[1] = Object.keys(this.totalWeekInfo[yearNow.toString()]).map(i=>Number(i))
-				// @ts-ignore
-				this.defaultIndexWeek = [this.columnsWeek[0].findIndex((year: number) => year === yearNow), weekTodayIndex - 1]
-				// @ts-ignore
-				this.defaultIndexMonth = [this.columnsMonth[0].findIndex((year: number) => year === yearNow), monthNow]
-				// @ts-ignore
-				this.defaultIndexYear = [this.columnsYear[0].findIndex((year: number) => year === yearNow)]
+				this.defaultIndexWeek = [this.columnsWeek[0].findIndex((year) => year === yearNow), weekTodayIndex - 1]
+				this.defaultIndexMonth = [this.columnsMonth[0].findIndex((year) => year === yearNow), monthNow]
+				this.defaultIndexYear = [this.columnsYear[0].findIndex((year) => year === yearNow)]
 			},
 			findData() {
+				this.$loadingOn();
 				this.switchType === 'personal' ?
 					getDatePersonalChargeCustomTimeAction({
 						year: this.curNow === 0 ? this.yearPick1 : this.curNow === 1 ? this.yearPick2 : this
@@ -287,46 +295,37 @@
 						index: this.curNow === 0 ? this.weekPick : this.curNow === 1 ? this.monthPick : 0,
 						time_type: this.curNow === 0 ? 'week' : this.curNow === 1 ? 'month' : 'year'
 					}).then(res => {
-						// @ts-ignore
 						this.baseData = res.data
-						// @ts-ignore
 						this.iconsListLocal.map(item => item.money = 0)
-						this.iconsListLocal.forEach((item: any) => {
-							// @ts-ignore
+						this.iconsListLocal.forEach((item) => {
 							Object.keys(this.baseData.items).map(key => {
 								if (item.id === key) {
-									// @ts-ignore
-									this.showType === 'spend' ? item.money = Math.round(this.baseData.items[key].spend.reduce((a: number, b:number) => a + b) * 100) / 100 : item.money = Math.round(this.baseData.items[key].income.reduce((a: number, b: number) => a + b) * 100) / 100
+									this.showType === 'spend' ? item.money = Math.round(this.baseData.items[key].spend.reduce((a, b) => a + b) * 100) / 100 : item.money = Math.round(this.baseData.items[key].income.reduce((a, b) => a + b) * 100) / 100
 								}
 							})
 						})
 						
 						if(this.curNow === 0){
-							// @ts-ignore
-							this.totalNumWeek = Math.round(this.iconsListLocal.map(item=>item.money).reduce((a: number, b:number) => a + b) * 100) / 100
+							this.totalNumWeek = Math.round(this.iconsListLocal.map(item=>item.money).reduce((a, b) => a + b) * 100) / 100
 						}else if(this.curNow === 1){
-							// @ts-ignore
-							this.totalNumMonth = Math.round(this.iconsListLocal.map(item=>item.money).reduce((a: number, b:number) => a + b) * 100) / 100
+							this.totalNumMonth = Math.round(this.iconsListLocal.map(item=>item.money).reduce((a, b) => a + b) * 100) / 100
 						}else{
-							// @ts-ignore
-							this.totalNumYear = Math.round(this.iconsListLocal.map(item=>item.money).reduce((a: number, b:number) => a + b) * 100) / 100
+							this.totalNumYear = Math.round(this.iconsListLocal.map(item=>item.money).reduce((a, b) => a + b) * 100) / 100
 						}
-						
+						this.chartData.categories = this.baseData.total.times
 						if (this.chooseInfo.id) {
-							// @ts-ignore
+							console.log('this.chooseInfo.id',this.chooseInfo.id)
 							if (this.baseData.items.hasOwnProperty(this.chooseInfo.id)) {
-								// @ts-ignore
 								this.chartData.series[0].data = this.baseData.items[this.chooseInfo.id][this.showType === 'spend' ? 'spend' : 'income']
 							} else {
-								// @ts-ignore
 								this.chartData.series[0].data = this.chartData.series[0].data.map(num => 0)
 							}
 						} else {
-							// @ts-ignore
-							this.chartData.categories = this.baseData.total.times
-							// @ts-ignore
 							this.chartData.series[0].data = this.baseData.total[this.showType === 'spend' ? 'spend' : 'income']
 						}
+						this.$loadingOff();
+					}).catch(err=>{
+						this.$loadingOff();
 					}) : getDateTeamChargeCustomTimeAction({
 						year: this.curNow === 0 ? this.yearPick1 : this.curNow === 1 ? this.yearPick2 : this
 							.yearPick3,
@@ -335,54 +334,39 @@
 						time_type: this.curNow === 0 ? 'week' : this.curNow === 1 ? 'month' : 'year'
 					}).then(res => {
 						console.log('find results res', res)
-						// @ts-ignore
 						this.baseData = res.data
-						// @ts-ignore
 						this.iconsListLocal.map(item => item.money = 0)
-						this.iconsListLocal.forEach((item: any) => {
-							// @ts-ignore
+						this.iconsListLocal.forEach((item) => {
 							Object.keys(this.baseData.items).map(key => {
 								if (item.id === key) {
-									// @ts-ignore
-									this.showType === 'spend' ? item.money = Math.round(this.baseData.items[key].spend.reduce((a: number, b: number) => a + b) * 100) / 100 : item.money = Math.round(this.baseData.items[key].income.reduce((a: number, b: number) => a + b) * 100) / 100
+									this.showType === 'spend' ? item.money = Math.round(this.baseData.items[key].spend.reduce((a, b) => a + b) * 100) / 100 : item.money = Math.round(this.baseData.items[key].income.reduce((a, b) => a + b) * 100) / 100
 								}
 							})
 						})
 						
 						if(this.curNow === 0){
-							// @ts-ignore
-							this.totalNumWeek = Math.round(this.iconsListLocal.map(item=>item.money).reduce((a: number, b:number) => a + b) * 100) / 100
+							this.totalNumWeek = Math.round(this.iconsListLocal.map(item=>item.money).reduce((a, b) => a + b) * 100) / 100
 						}else if(this.curNow === 1){
-							// @ts-ignore
-							this.totalNumMonth = Math.round(this.iconsListLocal.map(item=>item.money).reduce((a: number, b:number) => a + b) * 100) / 100
+							this.totalNumMonth = Math.round(this.iconsListLocal.map(item=>item.money).reduce((a, b) => a + b) * 100) / 100
 						}else{
-							// @ts-ignore
-							this.totalNumYear = Math.round(this.iconsListLocal.map(item=>item.money).reduce((a: number, b:number) => a + b) * 100) / 100
+							this.totalNumYear = Math.round(this.iconsListLocal.map(item=>item.money).reduce((a, b) => a + b) * 100) / 100
 						}
-						
+						this.chartData.categories = this.baseData.total.times
 						if (this.chooseInfo.id) {
-							// @ts-ignore
 							if (this.baseData.items.hasOwnProperty(this.chooseInfo.id)) {
-								// @ts-ignore
-								this.chartData.series[0].data = this.baseData.items[this.chooseInfo.id][this.showType === 'spend' ? 'spend' : 'income'
-								]
+								this.chartData.series[0].data = this.baseData.items[this.chooseInfo.id][this.showType === 'spend' ? 'spend' : 'income']
 							} else {
-								// @ts-ignore
 								this.chartData.series[0].data = this.chartData.series[0].data.map(num => 0)
 							}
 						} else {
-							// @ts-ignore
-							this.chartData.categories = this.baseData.total.times
-							// @ts-ignore
 							this.chartData.series[0].data = this.baseData.total[this.showType === 'spend' ? 'spend' : 'income']
 						}
+						this.$loadingOff();
+					}).catch(err=>{
+						this.$loadingOff();
 					})
 			},
-			changeHandler(e: {
-				columnIndex: number,
-				index: number,
-				picker: any
-			}) {
+			changeHandler(e) {
 				const {
 				    columnIndex,
 				    index,
@@ -397,44 +381,27 @@
 				}
 			},
 			close() {
-				this.showPopup = false
-				this.chooseInfo = {
-					id: '',
-					icon: ''
-				}
-				this.curNow = 0
-			},
-			show() {
-				this.showPopup = true
-				this.$nextTick(() => {
-					this.renderAllColumns()
-					this.findData()
-				})
+				uni.navigateBack()
 			},
 			leftClick() {
 				this.close()
 			},
-			sectionChange(index: number) {
+			sectionChange(index) {
 				this.curNow = index;
 				this.findData()
 			},
-			clickGrid(index: number) {
+			clickGrid(index) {
 				this.chooseInfo = {
-					// @ts-ignore
 					icon: this.iconsListLocal[index].icon,
-					// @ts-ignore
 					id: this.iconsListLocal[index].id
 				}
 				console.log('index', index)
 				console.log('chooseInfo', this.chooseInfo)
-				// @ts-ignore
 				if (this.baseData.items.hasOwnProperty(this.chooseInfo.id)) {
-					// @ts-ignore
 					this.chartData.series[0].data = this.baseData.items[this.chooseInfo.id][this.showType ===
 						'spend' ? 'spend' : 'income'
 					]
 				} else {
-					// @ts-ignore
 					this.chartData.series[0].data = this.chartData.series[0].data.map(num => 0)
 				}
 			}
@@ -443,7 +410,12 @@
 </script>
 
 <style lang="scss">
-	.analysis-wrapper {
+	.analysis-wrapper{
+		width: 100vw;
+		height: 100vh;
+	}
+	
+	.analysis-charts {
 		width: 100%;
 		height: 100%;
 		overflow: auto;
@@ -464,7 +436,7 @@
 	.analysis-box {
 		width: 100%;
 		height: 100vh;
-		padding-bottom: 60rpx;
+		padding-bottom: 20rpx;
 		box-sizing: border-box;
 	}
 

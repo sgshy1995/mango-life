@@ -4,6 +4,60 @@
 	},
 	"pages": [
 		{
+		    "path" : "pages/money/manage-type-item",
+		    "style" :                                                                                    
+		    {
+		        "navigationBarTitleText": "",
+		        "enablePullDownRefresh": false
+		    }
+		    
+		}
+		,{
+		    "path" : "pages/money/manage-types",
+		    "style" :                                                                                    
+		    {
+		        "navigationBarTitleText": "",
+		        "enablePullDownRefresh": false
+		    }
+		    
+		}
+		,{
+		    "path" : "pages/money/calendar",
+		    "style" :                                                                                    
+		    {
+		        "navigationBarTitleText": "",
+		        "enablePullDownRefresh": false
+		    }
+		    
+		}
+		,{
+		    "path" : "pages/money/analysis",
+		    "style" :                                                                                    
+		    {
+		        "navigationBarTitleText": "",
+		        "enablePullDownRefresh": false
+		    }
+		    
+		}
+		,{
+		    "path" : "pages/mine/userInfo",
+		    "style" :                                                                                    
+		    {
+		        "navigationBarTitleText": "",
+		        "enablePullDownRefresh": false
+		    }
+		    
+		}
+		,{
+		    "path" : "pages/mine/loginRegister",
+		    "style" :                                                                                    
+		    {
+		        "navigationBarTitleText": "",
+		        "enablePullDownRefresh": false
+		    }
+		    
+		}
+		,{
 			"path": "pages/index/Index",
 			"style": {
 				"navigationBarTitleText": "",
@@ -28,6 +82,15 @@
             }
             
         }
+		,{
+		    "path" : "pages/memo/test",
+		    "style" :                                                                                    
+		    {
+		        "navigationBarTitleText": "",
+		        "enablePullDownRefresh": false
+		    }
+		    
+		}
         ,{
             "path" : "pages/mine/Mine",
             "style" :                                                                                    
@@ -41,7 +104,12 @@
 	"globalStyle": {
 		"navigationStyle":"custom",
 		"app-plus":{
-			"titleView":false
+			"titleView":false,
+			"safearea": {
+				"bottom": {
+			        "offset": "none" 
+			    }   
+			}
 		}
 	},
 	"condition" : { //模式配置，仅开发期间生效
@@ -57,7 +125,7 @@
 	"tabBar" : {
 		"color": "#333333",
 		"selectedColor": "#ffbb00",
-		"backgroundColor": "#ffffff",
+		"backgroundColor": "#fff",
 		"borderStyle": "#ccc",
 		"iconWidth": "18rpx",
 		"fontSize": "12px",

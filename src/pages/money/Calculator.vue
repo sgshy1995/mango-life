@@ -360,7 +360,6 @@
 						icon: 'none'
 					})
 				} else if(this.editInfo.id) {
-					(this as any).$loadingOn();
 					this.switchType === 'personal' ?
 						changePersonalChargeAction(this.editInfo.id,{
 							charge_num: Number(this.inputNum),
@@ -369,9 +368,6 @@
 							(this as any).$toast(res.message || '更新成功');
 							this.$emit('ok');
 							this.close();
-							(this as any).$loadingOff();
-						}).catch(err=>{
-							(this as any).$loadingOff();
 						}) : changeTeamChargeAction(this.editInfo.id,{
 							charge_num: Number(this.inputNum),
 							remark: this.inputNote || undefined
@@ -379,13 +375,9 @@
 							(this as any).$toast(res.message || '更新成功');
 							this.$emit('ok');
 							this.close();
-							(this as any).$loadingOff();
-						}).catch(err=>{
-							(this as any).$loadingOff();
 						})
 					
 				} else{
-					(this as any).$loadingOn();
 					this.switchType === 'personal' ?
 						addPersonalChargeAction({
 							charge_num: Number(this.inputNum),
@@ -398,9 +390,6 @@
 							(this as any).$toast(res.message || '添加成功');
 							this.$emit('ok');
 							this.close();
-							(this as any).$loadingOff();
-						}).catch(err=>{
-							(this as any).$loadingOff();
 						}) : addTeamChargeAction({
 							charge_num: Number(this.inputNum),
 							created_by: this.userInfo.id,
@@ -413,9 +402,6 @@
 							(this as any).$toast(res.message || '添加成功');
 							this.$emit('ok');
 							this.close();
-							(this as any).$loadingOff();
-						}).catch(err=>{
-							(this as any).$loadingOff();
 						})
 				}
 			}
@@ -463,7 +449,7 @@
 		.u-custom-col {
 			background: #f3f3f3;
 			box-sizing: border-box;
-			border: 0.5rpx solid #d0d0d0;
+			border: 2rpx solid #d0d0d0;
 			height: 100rpx;
 			width: 100%;
 			font-size: 14px;

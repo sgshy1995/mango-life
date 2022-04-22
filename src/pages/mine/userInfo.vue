@@ -1,6 +1,5 @@
 <template>
-	<u-popup :overlay="true" bgColor="#f7f7f7" :duration="200" mode="right" :customStyle="customStyleIn"
-		:safeAreaInsetTop="true" :show="showPopup" @close="close" @open="open">
+	<view class="user-info-wrapper">
 		<scroll-view scroll-y class="mine-popup">
 			<view class="mine-popup-top">
 				<view class="top-back" @click="close">
@@ -87,15 +86,16 @@
 		</u-modal>
 		<u-picker @cancel="showPickerGender=false" @confirm="handleUpdateGender" :singleIndex="singleIndex"
 			:show="showPickerGender" confirmColor="#ffbb00" :columns="columnsGender"></u-picker>
-	</u-popup>
+	</view>
 </template>
 
-<script lang="ts">
+<script>
 	import Vue from 'vue';
 	import {
 		avatarUploadAction,
 		logoutAction,
-		updateUserAction
+		updateUserAction,
+		getUserInfoByUsernameAction
 	} from '@/service/service'
 	import TeamManageModal from './TeamManageModal.vue';
 	import ImageCropper from "@/components/invinbg-image-cropper/invinbg-image-cropper.vue";
@@ -127,39 +127,68 @@
 					['男', '女']
 				],
 				singleIndex: 0,
-			}
-		},
-		props: {
-			userInfo: {
-				type: Object,
-				default: () => {
-					return {
-						username: '',
-						nickname: '',
-						primary_key: '',
-						id: 0,
-						email: '',
-						phone: '',
-						avatar: '',
-						team_id: 0,
-						team_name: ''
-					}
+				userInfo: {
+					username: '',
+					nickname: '',
+					primary_key: '',
+					id: 0,
+					email: '',
+					phone: '',
+					avatar: '',
+					team_id: 0,
+					team_name: ''
 				}
 			}
 		},
+		onLoad(){
+			const that = this
+			// #ifdef APP-NVUE
+			const eventChannel = this.$scope.eventChannel; // 兼容APP-NVUE
+			// #endif
+			// #ifndef APP-NVUE
+			const eventChannel = this.getOpenerEventChannel();
+			// #endif
+			eventChannel.on('show', function(data) {
+			    console.log(data)
+				if(data.userInfo) that.userInfo = data.userInfo
+			})
+		},
 		methods: {
+			getUserInfo(){
+				return new Promise((reslove,reject)=>{
+					getUserInfoByUsernameAction(this.userInfo).then(res => {
+						//this.close()
+						uni.setStorageSync('SYS_USER_INFO', res.data)
+						this.userInfo = res.data
+						reslove()
+					}).catch(()=>{
+						this.userInfo = {
+							username: '',
+							nickname: '',
+							primary_key: '',
+							id: 0,
+							email: '',
+							phone: '',
+							avatar: '',
+							team_id: 0,
+							team_name: ''
+						}
+						uni.removeStorageSync('SYS_USER_INFO')
+						reject()
+					})
+				})
+			},
 			handleShowPickerGender() {
 				this.showPickerGender = true
 				this.singleIndex = this.userInfo.gender || 0
 			},
-			handleUpdateGender(e: {
-				indexs: number[]
-			}) {
+			handleUpdateGender(e) {
 				updateUserAction({
 					id: this.userInfo.id,
 					gender: e.indexs[0]
 				}).then(res => {
-					(this as any).$toast(res.message || '保存成功');
+					this.$toast(res.message || '保存成功');
+					this.getUserInfo()
 					this.$emit('change')
 					this.showPickerGender = false
 				})
@@ -169,7 +198,8 @@
 					id: this.userInfo.id,
 					nickname: this.nickname
 				}).then(res => {
-					(this as any).$toast(res.message || '保存成功');
+					this.$toast(res.message || '保存成功');
+					this.getUserInfo()
 					this.$emit('change')
 					this.showModalNickname = false
 				})
@@ -183,7 +213,8 @@
 					id: this.userInfo.id,
 					phone: this.phone
 				}).then(res => {
-					(this as any).$toast(res.message || '保存成功');
+					this.$toast(res.message || '保存成功');
+					this.getUserInfo()
 					this.$emit('change')
 					this.showModalPhone = false
 				})
@@ -197,7 +228,8 @@
 					id: this.userInfo.id,
 					email: this.email
 				}).then(res => {
-					(this as any).$toast(res.message || '保存成功');
+					this.$toast(res.message || '保存成功');
+					this.getUserInfo()
 					this.$emit('change')
 					this.showModalEmail = false
 				})
@@ -207,14 +239,14 @@
 				this.showModalEmail = true
 			},
 			close() {
-				if (!this.showPopup) return
-				this.showPopup = false;
+				console.log('close')
+				uni.navigateBack()
 			},
 			open() {
 
 			},
 			showTeamModal() {
-				(this.$refs.TeamManageModal as any).show();
+				this.$refs.TeamManageModal.show();
 			},
 			showAvatarView() {
 				// 预览图片
@@ -229,18 +261,14 @@
 					count: 1,
 					sizeType: ['original', 'compressed'],
 					sourceType: ['album', 'camera'],
-					success: function(result: any) {
+					success: function(result) {
 						console.log('result path', result.tempFilePaths)
 						const imgUrl = result.tempFilePaths[0]
 						that.tempFilePath = imgUrl
 					}.bind(this)
 				})
 			},
-			confirm(e: {
-				detail: {
-					tempFilePath: string
-				}
-			}) {
+			confirm(e) {
 				this.tempFilePath = ''
 				this.cropFilePath = e.detail.tempFilePath
 				avatarUploadAction(this.cropFilePath).then(res => {
@@ -266,7 +294,6 @@
 					this.$emit('change')
 					this.close()
 				}).catch(err => {
-
 				})
 			}
 		}
@@ -274,10 +301,14 @@
 </script>
 
 <style lang="scss">
+	.user-info-wrapper{
+		width: 100vw;
+		height: 100vh;
+	}
 	.mine-popup {
 		box-sizing: border-box;
 		width: 100%;
-		height: 100vh;
+		height: 100%;
 		padding-bottom: 40rpx;
 
 		.user-team {

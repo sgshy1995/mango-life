@@ -474,10 +474,11 @@
         display: -webkit-box;
         display: -webkit-flex;
         display: flex;
-        bottom: 0;
-        left: 0;
+        bottom: 160rpx;
+        left: 10%;
         right: 0;
         z-index: 998;
+		width: 80%;
     }
 
     .btn-group {

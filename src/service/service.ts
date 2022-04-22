@@ -51,6 +51,41 @@ export const avatarUploadAction = (path:string): Promise<Record<string,any>> => 
 	},path)
 }
 
+// 记账头像上传
+const moneyAvatarUploadUrl = '/info/upload/avatar'
+export const moneyAvatarUploadAction = (path:string): Promise<Record<string,any>> => {
+	return doUploadAction({
+		url: moneyAvatarUploadUrl
+	},path)
+}
+
+// 记账头像上传
+const moneyBackgroundUploadUrl = '/info/upload/background'
+export const moneyBackgroundUploadAction = (path:string): Promise<Record<string,any>> => {
+	return doUploadAction({
+		url: moneyBackgroundUploadUrl
+	},path)
+}
+
+// 根据 user_id 获取个人信息
+const getInfoByUserIdUrl = (user_id:number)=>`/info/user/${user_id}`
+export const getInfoByUserIdAction = (user: Record<string,any>): Promise<Record<string,any>> => {
+  return doRequestAction({
+    url: getInfoByUserIdUrl(user.id),
+    method: 'GET'
+  })
+}
+
+// 根据 user_id 更新个人信息
+const updateInfoByUserIdUrl = (user_id:number)=>`/info/user/${user_id}`
+export const updateInfoByUserIdAction = (user_id: number, info: Record<string,any>): Promise<Record<string,any>> => {
+  return doRequestAction({
+    url: updateInfoByUserIdUrl(user_id),
+    method: 'PUT',
+	data: info
+  })
+}
+
 // 更新用户信息
 const updateUserUrl = (id:number)=>`/user/${id}`
 export const updateUserAction = (user: Record<string,any>): Promise<Record<string,any>> => {
