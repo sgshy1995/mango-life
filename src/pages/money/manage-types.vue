@@ -18,9 +18,9 @@
 						:customStyle="buttonStyle" icon="integral-fill" iconColor="#333"></u-button>
 				</view>
 				<view class="manage-list" v-if="showType === 'spend'">
-					<u-swipe-action v-if="curNow===0">
-						<u-swipe-action-item :disabled="u.created_type === 'default'" @click="(info)=>handleClickIcon(info,u)"
-							v-for="(u,index) in iconsListSpendPersonal" :key="u.id" :options="swiperOptions">
+					<uni-swipe-action v-if="curNow===0">
+						<uni-swipe-action-item :disabled="u.created_type === 'default'" @click="(info)=>handleClickIcon(info,u)"
+							v-for="(u,index) in iconsListSpendPersonal" :key="u.id" :right-options="swiperOptions">
 							<view class="swipe-action u-border-top"
 								:class="[index === iconsListSpendPersonal.length - 1 && 'u-border-bottom']">
 								<view class="swipe-action__content">
@@ -30,11 +30,11 @@
 									</view>
 								</view>
 							</view>
-						</u-swipe-action-item>
-					</u-swipe-action>
-					<u-swipe-action v-else>
-						<u-swipe-action-item :disabled="u.created_type === 'default'" @click="(info)=>handleClickIcon(info,u)"
-							v-for="(u,index) in iconsListSpendTeam" :key="u.id" :options="swiperOptions">
+						</uni-swipe-action-item>
+					</uni-swipe-action>
+					<uni-swipe-action v-else>
+						<uni-swipe-action-item :disabled="u.created_type === 'default'" @click="(info)=>handleClickIcon(info,u)"
+							v-for="(u,index) in iconsListSpendTeam" :key="u.id" :right-options="swiperOptions">
 							<view class="swipe-action u-border-top"
 								:class="[index === iconsListSpendTeam.length - 1 && 'u-border-bottom']">
 								<view class="swipe-action__content">
@@ -44,13 +44,13 @@
 									</view>
 								</view>
 							</view>
-						</u-swipe-action-item>
-					</u-swipe-action>
+						</uni-swipe-action-item>
+					</uni-swipe-action>
 				</view>
 				<view class="manage-list" v-if="showType === 'income'">
-					<u-swipe-action v-if="curNow===0">
-						<u-swipe-action-item :disabled="u.created_type === 'default'" @click="(info)=>handleClickIcon(info,u)"
-							v-for="(u,index) in iconsListIncomePersonal" :key="u.id" :options="swiperOptions">
+					<uni-swipe-action v-if="curNow===0">
+						<uni-swipe-action-item :disabled="u.created_type === 'default'" @click="(info)=>handleClickIcon(info,u)"
+							v-for="(u,index) in iconsListIncomePersonal" :key="u.id" :right-options="swiperOptions">
 							<view class="swipe-action u-border-top"
 								:class="[index === iconsListIncomePersonal.length - 1 && 'u-border-bottom']">
 								<view class="swipe-action__content">
@@ -60,11 +60,11 @@
 									</view>
 								</view>
 							</view>
-						</u-swipe-action-item>
-					</u-swipe-action>
-					<u-swipe-action v-else>
-						<u-swipe-action-item :disabled="u.created_type === 'default'" @click="(info)=>handleClickIcon(info,u)"
-							v-for="(u,index) in iconsListIncomeTeam" :key="u.id" :options="swiperOptions">
+						</uni-swipe-action-item>
+					</uni-swipe-action>
+					<uni-swipe-action v-else>
+						<uni-swipe-action-item :disabled="u.created_type === 'default'" @click="(info)=>handleClickIcon(info,u)"
+							v-for="(u,index) in iconsListIncomeTeam" :key="u.id" :right-options="swiperOptions">
 							<view class="swipe-action u-border-top"
 								:class="[index === iconsListIncomeTeam.length - 1 && 'u-border-bottom']">
 								<view class="swipe-action__content">
@@ -74,15 +74,15 @@
 									</view>
 								</view>
 							</view>
-						</u-swipe-action-item>
-					</u-swipe-action>
+						</uni-swipe-action-item>
+					</uni-swipe-action>
 				</view>
 			</view>
 		</scroll-view>
-		<u-modal :show="showModal" showCancelButton @cancel="showModal = false;" @confirm="deleteTypeData"
+		<u-modal :show="showModal" showCancelButton @cancel="showModal = false;deletingType = '';" @confirm="deleteTypeData"
 			confirmColor="#ffbb00">
 			<text class="slot-content">
-				{{ '确定删除该记账类型吗？\n'}}
+				{{ '确定删除记账类型“' + deletingType + '”吗？\n'}}
 				<text class="delete-warning">⚠️ 警告：所有在该记账类型下的记录都将被删除！</text>
 			</text>
 		</u-modal>
@@ -101,6 +101,7 @@
 	export default Vue.extend({
 		data() {
 			return {
+				deletingType: '',
 				showType: 'spend',
 				curNow: 0,
 				titleList: ['个人', '团队'],
@@ -126,21 +127,21 @@
 					icon: ''
 				},
 				swiperOptions: [{
-					icon: 'edit-pen-fill',
+					text: '编辑',
 					style: {
 						backgroundColor: '#ffbb00',
 						borderRadius: '50%',
 						color: '#fff',
-						fontSize: '30rpx',
+						fontSize: '12px',
 						padding: '14rpx'
 					}
 				}, {
-					icon: 'trash-fill',
+					text: '删除',
 					style: {
 						backgroundColor: '#f56c6c',
 						borderRadius: '50%',
 						color: '#fff',
-						fontSize: '30rpx',
+						fontSize: '12px',
 						marginLeft: '16rpx',
 						padding: '14rpx'
 					}
@@ -310,11 +311,13 @@
 					this.handleOkItem();
 					this.clearPick();
 					this.showModal = false;
+					this.deletingType = '';
 				}) : deleteTeamChargeTypeAction(this.pickInfo.origin_id).then(res => {
 					this.$toast(res.message || '删除成功');
 					this.handleOkItem();
 					this.clearPick();
 					this.showModal = false;
+					this.deletingType = '';
 				})
 			},
 			handleClickIcon(info, record) {
@@ -322,6 +325,7 @@
 				console.log('click record', record)
 				this.pickInfo = record
 				if(info.index === 1){
+					this.deletingType = record.name
 					this.showModal = true;
 				}else{
 					this.$nextTick(()=>{
