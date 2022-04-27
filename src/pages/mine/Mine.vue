@@ -23,7 +23,7 @@
 		<view class="mine-body">
 			<view class="mine-pictures" v-if="userInfo.id">
 				<u-collapse @change="changeCollapse" @close="closeCollapse" @open="openCollapse" accordion :value="valueCollapse">
-					<u-collapse-item title="个人图片管理" icon="/static/images/图片管理.png" name="Docs guide">
+					<u-collapse-item title="个人图片管理" icon="https://eden-life.net.cn:9000/cdn/mango/images/图片管理.png" name="Docs guide">
 						<view class="u-collapse-content">
 							<view class="mine-pictures-title">上传和更改您的个人图片</view>
 							<u-line></u-line>
@@ -145,6 +145,7 @@
 						//this.close()
 						uni.setStorageSync('SYS_USER_INFO', res.data)
 						this.userInfo = res.data
+						this.$store.dispatch('setUserInfo', this.userInfo)
 						getInfoByUserIdAction(this.userInfo).then(res=>{
 							this.info = res.data
 						})
@@ -170,7 +171,7 @@
 				console.log('show111111111')
 				const that = this
 				uni.navigateTo({
-					url: "/pages/mine/userInfo",
+					url: "/pages-mine/userInfo",
 					success: function(res) {
 						// 通过eventChannel向被打开页面传送数据
 						res.eventChannel.emit('show', {
@@ -182,7 +183,7 @@
 			},
 			handleLoginOrRegister() {
 				uni.navigateTo({
-					url: "/pages/mine/loginRegister"
+					url: "/pages-mine/loginRegister"
 				})
 				//(this.$refs.LoginRegisterWrapper as any).showPopup = true;
 				//(this.$refs.LoginRegisterWrapper as any).tapCaptcha();

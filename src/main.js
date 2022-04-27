@@ -4,6 +4,10 @@ import App from './App.vue'
 import uView from "uview-ui";
 Vue.use(uView);
 
+import store from "@/store/index"
+
+Vue.prototype.$store = store
+
 Vue.prototype.$toast  = function(message,icon){
 	uni.showToast({
 		title: message,
@@ -24,4 +28,11 @@ Vue.prototype.$loadingOff  = function(){
 
 Vue.config.productionTip = false
 
-new App().$mount()
+App.mpType = 'app'
+
+const app = new Vue({
+    ...App,
+//挂载
+    store
+})
+app.$mount();

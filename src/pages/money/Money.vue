@@ -3,15 +3,15 @@
 		<view class="money-body">
 			<view class="money-body-top">
 				<view @click="changeChargeType" v-if="switchType === 'personal'" class="top-switch">
-					<image src="../../static/images/home/个人.png"></image>
+					<image src="https://eden-life.net.cn:9000/cdn/mango/images/home/个人.png"></image>
 					<view class="text">
-						<image src="../../static/images/home/切换.png"></image>个人记账
+						<image src="https://eden-life.net.cn:9000/cdn/mango/images/home/切换.png"></image>个人记账
 					</view>
 				</view>
 				<view @click="changeChargeType" v-else class="top-switch">
-					<image src="../../static/images/home/团队.png"></image>
+					<image src="https://eden-life.net.cn:9000/cdn/mango/images/home/团队.png"></image>
 					<view class="text">
-						<image src="../../static/images/home/切换.png">团队/家庭记账
+						<image src="https://eden-life.net.cn:9000/cdn/mango/images/home/切换.png">团队/家庭记账
 					</view>
 				</view>
 				<u-subsection :list="titleList" activeColor="#ffbb00" inactiveColor="#333" mode="subsection"
@@ -32,7 +32,7 @@
 								<text>{{ u.name + '\n' + u.money }}</text>
 							</view>
 							<view class="money-body-icon icon-manage" @click="handleShowManage">
-								<image src="../../static/images/home/其他.png"></image>
+								<image src="https://eden-life.net.cn:9000/cdn/mango/images/home/其他.png"></image>
 								<text>{{ '管理' + '\n\n' }}</text>
 							</view>
 						</view>
@@ -45,7 +45,7 @@
 								<text>{{ u.name + '\n' + u.money }}</text>
 							</view>
 							<view class="money-body-icon icon-manage" @click="handleShowManage">
-								<image src="../../static/images/home/其他.png"></image>
+								<image src="https://eden-life.net.cn:9000/cdn/mango/images/home/其他.png"></image>
 								<text>{{ '管理' + '\n\n' }}</text>
 							</view>
 						</view>
@@ -60,7 +60,7 @@
 								<text>{{ u.name + '\n' + u.money }}</text>
 							</view>
 							<view class="money-body-icon icon-manage" @click="handleShowManage">
-								<image src="../../static/images/home/其他.png"></image>
+								<image src="https://eden-life.net.cn:9000/cdn/mango/images/home/其他.png"></image>
 								<text>{{ '管理' + '\n\n' }}</text>
 							</view>
 						</view>
@@ -73,7 +73,7 @@
 								<text>{{ u.name + '\n' + u.money }}</text>
 							</view>
 							<view class="money-body-icon icon-manage" @click="handleShowManage">
-								<image src="../../static/images/home/其他.png"></image>
+								<image src="https://eden-life.net.cn:9000/cdn/mango/images/home/其他.png"></image>
 								<text>{{ '管理' + '\n\n' }}</text>
 							</view>
 						</view>
@@ -161,14 +161,14 @@
 				iconsListIncomePersonal: require('@/static/json/default_icons.json').iconsListIncome.map((item) => {
 					return {
 						...item,
-						src: require(`@/static/images/home/${item.icon}`),
+						src: `https://eden-life.net.cn:9000/cdn/mango/images/home/${item.icon}`,
 						money: 0
 					}
 				}),
 				iconsListIncomeTeam: require('@/static/json/default_icons.json').iconsListIncome.map((item) => {
 					return {
 						...item,
-						src: require(`@/static/images/home/${item.icon}`),
+						src: `https://eden-life.net.cn:9000/cdn/mango/images/home/${item.icon}`,
 						money: 0,
 						created_type: 'default'
 					}
@@ -176,7 +176,7 @@
 				iconsListSpendPersonal: require('@/static/json/default_icons.json').iconsListSpend.map((item) => {
 					return {
 						...item,
-						src: require(`@/static/images/home/${item.icon}`),
+						src: `https://eden-life.net.cn:9000/cdn/mango/images/home/${item.icon}`,
 						money: 0,
 						created_type: 'default'
 					}
@@ -184,7 +184,7 @@
 				iconsListSpendTeam: require('@/static/json/default_icons.json').iconsListSpend.map((item) => {
 					return {
 						...item,
-						src: require(`@/static/images/home/${item.icon}`),
+						src: `https://eden-life.net.cn:9000/cdn/mango/images/home/${item.icon}`,
 						money: 0,
 						created_type: 'default'
 					}
@@ -272,7 +272,7 @@
 			if (switchHistory && switchHistory === 'personal' || switchHistory === 'team') {
 				this.switchType = switchHistory
 			}
-			this.showSwitch = uni.getStorageSync('SYS_INFO_SHOW_SWITCH') || false
+			this.showSwitch = !!uni.getStorageSync('SYS_INFO_SHOW_SWITCH') || false
 			if (uni.getStorageSync('SYS_USER_INFO') && uni.getStorageSync('SYS_USER_INFO').id) {
 				this.userInfo = uni.getStorageSync('SYS_USER_INFO')
 				console.log('this.userInfo', this.userInfo)
@@ -299,7 +299,7 @@
 				this.iconsListIncomePersonal = require('@/static/json/default_icons.json').iconsListIncome.map((item) => {
 					return {
 						...item,
-						src: require(`@/static/images/home/${item.icon}`),
+						src: `https://eden-life.net.cn:9000/cdn/mango/images/home/${item.icon}`,
 						money: 0,
 						created_type: 'default'
 					}
@@ -308,7 +308,7 @@
 				this.iconsListSpendPersonal = require('@/static/json/default_icons.json').iconsListSpend.map((item) => {
 					return {
 						...item,
-						src: require(`@/static/images/home/${item.icon}`),
+						src: `https://eden-life.net.cn:9000/cdn/mango/images/home/${item.icon}`,
 						money: 0,
 						created_type: 'default'
 					}
@@ -344,7 +344,7 @@
 							origin_id: item.id,
 							id: item.realname,
 							name: item.name,
-							src: require(`@/static/images/home/${item.icon}`),
+							src: `https://eden-life.net.cn:9000/cdn/mango/images/home/${item.icon}`,
 							money: 0,
 							created_type: item.created_type,
 							icon: item.icon
@@ -354,7 +354,7 @@
 							origin_id: item.id,
 							id: item.realname,
 							name: item.name,
-							src: require(`@/static/images/home/${item.icon}`),
+							src: `https://eden-life.net.cn:9000/cdn/mango/images/home/${item.icon}`,
 							money: 0,
 							created_type: item.created_type,
 							icon: item.icon
@@ -379,7 +379,7 @@
 							origin_id: item.id,
 							id: item.realname,
 							name: item.name,
-							src: require(`@/static/images/home/${item.icon}`),
+							src: `https://eden-life.net.cn:9000/cdn/mango/images/home/${item.icon}`,
 							money: 0,
 							created_type: item.created_type,
 							icon: item.icon
@@ -389,7 +389,7 @@
 							origin_id: item.id,
 							id: item.realname,
 							name: item.name,
-							src: require(`@/static/images/home/${item.icon}`),
+							src: `https://eden-life.net.cn:9000/cdn/mango/images/home/${item.icon}`,
 							money: 0,
 							created_type: item.created_type,
 							icon: item.icon
@@ -505,7 +505,7 @@
 			handleShowAnalysis() {
 				const that = this
 				uni.navigateTo({
-					url: "/pages/money/analysis",
+					url: "/pages-money/analysis",
 					success: function(res) {
 					    // 通过eventChannel向被打开页面传送数据
 					    res.eventChannel.emit('show', { switchType: that.switchType, showType: that.curNow === 0 ? 'spend' : 'income', iconsList: that.iconsList, userInfo: that.userInfo })
@@ -515,7 +515,7 @@
 			handleShowManage(){
 				const that = this
 				uni.navigateTo({
-					url: "/pages/money/manage-types",
+					url: "/pages-money/manage-types",
 					success: function(res) {
 					    // 通过eventChannel向被打开页面传送数据
 					    res.eventChannel.emit('show', { 
@@ -546,7 +546,7 @@
 			handleShowCalendar(record) {
 				const that = this
 				uni.navigateTo({
-					url: "/pages/money/calendar",
+					url: "/pages-money/calendar",
 					success: function(res) {
 					    // 通过eventChannel向被打开页面传送数据
 					    res.eventChannel.emit('show', { record, showType: that.curNow === 0 ? 'spend' : 'income', userInfo: that.userInfo, switchType: that.switchType })
