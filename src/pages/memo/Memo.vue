@@ -1,6 +1,7 @@
 <template>
 	<view class="memo-wrapper">		
 		<view class="memo-top">
+			<view class="title">备忘生活</view>	
 			<u-notice-bar bgColor="#F86A7F" color="#fff" :text="textNotice"></u-notice-bar>
 		</view>
 		<view class="memo-body"></view>
@@ -68,7 +69,22 @@
 	
 	.memo-top{
 		width: 100%;
-		height: 200rpx;
+		height: 220rpx;
+		display: flex;
+		align-items: flex-end;
+		justify-content: flex-start;
+		background: #F86A7F;
+		color: #fff;
+		position: relative;
+		
+		.title{
+			font-size: 14px;
+			position: absolute;
+			top: 100rpx;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+		
 	}
 	
 	.memo-body{

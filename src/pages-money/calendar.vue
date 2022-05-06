@@ -35,7 +35,7 @@
 							</view>
 						</u-cell>
 					</u-cell-group>
-					<u-empty text="没有记录,快去记账吧!" :show="!historyList.length" mode="history" icon="http://cdn.uviewui.com/uview/empty/history.png"></u-empty>
+					<u-empty text="没有记录,快去记账吧!" v-if="!historyList.length" :show="!historyList.length" mode="history" icon="http://cdn.uviewui.com/uview/empty/history.png"></u-empty>
 				</scroll-view>
 			</view>
 			<u-safe-bottom></u-safe-bottom>

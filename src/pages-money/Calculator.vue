@@ -7,7 +7,7 @@
 					<view class="calculator-info">
 						<image src="https://eden-life.net.cn:9000/cdn/mango/images/home/备注.png">
 						</image>
-						<u--input maxlength="12" placeholder="请输入备注..." border="none" v-model="inputNote"></u--input>
+						<u--input placeholder="请输入备注..." border="none" v-model="inputNote"></u--input>
 					</view>
 				</u-col>
 				<u-col textAlign="center" align="flex-end" justify="center" span="6">

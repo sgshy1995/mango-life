@@ -16,7 +16,7 @@
 			</scroll-view>
 			<view class="manage-item-bottom">
 				<view class="left">
-					<u--input maxlength="6" fontSize="14" placeholder="请输入名称..." border="bottom" v-model="inputName"></u--input>
+					<u--input fontSize="14" placeholder="请输入名称..." border="bottom" v-model="inputName"></u--input>
 				</view>
 				<view class="right" v-if="showType==='add'">
 					<u-button @click="handleCreate" type="primary" color="#ffbb00" text="添加"

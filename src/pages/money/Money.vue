@@ -414,7 +414,7 @@
 						const itemFind = this.todayListPersonal.find((itemIn) => itemIn.charge_type === item.id)
 						if (itemFind) {
 							console.log('itemFind find-------------', itemFind)
-							this.$set(item, 'money', itemFind.money)
+							this.$set(item, 'money', Math.round(itemFind.money * 100) / 100)
 							//item.money = itemFind.money
 						}
 					})
@@ -423,7 +423,7 @@
 						if (itemFind) {
 							console.log('itemFind find-------------', itemFind)
 							// @ts-ignore
-							this.$set(item, 'money', itemFind.money)
+							this.$set(item, 'money', Math.round(itemFind.money * 100) / 100)
 						}
 					})
 					this.$loadingOff();
@@ -442,14 +442,14 @@
 						const itemFind = this.todayListTeam.find((itemIn) => itemIn.charge_type === item.id)
 						if (itemFind) {
 							console.log('itemFind find-------------', itemFind)
-							this.$set(item, 'money', itemFind.money)
+							this.$set(item, 'money', Math.round(itemFind.money * 100) / 100)
 						}
 					})
 					this.iconsListIncomeTeam.forEach((item) => {
 						const itemFind = this.todayListTeam.find((itemIn) => itemIn.charge_type === item.id)
 						if (itemFind) {
 							console.log('itemFind find-------------', itemFind)
-							this.$set(item, 'money', itemFind.money)
+							this.$set(item, 'money', Math.round(itemFind.money * 100) / 100)
 						}
 					})
 					this.$loadingOff();
