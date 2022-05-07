@@ -44,7 +44,7 @@
 						<u-checkbox size="16" shape="circle" activeColor="#ffbb00" name="select"></u-checkbox>
 					</u-checkbox-group>
 
-					<text>已阅读并同意<text class="a-lisence">懒比蛋使用协议</text></text>
+					<text>已阅读并同意<text @click="handleShowAgreement" class="a-lisence">懒比蛋使用协议</text></text>
 				</view>
 				<u-button v-if="showType==='register'" color="#ffbb00" type="primary" text="注册" @click="handleRegister">
 				</u-button>
@@ -239,6 +239,11 @@
 					if (typeof res === 'string') {
 						this.captureCode = res
 					}
+				})
+			},
+			handleShowAgreement(){
+				uni.navigateTo({
+					url: "/pages-mine/agreement-of-usage"
 				})
 			}
 		}

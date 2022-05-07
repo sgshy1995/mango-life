@@ -60,6 +60,15 @@
 				    }
 				    
 				}
+				,{
+				    "path" : "agreement-of-usage",
+				    "style" :                                                                                    
+				    {
+				        "navigationBarTitleText": "",
+				        "enablePullDownRefresh": false
+				    }
+				    
+				}
 			]
 		},
 		{

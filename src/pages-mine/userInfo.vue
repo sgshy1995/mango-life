@@ -8,6 +8,7 @@
 				</view>
 				<text class="top-title">个人信息</text>
 			</view>
+			<u-divider text="个人信息只用于内部展示和记录,不对外公开"></u-divider>
 			<view class="user-avatar">
 				<view class="left">
 					<u-icon name="photo-fill" color="#606266" size="22"></u-icon>用户头像
