@@ -1,8 +1,12 @@
 <template>
-	<view class="memo-wrapper">		
-		<view class="memo-top">
-			<view class="title">备忘生活</view>	
-			<u-notice-bar bgColor="#F86A7F" color="#fff" :text="textNotice"></u-notice-bar>
+	<view class="memo-wrapper">
+		<u-navbar placeholder title="备忘生活" leftIconSize="28" border bgColor="#fff" leftIcon="camera">
+			<view slot="left">
+				<image class="i-icon" src="../../static/lanbidan.png"></image>
+			</view>
+		</u-navbar>
+		<view class="notice">
+			<u-notice-bar :text="textNotice" mode="closable"></u-notice-bar>
 		</view>
 		<view class="memo-body"></view>
 		<view class="memo-bottom">
@@ -66,6 +70,15 @@
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
+	
+	.i-icon{
+		width: 24px;
+		height: 24px;
+	}
+	
+	.notice{
+		width: 100%;
+	}
 	
 	.memo-top{
 		width: 100%;

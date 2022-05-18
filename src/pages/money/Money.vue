@@ -84,7 +84,7 @@
 			
 
 			<view class="money-body-bottom">
-				<image v-if="info.money_avatar" :src="baseUrl + '/' + info.money_avatar"></image>
+				<image v-if="info.money_avatar" :src="baseUrl + '/' + info.money_avatar" @click="showView"></image>
 				<image v-else src="../../static/lanbidan.png"></image>
 				<view class="today" v-if="switchType==='personal'">
 					<text>今日总<text>{{ curNow===0 ? '支出\n' : '收入\n' }}</text><text
@@ -295,6 +295,13 @@
 			}
 		},
 		methods: {
+			showView(){
+				// 预览图片
+				uni.previewImage({
+					urls: [this.baseUrl + '/' + this.info.money_avatar],
+					indicator: 'none'
+				});
+			},
 			loadDefaultIcons() {
 				this.iconsListIncomePersonal = require('@/static/json/default_icons.json').iconsListIncome.map((item) => {
 					return {

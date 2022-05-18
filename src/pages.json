@@ -116,6 +116,15 @@
 			"root": "pages-memo",
 			"pages": [
 				{
+				    "path" : "memorial-day-info",
+				    "style" :                                                                                    
+				    {
+				        "navigationBarTitleText": "",
+				        "enablePullDownRefresh": false
+				    }
+				    
+				},
+				{
 				    "path" : "memorial-day",
 				    "style" :                                                                                    
 				    {
@@ -153,9 +162,9 @@
 		"selectedColor": "#ffbb00",
 		"backgroundColor": "#fff",
 		"borderStyle": "black",
-		"iconWidth": "18rpx",
+		"iconWidth": "22px",
 		"fontSize": "12px",
-		"spacing": "6rpx",
+		"spacing": "6px",
 		"list": [
 			{
 				"text": "首页",

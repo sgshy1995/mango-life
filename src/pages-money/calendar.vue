@@ -9,6 +9,7 @@
 			</view>
 			<view class="calendar-in">
 				<uni-calendar 
+					:selected="selected"
 					:insert="true"
 					:lunar="true"
 					@change="clickDate"
@@ -68,6 +69,7 @@
 				customStyleIn: {
 					width: '100vw'
 				},
+				selected: [],
 				showPopup: false,
 				visible: true,
 				showModal: false,
@@ -85,6 +87,7 @@
 				},
 				// id date type money remark
 				historyList: [],
+				historyListAll: [],
 				todayMoney: 0,
 				pickId: 0,
 				userInfo: {
@@ -124,6 +127,7 @@
 		onShow(){
 			if(this.userInfo.id && this.chooseInfo.id){
 				this.getHistoryData({charge_time: this.pickDate + ' 00:00:00', charge_type: this.chooseInfo.id})
+				this.getHistoryDataAll({charge_type: this.chooseInfo.id})
 			}
 		},
 		watch: {
@@ -131,23 +135,49 @@
 				handler(){
 					if(this.chooseInfo.id){
 						this.getHistoryData({charge_time: this.pickDate + ' 00:00:00', charge_type: this.chooseInfo.id})
+						this.getHistoryDataAll({charge_type: this.chooseInfo.id})
 					}
 				},
 				deep: true
+			},
+			historyListAll:{
+				handler(){
+					this.selected = []
+					if(this.historyListAll && this.historyListAll.length){
+						this.historyListAll.map(item=>{
+							const itemTime = moment(item.charge_time, 'YYYY-MM-DD').format('YYYY-MM-DD')
+							if(this.selected.find(itemIn=>itemIn.date === itemTime)){
+								this.selected[this.selected.findIndex(itemIn=>itemIn.date === itemTime)].info = Math.floor((Number(this.selected[this.selected.findIndex(itemIn=>itemIn.date === itemTime)].info) + item.charge_num) * 100) / 100
+							}else{
+								this.selected.push({
+									date: itemTime,
+									info: (Math.floor(item.charge_num * 100) / 100).toString()
+								})
+							}
+						})
+					}
+				},
+				deep: true,
+				immediate: true
 			}
 		},
 		methods: {
 			getHistoryData(findOptions){
-				console.log('findOptions----findOptions',findOptions,'this.userInfo.id',this.userInfo.id,'this.userInfo.team_id',this.userInfo.team_id)
 				this.switchType === 'personal' ?
 					getDatePersonalChargeAction({...findOptions, created_by: this.userInfo.id}).then(res=>{
-						console.log('res1',res.data.result)
 						this.historyList = res.data.result
 						this.todayMoney = this.showType === 'spend' ? res.data.summary.total.spend : res.data.summary.total.income
 					}) : getDateTeamChargeAction({...findOptions, team_id: this.userInfo.team_id}).then(res=>{
-						console.log('res2',res.data.result)
 						this.historyList = res.data.result
 						this.todayMoney = this.showType === 'spend' ? res.data.summary.total.spend : res.data.summary.total.income
+					})
+			},
+			getHistoryDataAll(findOptions){
+				this.switchType === 'personal' ?
+					getDatePersonalChargeAction({...findOptions, created_by: this.userInfo.id}).then(res=>{
+						this.historyListAll = res.data.result
+					}) : getDateTeamChargeAction({...findOptions, team_id: this.userInfo.team_id}).then(res=>{
+						this.historyListAll = res.data.result
 					})
 			},
 			deleteHistoryData(){
@@ -169,6 +199,7 @@
 			handleOk(){
 				this.$emit('ok')
 				this.getHistoryData({charge_time: this.pickDate + ' 00:00:00', charge_type: this.chooseInfo.id});
+				this.getHistoryDataAll({charge_type: this.chooseInfo.id});
 			},
 			handleDelete(id){
 				this.pickId = id
