@@ -30,17 +30,17 @@
 							<u-icon name="bell" color="#F86A7F" size="18"></u-icon>
 						</view>
 						<text @click="handleChooseRemind"
-							:class="{empty: remind === 0 }">{{ remind === 0 ? '不提醒' : remind === 1 ? '当天' : remind === 2 ? '提前一周' : '提前一月' }}</text>
+							:class="{empty: remind === 0 }">{{ columns[0][remind] }}</text>
 					</view>
 				</view>
 				<view class="modal-button">
 					<u-button :customStyle="inviteButtonStyle" type="primary" color="#F86A7F" text="确定"
-						@click="handleAdd"></u-button>
+						@click="handleOk"></u-button>
 				</view>
 			</view>
 		</view>
-		<u-datetime-picker :overlayStyle="{zIndex: 10090}" zIndex="10091" :key="refreshKey" :show="showDatePicker" @cancel="showDatePicker = false" v-model="valuePicker" confirmColor="#F86A7F" mode="date" @confirm="handleConfirmDate"></u-datetime-picker>
-		<u-picker :overlayStyle="{zIndex: 10090}" zIndex="10091" :show="showPicker" :columns="columns" @close="showPicker = false" @cancel="showPicker = false" @confirm="handleConfirmRemind"></u-picker>
+		<u-datetime-picker :overlayStyle="{zIndex: 10090}" zIndex="10091" :show="showDatePicker" @cancel="showDatePicker = false" v-model="valuePicker" confirmColor="#F86A7F" mode="date" @confirm="handleConfirmDate"></u-datetime-picker>
+		<u-picker ref="uPicker" :defaultIndex="defaultIndex" :key="refreshKey" :overlayStyle="{zIndex: 10090}" zIndex="10091" :show="showPicker" :columns="columns" @close="showPicker = false" @cancel="showPicker = false" @confirm="handleConfirmRemind"></u-picker>
 	</scroll-view>
 </template>
 
@@ -50,6 +50,10 @@
 	} from 'vuex'
 	import store from '@/store/index'
 	import moment from 'moment'
+	import {
+		createMemrialDayAction,
+		updateMemrialDayAction
+	} from '@/service/service';
 	export default {
 		data() {
 			return {
@@ -69,9 +73,11 @@
 				refreshKey: 0,
 				remind: 0,
 				columns: [
-					['不提醒', '当天', '提前一周', '提前一月']
+					['不提醒', '当天提醒', '提前一天提醒', '提前一周提醒', '提前一月提醒']
 				],
-				showType: 'add'
+				showType: 'add',
+				chooseInfo: {},
+				defaultIndex: [0]
 			}
 		},
 		onLoad(){
@@ -89,6 +95,13 @@
 					that.chooseInfo = {
 						...data.record
 					}
+					that.memorialName = that.chooseInfo.memorial_name
+					that.memorialRemark = that.chooseInfo.memorial_remark
+					that.chooseDate = that.chooseInfo.memorial_day
+					that.remind = that.chooseInfo.remind
+					console.log('that.remind',that.remind)
+					that.defaultIndex = [that.remind]
+					that.refreshKey ++
 				}
 			})
 		},
@@ -101,8 +114,37 @@
 			close() {
 				uni.navigateBack()
 			},
+			handleOk(){
+				this.showType === 'add' ? this.handleAdd() : this.handleEdit()
+			},
 			handleAdd() {
-				this.close()
+				createMemrialDayAction({
+					created_by: this.userInfo.id,
+					memorial_name: this.memorialName,
+					memorial_remark: this.memorialRemark,
+					memorial_day: this.chooseDate,
+					remind: this.remind
+				}).then(res=>{
+					this.$toast(res.message)
+					this.close()
+				}).catch(err=>{
+					this.$toast(err && err.message)
+				})
+			},
+			handleEdit(){
+				updateMemrialDayAction({
+					...this.chooseInfo,
+					created_by: this.userInfo.id,
+					memorial_name: this.memorialName,
+					memorial_remark: this.memorialRemark,
+					memorial_day: this.chooseDate,
+					remind: this.remind
+				}).then(res=>{
+					this.$toast(res.message)
+					this.close()
+				}).catch(err=>{
+					this.$toast(err && err.message)
+				})
 			},
 			handleChooseDate() {
 				this.showDatePicker = true

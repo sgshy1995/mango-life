@@ -302,3 +302,40 @@ export const createTeamChargeTypeAction = (chargeType: Record<string,any>): Prom
 	  data: chargeType
 	})
 }
+
+// 纪念日
+const memrialDayUrl = (id?:number | string)=>`/memorial_day${id ? ('/'+id) : ''}`
+
+// 纪念日新建
+export const createMemrialDayAction = (memrialDay: Record<string,any>): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: memrialDayUrl(),
+	  method: 'POST',
+	  data: memrialDay
+	})
+}
+
+// 纪念日更新
+export const updateMemrialDayAction = (memrialDay: Record<string,any>): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: memrialDayUrl(memrialDay.id),
+	  method: 'PUT',
+	  data: memrialDay
+	})
+}
+
+// 纪念日删除
+export const deleteMemrialDayAction = (id: number): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: memrialDayUrl(id),
+	  method: 'DELETE'
+	})
+}
+
+// 纪念日查询
+export const findMemrialDaysAction = (created_by: number): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: `/memorial_day/user/${created_by}`,
+	  method: 'GET'
+	})
+}
