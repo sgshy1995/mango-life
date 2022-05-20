@@ -132,6 +132,24 @@
 				        "enablePullDownRefresh": false
 				    }
 				    
+				},
+				{
+				    "path" : "birthday-info",
+				    "style" :                                                                                    
+				    {
+				        "navigationBarTitleText": "",
+				        "enablePullDownRefresh": false
+				    }
+				    
+				},
+				{
+				    "path" : "birthday",
+				    "style" :                                                                                    
+				    {
+				        "navigationBarTitleText": "",
+				        "enablePullDownRefresh": false
+				    }
+				    
 				}
 			]
 		}

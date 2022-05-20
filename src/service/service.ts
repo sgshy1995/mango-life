@@ -339,3 +339,40 @@ export const findMemrialDaysAction = (created_by: number): Promise<Record<string
 	  method: 'GET'
 	})
 }
+
+// 生日
+const birthdayUrl = (id?:number | string)=>`/birthday${id ? ('/'+id) : ''}`
+
+// 生日新建
+export const createBirthdayAction = (birthday: Record<string,any>): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: birthdayUrl(),
+	  method: 'POST',
+	  data: birthday
+	})
+}
+
+// 生日更新
+export const updateBirthdayAction = (birthday: Record<string,any>): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: birthdayUrl(birthday.id),
+	  method: 'PUT',
+	  data: birthday
+	})
+}
+
+// 生日删除
+export const deleteBirthdayAction = (id: number): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: birthdayUrl(id),
+	  method: 'DELETE'
+	})
+}
+
+// 生日查询
+export const findBirthdaysAction = (created_by: number): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: `/birthday/user/${created_by}`,
+	  method: 'GET'
+	})
+}

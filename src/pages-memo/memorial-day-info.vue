@@ -39,7 +39,7 @@
 				</view>
 			</view>
 		</view>
-		<u-datetime-picker :overlayStyle="{zIndex: 10090}" zIndex="10091" :show="showDatePicker" @cancel="showDatePicker = false" v-model="valuePicker" confirmColor="#F86A7F" mode="date" @confirm="handleConfirmDate"></u-datetime-picker>
+		<u-datetime-picker :minDate="-2209017943000" :overlayStyle="{zIndex: 10090}" zIndex="10091" :show="showDatePicker" @cancel="showDatePicker = false" v-model="valuePicker" confirmColor="#F86A7F" mode="date" @confirm="handleConfirmDate"></u-datetime-picker>
 		<u-picker ref="uPicker" :defaultIndex="defaultIndex" :key="refreshKey" :overlayStyle="{zIndex: 10090}" zIndex="10091" :show="showPicker" :columns="columns" @close="showPicker = false" @cancel="showPicker = false" @confirm="handleConfirmRemind"></u-picker>
 	</scroll-view>
 </template>
@@ -176,57 +176,6 @@
 			width: 100%;
 			box-sizing: border-box;
 			padding: 40rpx;
-		}
-
-		.memorial-top {
-			width: 100%;
-			height: 200rpx;
-			border-radius: 20rpx;
-			background: #F86A7F;
-			/* fallback for old browsers */
-			background: -webkit-linear-gradient(to right, #6A82FB, #F86A7F);
-			/* Chrome 10-25, Safari 5.1-6 */
-			background: linear-gradient(to right, #6A82FB, #F86A7F);
-			/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-			display: flex;
-			align-items: center;
-			justify-content: center;
-
-			image {
-				width: 80rpx;
-				height: 80rpx;
-				margin-right: 40rpx;
-			}
-
-			text {
-				color: #fff;
-				font-size: 14px;
-			}
-
-			.right {
-				display: flex;
-				flex-direction: column;
-			}
-		}
-
-		.memorial-body {
-			width: 100%;
-
-			.memorial-add {
-				margin-top: 38rpx;
-				width: 100%;
-				box-sizing: border-box;
-				padding: 14rpx 0;
-				border: 2px dashed #F86A7F;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-
-				text {
-					font-size: 14px;
-					padding-left: 38rpx;
-				}
-			}
 		}
 	}
 
