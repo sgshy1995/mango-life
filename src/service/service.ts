@@ -376,3 +376,40 @@ export const findBirthdaysAction = (created_by: number): Promise<Record<string,a
 	  method: 'GET'
 	})
 }
+
+// 待办
+const backlogUrl = (id?:number | string)=>`/backlog${id ? ('/'+id) : ''}`
+
+// 待办新建
+export const createBacklogAction = (backlog: Record<string,any>): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: backlogUrl(),
+	  method: 'POST',
+	  data: backlog
+	})
+}
+
+// 待办更新
+export const updateBacklogAction = (backlog: Record<string,any>): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: backlogUrl(backlog.id),
+	  method: 'PUT',
+	  data: backlog
+	})
+}
+
+// 待办删除
+export const deleteBacklogAction = (id: number): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: backlogUrl(id),
+	  method: 'DELETE'
+	})
+}
+
+// 待办查询
+export const findBacklogsAction = (created_by: number): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: `/backlog/user/${created_by}`,
+	  method: 'GET'
+	})
+}

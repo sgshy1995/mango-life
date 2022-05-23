@@ -5,7 +5,7 @@
 				<u-tabs :current="current" @change="changeTabs" :list="listTitle" :itemStyle="itemStyle" lineColor="#ffbb00"></u-tabs>
 			</view>
 			<view slot="right">
-				<image class="add-icon" src="../../static/images/home/添加.png"></image>
+				<image class="add-icon" src="../../static/images/home/add.png"></image>
 			</view>
 		</u-navbar>
 		<index-community v-show="current === 0"></index-community>

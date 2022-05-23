@@ -1,19 +1,19 @@
 <template>
-	<scroll-view scroll-y class="birthday-wrapper">
-		<view class="birthday-wrapper-inner">
-			<u-navbar placeholder leftIconSize="14" border bgColor="#FAB876" title="生日" @leftClick="close" leftText="返回">
+	<scroll-view scroll-y class="backlog-wrapper">
+		<view class="backlog-wrapper-inner">
+			<u-navbar placeholder leftIconSize="14" border bgColor="#E1BBC9" title="待办" @leftClick="close" leftText="返回">
 			</u-navbar>
-			<view class="birthday-top">
-				<image src="https://eden-life.net.cn:9000/cdn/mango/images/memo/生日.png"></image>
+			<view class="backlog-top">
+				<image src="https://eden-life.net.cn:9000/cdn/mango/images/memo/待办.png"></image>
 				<view class="right">
-					<text>生日</text>
-					<text>Birthday</text>
+					<text>待办</text>
+					<text>Backlog</text>
 				</view>
 			</view>
-			<view class="birthday-body">
-				<u-empty text="你还没有生日哦" :show="!historyList.length" mode="history"
+			<view class="backlog-body">
+				<u-empty text="你还没有待办哦" :show="!historyList.length" mode="history"
 					icon="http://cdn.uviewui.com/uview/empty/history.png"></u-empty>
-				<view class="tips" v-if="historyList.length">您可以左滑来选择编辑或删除一个生日，包括设置它的提醒时间</view>
+				<view class="tips" v-if="historyList.length">您可以左滑来选择编辑或删除一个待办，包括设置它的提醒时间</view>
 				<view class="manage-list" v-if="historyList.length">
 					<uni-swipe-action>
 						<uni-swipe-action-item :disabled="u.created_type === 'default'" @click="(info)=>handleClickIcon(info,u)"
@@ -33,7 +33,8 @@
 											</view>
 										</view>
 										<view class="swipe-action__content__text__right">
-											<text class="text-time">{{ u.is_lunar ? u.lunar_cn.split('年')[1] : u.birthday }}</text>
+											<text class="text-time">{{ u.backlog_day }}</text>
+											<text class="text-priority">{{ columnsPriority[0][u.priority] }}</text>
 										</view>
 									</view>
 								</view>
@@ -41,14 +42,14 @@
 						</uni-swipe-action-item>
 					</uni-swipe-action>
 				</view>
-				<view class="birthday-add" @click="handleShowBirthdayInfo('add')">
-					<u-icon name="plus" color="#FAB876" size="20"></u-icon>
-					<text>添加生日</text>
+				<view class="backlog-add" @click="handleShowBacklogInfo('add')">
+					<u-icon name="plus" color="#E1BBC9" size="20"></u-icon>
+					<text>添加待办</text>
 				</view>
 			</view>
 		</view>
 		<u-modal :show="showModal" showCancelButton @cancel="showModal = false;deletingType = '';" @confirm="deleteTypeData"
-			confirmColor="#ffbb00" content="确定删除该生日吗？">
+			confirmColor="#ffbb00" content="确定删除该待办吗？">
 		</u-modal>
 	</scroll-view>
 </template>
@@ -63,14 +64,14 @@
 	// 使用中文时间
 	moment.locale('zh-cn')
 	import {
-		findBirthdaysAction,
-		deleteBirthdayAction
+		findBacklogsAction,
+		deleteBacklogAction
 	} from '@/service/service';
 	export default {
 		data() {
 			return {
 				remindImgList: [
-					require('@/static/images/days/reminding_birthday.png'),
+					require('@/static/images/days/reminding_backlog.png'),
 					require('@/static/images/days/will_remind.png')
 				],
 				historyList: [],
@@ -90,6 +91,9 @@
 				remind: 0,
 				columns: [
 					['不提醒', '当天提醒', '提前一天提醒', '提前一周提醒', '提前一月提醒']
+				],
+				columnsPriority: [
+					['预置', '低优先级', '中优先级', '高优先级', '紧急']
 				],
 				pickInfo: {},
 				swiperOptions: [{
@@ -124,17 +128,17 @@
 		},
 		methods: {
 			loadData(){
-				findBirthdaysAction(this.userInfo.id).then(res=>{
+				findBacklogsAction(this.userInfo.id).then(res=>{
 					this.historyList = res.data
 					this.historyList.map(item=>{
-						item.birthday = moment(new Date(item.birthday), 'MMMMDo').format('MMMMDo')
+						item.backlog_day = moment(new Date(item.backlog_day), 'YYYY-MM-DD HH:mm').format('YYYY-MM-DD HH:mm')
 					})
 				}).catch(err=>{
 					this.$toast(err && err.message)
 				})
 			},
 			deleteTypeData() {
-				deleteBirthdayAction(this.pickInfo.id).then(res => {
+				deleteBacklogAction(this.pickInfo.id).then(res => {
 					this.$toast(res.message || '删除成功');
 					this.loadData()
 					this.pickInfo = {};
@@ -153,17 +157,17 @@
 			closeModal() {
 				this.showModal = false
 				setTimeout(()=>{
-					this.memorialName = ''
+					this.name = ''
 					this.chooseDate = ''
 					this.valuePicker = Number(new Date())
 					this.refreshKey ++
 				},300)
 				
 			},
-			handleShowBirthdayInfo(type, record){
+			handleShowBacklogInfo(type, record){
 				const that = this
 				uni.navigateTo({
-					url: "/pages-memo/birthday-info",
+					url: "/pages-memo/backlog-info",
 					success: function(res) {
 						// 通过eventChannel向被打开页面传送数据
 						res.eventChannel.emit('show', {
@@ -182,7 +186,7 @@
 					this.showModal = true;
 				}else{
 					this.$nextTick(()=>{
-						this.handleShowBirthdayInfo('edit', this.pickInfo);
+						this.handleShowBacklogInfo('edit', this.pickInfo);
 					})
 				}
 			}
@@ -191,26 +195,26 @@
 </script>
 
 <style lang="scss">
-	.birthday-wrapper {
+	.backlog-wrapper {
 		width: 100vw;
 		height: 100vh;
 		box-sizing: border-box;
 		
-		.birthday-wrapper-inner{
+		.backlog-wrapper-inner{
 			width: 100%;
 			box-sizing: border-box;
 			padding: 20rpx;
 		}
 
-		.birthday-top {
+		.backlog-top {
 			width: 100%;
 			height: 200rpx;
 			border-radius: 20rpx;
-			background: linear-gradient(to right, #f6d365, #fda085);
+			background: #d299c2;
 			/* fallback for old browsers */
-			background: -webkit-linear-gradient(to right, #f6d365, #fda085);
+			background: -webkit-linear-gradient(to right, #fef9d7, #d299c2);
 			/* Chrome 10-25, Safari 5.1-6 */
-			background: linear-gradient(to right, #f6d365, #fda085);
+			background: linear-gradient(to right, #fef9d7, #d299c2);
 			/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 			display: flex;
 			align-items: center;
@@ -233,15 +237,15 @@
 			}
 		}
 
-		.birthday-body {
+		.backlog-body {
 			width: 100%;
 
-			.birthday-add {
+			.backlog-add {
 				margin-top: 38rpx;
 				width: 100%;
 				box-sizing: border-box;
 				padding: 14rpx 0;
-				border: 2px dashed #FAB876;
+				border: 2px dashed #E1BBC9;
 				display: flex;
 				align-items: center;
 				justify-content: center;
@@ -249,7 +253,7 @@
 				text {
 					font-size: 14px;
 					padding-left: 38rpx;
-					color: #FAB876;
+					color: #E1BBC9;
 				}
 			}
 			
@@ -376,8 +380,14 @@
 	
 				&__right{
 					display: flex;
-					align-items: center;
+					flex-direction: column;
+					text-align: right;
 					font-size: 13px;
+					
+					.text-priority{
+						font-size: 12px;
+						color: #E1BBC9;
+					}
 				}
 	
 			}

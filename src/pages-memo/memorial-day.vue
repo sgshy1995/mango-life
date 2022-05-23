@@ -70,8 +70,8 @@
 		data() {
 			return {
 				remindImgList: [
-					require('@/static/images/days/提醒中.png'),
-					require('@/static/images/days/待提醒.png')
+					require('@/static/images/days/reminding_memeorial.png'),
+					require('@/static/images/days/will_remind.png')
 				],
 				historyList: [],
 				showModal: false,
@@ -249,6 +249,7 @@
 				text {
 					font-size: 14px;
 					padding-left: 38rpx;
+					color: #F86A7F;
 				}
 			}
 			

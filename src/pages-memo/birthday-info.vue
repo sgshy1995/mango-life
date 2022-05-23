@@ -1,52 +1,52 @@
 <template>
 	<scroll-view scroll-y class="birthday-info-wrapper">
 		<view class="birthday-info-wrapper-inner">
-			<u-navbar placeholder leftIconSize="14" border bgColor="#1AC7CD" :title="showType === 'add' ? '新增生日' : '编辑生日'" @leftClick="close" leftText="返回">
+			<u-navbar placeholder leftIconSize="14" border bgColor="#FAB876" :title="showType === 'add' ? '新增生日' : '编辑生日'" @leftClick="close" leftText="返回">
 			</u-navbar>
 			<view class="modal-wrapper">
 				<view class="tip">生日支持阳历和农历两种日期</view>
 				<view class="modal-body">
 					<view class="modal-body-item">
 						<view>
-							<u-icon name="edit-pen" color="#1AC7CD" size="18"></u-icon>
+							<u-icon name="edit-pen" color="#FAB876" size="18"></u-icon>
 						</view>
 						<u--input placeholder="请输入姓名" border="none" v-model="name"></u--input>
 					</view>
 					<view class="modal-body-item">
 						<view>
-							<u-icon name="tags" color="#1AC7CD" size="18"></u-icon>
+							<u-icon name="tags" color="#FAB876" size="18"></u-icon>
 						</view>
 						<u--input placeholder="请输入备注(选填)" border="none" v-model="remark"></u--input>
 					</view>
 					<view class="modal-body-item">
 						<view>
-							<u-icon name="coupon" color="#1AC7CD" size="18"></u-icon>
+							<u-icon name="coupon" color="#FAB876" size="18"></u-icon>
 						</view>
 						<text class="item-title">农历模式</text>
-						<switch class="lunar-switch" color="#1AC7CD" :checked="isLunar" @change="changeSwitch"></switch>
+						<switch class="lunar-switch" color="#FAB876" :checked="isLunar" @change="changeSwitch"></switch>
 					</view>
 					<view class="modal-body-item">
 						<view>
-							<u-icon name="calendar" color="#1AC7CD" size="18"></u-icon>
+							<u-icon name="calendar" color="#FAB876" size="18"></u-icon>
 						</view>
 						<text @click="handleChooseDate"
 							:class="{empty: !chooseDate && !chooseDateLunar}">{{ (isLunar ? chooseDateLunar : chooseDate) || '请选择生日' }}</text>
 					</view>
 					<view class="modal-body-item">
 						<view>
-							<u-icon name="bell" color="#1AC7CD" size="18"></u-icon>
+							<u-icon name="bell" color="#FAB876" size="18"></u-icon>
 						</view>
 						<text @click="handleChooseRemind"
 							:class="{empty: remind === 0 }">{{ columns[0][remind] }}</text>
 					</view>
 				</view>
 				<view class="modal-button">
-					<u-button :customStyle="inviteButtonStyle" type="primary" color="#1AC7CD" text="确定"
+					<u-button :customStyle="inviteButtonStyle" type="primary" color="#FAB876" text="确定"
 						@click="handleOk"></u-button>
 				</view>
 			</view>
 		</view>
-		<u-datetime-picker :minDate="-2209017943000" :overlayStyle="{zIndex: 10090}" zIndex="10091" :show="showDatePicker" @cancel="showDatePicker = false" v-model="valuePicker" confirmColor="#1AC7CD" mode="date" @confirm="handleConfirmDate"></u-datetime-picker>
+		<u-datetime-picker :minDate="-2209017943000" :overlayStyle="{zIndex: 10090}" zIndex="10091" :show="showDatePicker" @cancel="showDatePicker = false" v-model="valuePicker" confirmColor="#FAB876" mode="date" @confirm="handleConfirmDate"></u-datetime-picker>
 		<u-picker ref="uPicker" :defaultIndex="defaultIndex" :key="refreshKey" :overlayStyle="{zIndex: 10090}" zIndex="10091" :show="showPicker" :columns="columns" @close="showPicker = false" @cancel="showPicker = false" @confirm="handleConfirmRemind"></u-picker>
 		<u-picker ref="uPickerLunar" :defaultIndex="defaultIndexLunar" :key="refreshKey1" :overlayStyle="{zIndex: 10090}" zIndex="10091" :show="showPickerLunar" :columns="columnsLunar" @close="showPickerLunar = false" @cancel="showPickerLunar = false" @confirm="handleConfirmLunar"></u-picker>
 	</scroll-view>

@@ -13,16 +13,16 @@
 				<view class="memo-total-title">- 汇 总 -</view>
 				<view class="memo-total-body">
 					<view class="body-item">
+						<image src="https://eden-life.net.cn:9000/cdn/mango/images/memo/待办.png"></image>
+						<text class="body-item-text">0</text>
+					</view>
+					<view class="body-item">
 						<image src="https://eden-life.net.cn:9000/cdn/mango/images/memo/纪念日.png"></image>
 						<text class="body-item-text">{{ memorialDayList.length }}</text>
 					</view>
 					<view class="body-item">
 						<image src="https://eden-life.net.cn:9000/cdn/mango/images/memo/生日.png"></image>
 						<text class="body-item-text">{{ birthdayList.length }}</text>
-					</view>
-					<view class="body-item">
-						<image src="https://eden-life.net.cn:9000/cdn/mango/images/memo/待办.png"></image>
-						<text class="body-item-text">0</text>
 					</view>
 					<view class="body-item">
 						<image src="https://eden-life.net.cn:9000/cdn/mango/images/memo/记录.png"></image>
@@ -36,8 +36,35 @@
 					<u-tabs :current="current" @change="changeTabs" :list="listTitle" :itemStyle="itemStyle" lineColor="#ffbb00"></u-tabs>
 				</view>
 				<view class="memo-recent-body" v-if="current === 0">
+					<view class="memo-recent-empty" v-if="!backlogRecentList.length">
+						<image src="../../static/images/days/nothing.png"></image>
+						<text>暂无动态~</text>
+					</view>
+					<view class="memo-recent-body-item" v-for="(u,index) in backlogRecentList" :key="index">
+						<view class="now" v-if="!u.interval"></view>
+						<view class="recent-left">
+							<view class="recent-left-top">{{ u.name }}</view>
+							<view class="recent-left-center">
+								<u-icon name="calendar" color="#333" size="22"></u-icon>
+								<text>{{ u.show_time }}</text>
+							</view>
+							<view class="recent-left-bottom">{{ u.remark }}</view>
+						</view>
+						<view class="recent-right">
+							<view class="recent-right-top" v-if="u.interval">
+								<text>倒计时</text>
+								{{ u.interval }} 天
+							</view>
+							<view class="recent-right-top" v-else>
+								今天
+							</view>
+							<view class="recent-right-bottom" :class="{empty: !u.remind}"><u-icon name="bell-fill" :color="u.remind ? '#333333' : '#cdcdcd'" size="14"></u-icon>{{ columnsRemind[0][u.remind] }}</view>
+						</view>
+					</view>
+				</view>
+				<view class="memo-recent-body" v-if="current === 1">
 					<view class="memo-recent-empty" v-if="!memorialDayRecentList.length">
-						<image src="../../static/images/days/暂无动态.png"></image>
+						<image src="../../static/images/days/nothing.png"></image>
 						<text>暂无动态~</text>
 					</view>
 					<view class="memo-recent-body-item" v-for="(u,index) in memorialDayRecentList" :key="index">
@@ -62,9 +89,9 @@
 						</view>
 					</view>
 				</view>
-				<view class="memo-recent-body" v-if="current === 1">
+				<view class="memo-recent-body" v-if="current === 2">
 					<view class="memo-recent-empty" v-if="!birthdayRecentList.length">
-						<image src="../../static/images/days/暂无动态.png"></image>
+						<image src="../../static/images/days/nothing.png"></image>
 						<text>暂无动态~</text>
 					</view>
 					<view class="memo-recent-body-item" v-for="(u,index) in birthdayRecentList" :key="index">
@@ -89,21 +116,19 @@
 						</view>
 					</view>
 				</view>
-				<view class="memo-recent-body" v-if="current === 2">
-					<view class="memo-recent-empty">
-						<image src="../../static/images/days/暂无动态.png"></image>
-						<text>暂无动态~</text>
-					</view>
-				</view>
 				<view class="memo-recent-body" v-if="current === 3">
 					<view class="memo-recent-empty">
-						<image src="../../static/images/days/暂无动态.png"></image>
+						<image src="../../static/images/days/nothing.png"></image>
 						<text>暂无动态~</text>
 					</view>
 				</view>
 			</view>
 		</view>
 		<view class="memo-bottom">
+			<view class="memo-bottom-item" @click="handleShowBacklog">
+				<image src="https://eden-life.net.cn:9000/cdn/mango/images/memo/待办.png"></image>
+				<text class="text">待办</text>
+			</view>
 			<view class="memo-bottom-item" @click="handleShowMemorialDay">
 				<image src="https://eden-life.net.cn:9000/cdn/mango/images/memo/纪念日.png"></image>
 				<text class="text">纪念日</text>
@@ -111,10 +136,6 @@
 			<view class="memo-bottom-item" @click="handleShowBirthday">
 				<image src="https://eden-life.net.cn:9000/cdn/mango/images/memo/生日.png"></image>
 				<text class="text">生日</text>
-			</view>
-			<view class="memo-bottom-item">
-				<image src="https://eden-life.net.cn:9000/cdn/mango/images/memo/待办.png"></image>
-				<text class="text">待办</text>
 			</view>
 			<view class="memo-bottom-item">
 				<image src="https://eden-life.net.cn:9000/cdn/mango/images/memo/记录.png"></image>
@@ -133,7 +154,8 @@
 	moment.locale('zh-cn')
 	import {
 		findBirthdaysAction,
-		findMemrialDaysAction
+		findMemrialDaysAction,
+		findBacklogsAction
 	} from '@/service/service';
 	import {lunarToSolar} from '@/utils/lunarSolarConverter'
 	export default {
@@ -142,13 +164,13 @@
 				current: 0,
 				listTitle: [
 					{
+						name: '待办'
+					},
+					{
 						name: '纪念日'
 					},
 					{
 						name: '生日'
-					},
-					{
-						name: '待办'
 					},
 					{
 						name: '记录'
@@ -166,8 +188,10 @@
 				],
 				birthdayList: [],
 				memorialDayList: [],
+				backlogList: [],
 				birthdayRecentList: [],
-				memorialDayRecentList: []
+				memorialDayRecentList: [],
+				backlogRecentList: []
 			};
 		},
 		computed: {
@@ -193,13 +217,13 @@
 						const time = item.is_lunar ? 
 						moment(new Date(lunarToSolar(new Date().getFullYear(), item.lunar_month, item.lunar_day)), 'YYYY-MM-DD').format('YYYY-MM-DD') :
 						new Date().getFullYear().toString() + '-' + moment(new Date(item.birthday), 'MM-DD').format('MM-DD')
-						return new Date(new Date(time).toLocaleDateString()).getTime() >= (new Date(new Date().toLocaleDateString()).getTime() - 31 * 24 * 3600 * 1000)
+						return new Date(new Date(time).toLocaleDateString()).getTime() <= (new Date(new Date().toLocaleDateString()).getTime() + 31 * 24 * 3600 * 1000) && new Date(new Date(time).toLocaleDateString()).getTime() >= (new Date(new Date().toLocaleDateString()).getTime())
 					})
 					this.birthdayRecentList.map(item=>{
-						const timeStart = item.is_lunar ? 
+						const timeEnd = item.is_lunar ? 
 						moment(new Date(lunarToSolar(new Date().getFullYear(), item.lunar_month, item.lunar_day)), 'YYYY-MM-DD').format('YYYY-MM-DD') :
 						new Date().getFullYear().toString() + '-' + moment(new Date(item.birthday), 'MM-DD').format('MM-DD')
-						const timeEnd = moment(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD')
+						const timeStart = moment(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD')
 						item.show_time = item.is_lunar ? item.lunar_cn.split('年')[1] : moment(new Date(item.birthday), 'MMMMDo').format('MMMMDo')
 						item.interval = this.getDayNum(timeStart, timeEnd)
 					})
@@ -208,12 +232,25 @@
 					this.memorialDayList = res.data || []
 					this.memorialDayRecentList = this.memorialDayList.filter(item=>{
 						const time = new Date().getFullYear().toString() + '-' + moment(new Date(item.memorial_day), 'MM-DD').format('MM-DD')
-						return new Date(new Date(time).toLocaleDateString()).getTime() >= (new Date(new Date().toLocaleDateString()).getTime() - 31 * 24 * 3600 * 1000)
+						return new Date(new Date(time).toLocaleDateString()).getTime() <= (new Date(new Date().toLocaleDateString()).getTime() + 31 * 24 * 3600 * 1000) && new Date(new Date(time).toLocaleDateString()).getTime() >= (new Date(new Date().toLocaleDateString()).getTime())
 					})
 					this.memorialDayRecentList.map(item=>{
-						const timeStart = new Date().getFullYear().toString() + '-' + moment(new Date(item.memorial_day), 'MM-DD').format('MM-DD')
-						const timeEnd = moment(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD')
+						const timeEnd = new Date().getFullYear().toString() + '-' + moment(new Date(item.memorial_day), 'MM-DD').format('MM-DD')
+						const timeStart = moment(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD')
 						item.show_time = moment(new Date(item.memorial_day), 'MMMMDo').format('MMMMDo')
+						item.interval = this.getDayNum(timeStart, timeEnd)
+					})
+				})
+				findBacklogsAction(this.userInfo.id).then(res=>{
+					this.backlogList = res.data || []
+					this.backlogRecentList = this.backlogList.filter(item=>{
+						const time = new Date().getFullYear().toString() + '-' + moment(new Date(item.backlog_day), 'MM-DD').format('MM-DD')
+						return new Date(new Date(time).toLocaleDateString()).getTime() <= (new Date(new Date().toLocaleDateString()).getTime() + 31 * 24 * 3600 * 1000) && new Date(new Date(time).toLocaleDateString()).getTime() >= (new Date(new Date().toLocaleDateString()).getTime())
+					})
+					this.backlogRecentList.map(item=>{
+						const timeEnd = new Date().getFullYear().toString() + '-' + moment(new Date(item.backlog_day), 'MM-DD').format('MM-DD')
+						const timeStart = moment(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD')
+						item.show_time = moment(new Date(item.backlog_day), 'YYYY-MM-DD HH:mm').format('YYYY-MM-DD HH:mm')
 						item.interval = this.getDayNum(timeStart, timeEnd)
 					})
 				})
@@ -234,6 +271,18 @@
 				const that = this
 				uni.navigateTo({
 					url: "/pages-memo/birthday",
+					success: function(res) {
+						// 通过eventChannel向被打开页面传送数据
+						res.eventChannel.emit('show', {
+							userInfo: that.userInfo
+						})
+					}
+				})
+			},
+			handleShowBacklog(){
+				const that = this
+				uni.navigateTo({
+					url: "/pages-memo/backlog",
 					success: function(res) {
 						// 通过eventChannel向被打开页面传送数据
 						res.eventChannel.emit('show', {
@@ -382,7 +431,7 @@
 							padding-left: 8rpx;
 							font-size: 12px;
 							color: #cdcdcd;
-							max-width: 200rpx;
+							max-width: 300rpx;
 							white-space: nowrap;
 							overflow: hidden;
 							text-overflow: ellipsis;

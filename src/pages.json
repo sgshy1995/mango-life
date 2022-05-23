@@ -150,6 +150,24 @@
 				        "enablePullDownRefresh": false
 				    }
 				    
+				},
+				{
+				    "path" : "backlog-info",
+				    "style" :                                                                                    
+				    {
+				        "navigationBarTitleText": "",
+				        "enablePullDownRefresh": false
+				    }
+				    
+				},
+				{
+				    "path" : "backlog",
+				    "style" :                                                                                    
+				    {
+				        "navigationBarTitleText": "",
+				        "enablePullDownRefresh": false
+				    }
+				    
 				}
 			]
 		}
@@ -187,26 +205,26 @@
 			{
 				"text": "首页",
 				"pagePath": "pages/index/Index",
-				"iconPath": "static/images/tab/首页.png",
-				"selectedIconPath": "static/images/tab/首页-激活.png"
+				"iconPath": "static/images/tab/home.png",
+				"selectedIconPath": "static/images/tab/home-active.png"
 			},
 			{
 				"text": "记账",
 				"pagePath": "pages/money/Money",
-				"iconPath": "static/images/tab/记账本.png",
-				"selectedIconPath": "static/images/tab/记账本-激活.png"
+				"iconPath": "static/images/tab/money.png",
+				"selectedIconPath": "static/images/tab/money-active.png"
 			},
 			{
 				"text": "备忘",
 				"pagePath": "pages/memo/Memo",
-				"iconPath": "static/images/tab/备忘.png",
-				"selectedIconPath": "static/images/tab/备忘-激活.png"
+				"iconPath": "static/images/tab/memo.png",
+				"selectedIconPath": "static/images/tab/memo-active.png"
 			},
 			{
 				"text": "我的",
 				"pagePath": "pages/mine/Mine",
-				"iconPath": "static/images/tab/我的.png",
-				"selectedIconPath": "static/images/tab/我的-激活.png"
+				"iconPath": "static/images/tab/mine.png",
+				"selectedIconPath": "static/images/tab/mine-active.png"
 			}
 		]
 	}
