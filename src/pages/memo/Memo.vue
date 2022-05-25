@@ -244,13 +244,13 @@
 				findBacklogsAction(this.userInfo.id).then(res=>{
 					this.backlogList = res.data || []
 					this.backlogRecentList = this.backlogList.filter(item=>{
-						const time = new Date().getFullYear().toString() + '-' + moment(new Date(item.backlog_day), 'MM-DD').format('MM-DD')
+						const time = new Date().getFullYear().toString() + '-' + moment(new Date(item.backlog_day.replace(/\-/g, '/')), 'MM-DD').format('MM-DD')
 						return new Date(new Date(time).toLocaleDateString()).getTime() <= (new Date(new Date().toLocaleDateString()).getTime() + 31 * 24 * 3600 * 1000) && new Date(new Date(time).toLocaleDateString()).getTime() >= (new Date(new Date().toLocaleDateString()).getTime())
 					})
 					this.backlogRecentList.map(item=>{
-						const timeEnd = new Date().getFullYear().toString() + '-' + moment(new Date(item.backlog_day), 'MM-DD').format('MM-DD')
+						const timeEnd = new Date().getFullYear().toString() + '-' + moment(new Date(item.backlog_day.replace(/\-/g, '/')), 'MM-DD').format('MM-DD')
 						const timeStart = moment(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD')
-						item.show_time = moment(new Date(item.backlog_day), 'YYYY-MM-DD HH:mm').format('YYYY-MM-DD HH:mm')
+						item.show_time = moment(new Date(item.backlog_day.replace(/\-/g, '/')), 'YYYY-MM-DD HH:mm').format('YYYY-MM-DD HH:mm')
 						item.interval = this.getDayNum(timeStart, timeEnd)
 					})
 				})

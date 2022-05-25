@@ -22,20 +22,25 @@
 				<view class="history-title">
 					<text>{{ pickDate }}</text><text>{{ ` ${chooseInfo.name} ${showType==='spend'?'总支出: ':'总收入: '}` }}</text><text>{{ todayMoney }}</text>
 				</view>
-				<scroll-view scroll-anchoring scroll-y class="in-body">
-					<u-cell-group v-if="historyList.length">
-						<u-cell v-for="(u,index) in historyList" :key="u.id" :label="u.remark">
-							<view slot="title" class="history-list-left">
-								<text class="one">记于 </text>
-								<text class="two">{{moment(u.created_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')}}</text>
+				<scroll-view scroll-anchoring scroll-y class="in-body" v-if="renderKey">
+					<view class="cell-group" v-if="historyList.length">
+						<view class="cell-item" v-for="(u,index) in historyList" :key="u.id" :class="{last: index === historyList.length - 1}">
+							<view class="cell-item-left">
+								<view class="cell-item-left-top">
+									<text class="one">记于 </text>
+									<text class="two">{{moment(u.created_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')}}</text>
+								</view>
+								<view class="cell-item-left-bottom" v-if="u.remark">
+									{{ u.remark }}
+								</view>
 							</view>
-							<view slot="value" class="history-list-right">
+							<view class="cell-item-right">
 								<text>{{ (showType === 'spend' ? '-' : '+') + u.charge_num }}</text>
 								<u-icon style="margin-left: 30rpx;margin-right: 10rpx;" name="edit-pen-fill" color="#999" size="16" @click="handleEdit(u.id,u.charge_num,u.remark)"></u-icon>
 								<u-icon @click="handleDelete(u.id)" name="trash-fill" color="#999" size="16" ></u-icon>
 							</view>
-						</u-cell>
-					</u-cell-group>
+						</view>
+					</view>
 					<u-empty text="没有记录,快去记账吧!" v-if="!historyList.length" :show="!historyList.length" mode="history" icon="http://cdn.uviewui.com/uview/empty/history.png"></u-empty>
 				</scroll-view>
 			</view>
@@ -101,7 +106,8 @@
 					team_id: 0,
 					team_name: ''
 				},
-				switchType: 'personal'
+				switchType: 'personal',
+				renderKey: true
 			}
 		},
 		onLoad(){
@@ -200,8 +206,13 @@
 				this.$emit('ok')
 				this.getHistoryData({charge_time: this.pickDate + ' 00:00:00', charge_type: this.chooseInfo.id});
 				this.getHistoryDataAll({charge_type: this.chooseInfo.id});
+				this.renderKey = false
+				this.$nextTick(()=>{
+					this.renderKey = true
+				})
 			},
 			handleDelete(id){
+				console.log('handleDelete', id)
 				this.pickId = id
 				this.showModal = true
 			},
@@ -327,6 +338,50 @@
 			height: 100%;
 			box-sizing: border-box;
 		}
+		
+		.cell-group{
+			width: 100%;
+		}
+		
+		.cell-item{
+			width: 100%;
+			box-sizing: border-box;
+			padding: 24rpx 14rpx;
+			border-top: 1px solid #909399;
+			
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			&.last{
+				border-bottom: 1px solid #909399;
+			}
+		}
+		
+		.cell-item-left{
+			display: flex;
+			flex-direction: column;
+			.cell-item-left-top{
+				font-size: 14px;
+				.one {
+					font-size: 12px;
+					padding-right: 10rpx;
+				}
+				
+			}
+			
+			.cell-item-left-bottom{
+				font-size: 12px;
+				color: #909399;
+				padding-top: 14rpx;
+			}
+		}
+		
+		.cell-item-right{
+			display: flex;
+			align-items: center;
+			font-size: 14px;
+		}
+		
 		
 		.history-title{
 			font-size: 12px;

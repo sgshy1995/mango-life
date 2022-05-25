@@ -129,9 +129,10 @@
 		methods: {
 			loadData(){
 				findBacklogsAction(this.userInfo.id).then(res=>{
+					console.log('res res res', res.data)
 					this.historyList = res.data
 					this.historyList.map(item=>{
-						item.backlog_day = moment(new Date(item.backlog_day), 'YYYY-MM-DD HH:mm').format('YYYY-MM-DD HH:mm')
+						item.backlog_day = moment(new Date(item.backlog_day.replace(/\-/g, '/')), 'YYYY-MM-DD HH:mm').format('YYYY-MM-DD HH:mm')
 					})
 				}).catch(err=>{
 					this.$toast(err && err.message)

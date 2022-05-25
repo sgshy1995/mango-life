@@ -144,6 +144,7 @@
 					remind: this.remind,
 					priority: this.priority
 				}).then(res=>{
+					console.log('backlog_day add', this.chooseDate)
 					this.$toast(res.message)
 					this.close()
 				}).catch(err=>{
@@ -173,6 +174,7 @@
 				console.log('e',e)
 				this.showDatePicker = false
 				this.chooseDate = moment(new Date(e.value), 'YYYY-MM-DD HH:mm').format('YYYY-MM-DD HH:mm')
+				console.log('backlog_day confirm', this.chooseDate)
 			},
 			handleChooseRemind() {
 				this.showPicker = true
