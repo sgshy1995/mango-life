@@ -248,7 +248,7 @@ const cfe = {
 	"pie": {
 		"color": color,
 		"title": {
-			"text": ''
+			"text": 'hhhh'
 		},
 		"tooltip": {
 			"trigger": 'item'
@@ -299,7 +299,7 @@ const cfe = {
 			"avoidLabelOverlap": false,
 			"label": {
 				"show": true,
-        "color": "#666666",
+				"color": "#666666",
 				"position": 'top',
 			},
 			"labelLine": {

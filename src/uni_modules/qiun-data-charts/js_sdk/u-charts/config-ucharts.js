@@ -134,7 +134,7 @@ const cfu = {
 	},
 	"ring": {
 		"type": "ring",
-		"color": color,
+		"color": ['#FAC858', '#EE6666', '#73C0DE', '#3CA272', '#FC8452', '#9A60B4', '#ea7ccc', '#1890FF', '#91CB74'],
 		"padding": [5, 5, 5, 5],
 		"rotate": false,
 		"dataLabel": true,
@@ -144,12 +144,13 @@ const cfu = {
 			"lineHeight": 25,
 		},
 		"title": {
-			"name": "收益率",
+			"show": false,
 			"fontSize": 15,
 			"color": "#666666"
 		},
 		"subtitle": {
-			"name": "70%",
+			"show": false,
+			"name": "",
 			"fontSize": 25,
 			"color": "#7cb5ec"
 		},
@@ -161,8 +162,8 @@ const cfu = {
 				"offsetAngle": 0,
 				"labelWidth": 15,
 				"border": true,
-				"borderWidth": 3,
-				"borderColor": "#FFFFFF"
+				"borderWidth": 1,
+				"borderColor": "#333"
 			},
 		},
 	},

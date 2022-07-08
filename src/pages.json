@@ -180,7 +180,9 @@
 				"bottom": {
 			        "offset": "none" 
 			    }   
-			}
+			},
+			"bounce": "none",
+			"scrollIndicator":"none"
 		}
 	},
 	"condition" : { //模式配置，仅开发期间生效

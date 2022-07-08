@@ -34,6 +34,15 @@ export const loginAction = (user: Record<string,any>): Promise<Record<string,any
   })
 }
 
+// 根据 jwt 自动获取用户信息
+const getUserInfoByJWTUrl = '/user'
+export const getUserInfoByJWTAction = (): Promise<Record<string,any>> => {
+  return doRequestAction({
+    url: getUserInfoByJWTUrl,
+    method: 'GET'
+  })
+}
+
 // 根据 username 获取用户信息
 const getUserInfoByUsernameUrl = (username:string)=>`/user/${username}`
 export const getUserInfoByUsernameAction = (user: Record<string,any>): Promise<Record<string,any>> => {
@@ -164,6 +173,16 @@ export const getDatePersonalChargeCustomTimeAction = (findOptions: Record<string
 	})
 }
 
+// 个人记账自定义时间最近查询
+const personalChargeRecentTimeUrl = '/personal_charge/time/find_recent'
+export const personalChargeRecentTimeAction = (findOptions: Record<string,any>): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: personalChargeRecentTimeUrl,
+	  method: 'GET',
+	  data: findOptions
+	})
+}
+
 // 个人记账删除
 export const deletePersonalChargeAction = (id: number): Promise<Record<string,any>> => {
 	return doRequestAction({
@@ -205,6 +224,16 @@ const teamChargeCustomTimeUrl = '/team_charge/time/find'
 export const getDateTeamChargeCustomTimeAction = (findOptions: Record<string,any>): Promise<Record<string,any>> => {
 	return doRequestAction({
 	  url: teamChargeCustomTimeUrl,
+	  method: 'GET',
+	  data: findOptions
+	})
+}
+
+// 团队记账自定义时间最近查询
+const teamChargeRecentTimeUrl = '/team_charge/time/find_recent'
+export const teamChargeRecentTimeAction = (findOptions: Record<string,any>): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: teamChargeRecentTimeUrl,
 	  method: 'GET',
 	  data: findOptions
 	})
