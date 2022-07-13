@@ -241,7 +241,10 @@
 			},
 			close() {
 				console.log('close')
-				uni.navigateBack()
+				//uni.navigateBack()
+				uni.reLaunch({
+					url: "/pages/guard/index"
+				})
 			},
 			open() {
 

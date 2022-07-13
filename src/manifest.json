@@ -7,9 +7,7 @@
     "transformPx" : false,
     "app-plus" : {
         /* 5+App特有相关 */
-        "modules" : {
-            "OAuth" : {}
-        },
+        "modules" : {},
         "optimization" : {
             "subPackages" : true
         },
@@ -46,13 +44,10 @@
             /* ios打包配置 */
             "sdkConfigs" : {
                 "oauth" : {
-                    "weixin" : {
-                        "appid" : "",
-                        "appsecret" : "",
-                        "UniversalLinks" : ""
-                    }
+                    "apple" : {}
                 },
-                "ad" : {}
+                "ad" : {},
+                "push" : {}
             },
             "icons" : {
                 "android" : {
@@ -89,11 +84,26 @@
             "splashscreen" : {
                 "androidStyle" : "common",
                 "iosStyle" : "common",
-                "useOriginalMsgbox" : true
+                "useOriginalMsgbox" : true,
+                "alwaysShowBeforeRender" : false,
+                "waiting" : false,
+                "autoclose" : false,
+                "delay" : 0
             }
         },
         /* SDK配置 */
-        "usingComponents" : true
+        "usingComponents" : true,
+        "splashscreen" : {
+            "alwaysShowBeforeRender" : false,
+            "waiting" : false,
+			"autoclose" : false,
+			"delay" : 0
+        },
+		"safearea": {
+			"bottom": {
+		        "offset": "none" 
+		    }   
+		}
     },
     "quickapp" : {},
     /* 快应用特有相关 */
