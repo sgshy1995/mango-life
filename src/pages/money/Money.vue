@@ -1,6 +1,7 @@
 <template>
 	<view class="money-view" :style="{background: info.money_background ? `url(${baseUrl + '/' + info.money_background})` : ''}">
 		<view class="money-body">
+			<u-status-bar></u-status-bar>
 			<view class="money-body-top">
 				<view @click="changeChargeType" v-if="switchType === 'personal'" class="top-switch">
 					<image src="https://eden-life.net.cn:9000/cdn/mango/images/home/个人.png"></image>
@@ -17,8 +18,10 @@
 				<u-subsection :list="titleList" activeColor="#ffbb00" inactiveColor="#333" mode="subsection"
 					@change="sectionChange" bgColor="#ffbb00" :current="curNow">
 				</u-subsection>
-				<u-button @click="handleShowAnalysis" type="primary" size="mini" color="#ffbb00" text="统计"
-					:customStyle="buttonStyle" icon="grid-fill" iconColor="#333"></u-button>
+				<view class="top-button">
+					<u-button @click="handleShowAnalysis" type="primary" size="mini" color="#ffbb00" text="统计"
+						:customStyle="buttonStyle" icon="grid-fill" iconColor="#333"></u-button>
+				</view>
 			</view>
 			
 			<view class="money-swiper">
@@ -151,9 +154,6 @@
 				buttonStyle: {
 					height: '42rpx',
 					width: '50rpx',
-					position: 'absolute',
-					bottom: '26rpx',
-					right: '26rpx',
 					color: '#333',
 					fontSize: '12px !important'
 				},
@@ -596,31 +596,25 @@
 		flex-direction: column;
 
 		.money-body-top {
-			height: 250rpx;
 			width: 100%;
 			border-bottom: 1px solid #ffbb00;
 			position: relative;
 			display: flex;
-			justify-content: center;
+			justify-content: space-between;
 			align-items: center;
+			box-sizing: border-box;
+			padding: 0 24rpx 12rpx 24rpx;
 
 			.u-subsection {
 				width: 300rpx !important;
-				position: absolute;
-				left: 50%;
-				bottom: 30rpx;
-				transform: translateX(-50%);
 			}
 
 			.top-switch {
-				position: absolute;
-				bottom: 10rpx;
-				left: 20rpx;
 				display: flex;
 				align-items: center;
-				justify-content: center;
+				justify-content: flex-start;
 				flex-direction: column;
-				transform: scale(0.8);
+				width: 100rpx;
 
 				>image {
 					width: 44rpx;
@@ -630,10 +624,11 @@
 				}
 
 				.text {
-					font-size: 12px;
+					font-size: 10px;
 					color: #333;
 					display: flex;
 					align-items: center;
+					white-space: nowrap;
 
 					>image {
 						width: 24rpx;
@@ -641,6 +636,13 @@
 						margin-right: 6rpx;
 					}
 				}
+			}
+			
+			.top-button{
+				width: 100rpx;
+				display: flex;
+				align-items: center;
+				justify-content: flex-end;
 			}
 
 			.u-button__text {
