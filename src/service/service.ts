@@ -294,6 +294,18 @@ export const createPersonalChargeTypeAction = (chargeType: Record<string,any>): 
 	})
 }
 
+// 个人分类排序
+const personalSortUrl = '/personal_sort'
+
+// 个人分类排序操作
+export const changePersonalSortAction = (sortOptions: {created_by: number, balance_type: number, origin_id: number, move_id: number}): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: personalSortUrl,
+	  method: 'POST',
+	  data: sortOptions
+	})
+}
+
 // 团队分类
 const teamChargeTypeUrl = (id?:number | string)=>`/team_charge_type${id ? ('/'+id) : ''}`
 
@@ -329,6 +341,18 @@ export const createTeamChargeTypeAction = (chargeType: Record<string,any>): Prom
 	  url: teamChargeTypeUrl(),
 	  method: 'POST',
 	  data: chargeType
+	})
+}
+
+// 团队分类排序
+const teamSortUrl = '/team_sort'
+
+// 团队分类排序操作
+export const changeTeamSortAction = (sortOptions: {team_id: number, balance_type: number, origin_id: number, move_id: number}): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: teamSortUrl,
+	  method: 'POST',
+	  data: sortOptions
 	})
 }
 

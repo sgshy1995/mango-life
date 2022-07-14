@@ -36,6 +36,23 @@
 				this.getUserInfo(this.userInfo)
 			}
 		},
+		computed: {
+			authStatus(){
+				return this.$store.state.auth.authStatus
+			}
+		},
+		watch: {
+			authStatus(){
+				if(!this.authStatus){
+					console.log('==================== relaunch ==================')
+					setTimeout(()=>{
+						uni.reLaunch({
+							url: "/pages/guard/index?notAuth=1"
+						})
+					},1000)
+				}
+			}
+		},
 		methods:{
 			getUserInfo(userInfo) {
 				return new Promise((reslove, reject) => {

@@ -71,8 +71,9 @@
 				</view>
 				
 				<view class="charts-in-middle">
-					<qiun-data-charts :inScrollView="true" type="line" :reshow="showPopup" :chartData="chartData"
+					<qiun-data-charts v-if="chartData.categories.length" :inScrollView="true" type="line" :reshow="showPopup" :chartData="chartData"
 						:loadingType="5" :disableScroll="false" background="none" :ontouch="true" />
+					<u-empty text="没有记账记录哦~" v-if="!chartData.categories.length" :show="!chartData.categories.length" mode="list" icon="http://cdn.uviewui.com/uview/empty/list.png"></u-empty>
 				</view>
 				
 				<view class="charts-in-bottom">
@@ -90,8 +91,9 @@
 						</view>
 					</view>
 					<view class="charts-in-bottom-body">
-						<qiun-data-charts :inScrollView="true" type="ring" :reshow="showPopup" :chartData="chartDataRing"
+						<qiun-data-charts v-if="chartDataRing.series[0].data.length" :inScrollView="true" type="ring" :reshow="showPopup" :chartData="chartDataRing"
 							:loadingType="5" :disableScroll="false" background="none" :ontouch="true" />
+						<u-empty :text="`${showTypes[chartsShowType].name}没有记账记录哦~`" v-if="!chartDataRing.series[0].data.length" :show="!chartDataRing.series[0].data.length" mode="list" icon="http://cdn.uviewui.com/uview/empty/list.png"></u-empty>
 					</view>
 				</view>
 				
@@ -122,8 +124,14 @@
 								</view>
 							</view>
 							<view class="body-item-bottom">
-								<text>{{ u.created_at }}</text>
-								<text>支出 {{ u.charge_num }} 元</text>
+								<view class="body-item-bottom-left">
+									{{ u.remark }}
+								</view>
+								<view class="body-item-bottom-right">
+									<text class="body-item-bottom-right-time">{{ u.created_at }}</text>
+									<text class="body-item-bottom-right-money">支出 <text class="inner-money-num">{{ u.charge_num }}</text> 元</text>
+								</view>
+								
 							</view>
 						</view>
 					</view>
@@ -140,8 +148,14 @@
 								</view>
 							</view>
 							<view class="body-item-bottom">
-								<text>{{ u.created_at }}</text>
-								<text>收入 {{ u.charge_num }} 元</text>
+								<view class="body-item-bottom-left">
+									{{ u.remark }}
+								</view>
+								<view class="body-item-bottom-right">
+									<text class="body-item-bottom-right-time">{{ u.created_at }}</text>
+									<text class="body-item-bottom-right-money">收入 <text class="inner-money-num">{{ u.charge_num }}</text> 元</text>
+								</view>
+								
 							</view>
 						</view>
 					</view>
@@ -978,7 +992,29 @@
 								display: flex;
 								align-items: center;
 								justify-content: space-between;
-								font-size: 12px;
+								font-size: 10px;
+								
+								.body-item-bottom-left{
+									color: #999;
+									max-width: 100rpx;
+									overflow: hidden;
+									text-overflow: ellipsis;
+									white-space: nowrap;
+								}
+								
+								.body-item-bottom-right{
+									display: flex;
+									align-items: center;
+									
+									.body-item-bottom-right-money{
+										padding-left: 12rpx;
+										font-size: 12px;
+										
+										.inner-money-num{
+											font-weight: 700;
+										}
+									}
+								}
 							}
 						}
 					}

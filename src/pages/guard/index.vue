@@ -33,21 +33,18 @@
 				showLoginRegister: false
 			}
 		},
-		onLoad() {
-			/* uni.navigateTo({
-				url: "/pages/index/Index"
-			}) */
-			/* uni.switchTab({
-				url: "/pages/index/Index"
-			}) */
-			if(uni.getStorageSync('SYS_AUTH_TOKEN_KEY')){
-				uni.switchTab({
-					url: "/pages/index/Index"
-				})
+		onLoad(option) {
+			if(!option.notAuth){
+				if(uni.getStorageSync('SYS_AUTH_TOKEN_KEY')){
+					uni.switchTab({
+						url: "/pages/index/Index"
+					})
+				}
+				setTimeout(() => {
+					plus.navigator.closeSplashscreen();
+				}, 500)
 			}
-			setTimeout(() => {
-				plus.navigator.closeSplashscreen();
-			}, 1000)
+			
 		},
 		methods: {
 			open() {
