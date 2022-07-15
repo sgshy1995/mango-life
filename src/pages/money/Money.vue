@@ -614,7 +614,7 @@
 				align-items: center;
 				justify-content: flex-start;
 				flex-direction: column;
-				width: 100rpx;
+				width: 120rpx;
 
 				>image {
 					width: 44rpx;
@@ -639,7 +639,7 @@
 			}
 			
 			.top-button{
-				width: 100rpx;
+				width: 120rpx;
 				display: flex;
 				align-items: center;
 				justify-content: flex-end;
@@ -712,7 +712,7 @@
 			position: absolute;
 			bottom: 0;
 			left: 0;
-			background: rgba(0, 0, 0, 0.15);
+			background: rgba(0, 0, 0, 0.05);
 			border-top-left-radius: 24rpx;
 			border-top-right-radius: 24rpx;
 			flex-shrink: 0;

@@ -466,3 +466,13 @@ export const findBacklogsAction = (created_by: number): Promise<Record<string,an
 	  method: 'GET'
 	})
 }
+
+// 生活助手
+
+// 根据省份查询油价信息
+export const getGasInfoByProvinceAction = (province: string): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: `/assistant/${province}`,
+	  method: 'GET'
+	})
+}
