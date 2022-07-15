@@ -392,12 +392,14 @@
 					this.clearPick();
 					this.showModal = false;
 					this.deletingType = '';
+					this.$store.dispatch('changeMoneyCount')
 				}) : deleteTeamChargeTypeAction(this.pickInfo.origin_id).then(res => {
 					this.$toast(res.message || '删除成功');
 					this.handleOkItem();
 					this.clearPick();
 					this.showModal = false;
 					this.deletingType = '';
+					this.$store.dispatch('changeMoneyCount')
 				})
 			},
 			handleClickIcon(info, record) {

@@ -145,6 +145,7 @@
 						balance_type: this.balanceType === 'spend' ? 0 : 1
 					}).then(res=>{
 						this.$toast(res.message || '创建成功');
+						this.$store.dispatch('changeMoneyCount')
 						this.close();
 					})
 				}else{
@@ -156,6 +157,7 @@
 						balance_type: this.balanceType === 'spend' ? 0 : 1
 					}).then(res=>{
 						this.$toast(res.message || '创建成功');
+						this.$store.dispatch('changeMoneyCount')
 						this.close();
 					})
 				}
@@ -167,6 +169,7 @@
 						icon: this.selectedInfo.icon
 					}).then(res=>{
 						this.$toast(res.message || '更新成功');
+						this.$store.dispatch('changeMoneyCount')
 						this.close();
 					})
 				}else{
@@ -175,6 +178,7 @@
 						icon: this.selectedInfo.icon
 					}).then(res=>{
 						this.$toast(res.message || '更新成功');
+						this.$store.dispatch('changeMoneyCount')
 						this.close();
 					})
 				}

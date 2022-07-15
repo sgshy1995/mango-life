@@ -260,6 +260,9 @@
 		computed: {
 			userInfo(){
 				return this.$store.state.user.userInfo
+			},
+			moneyChangeCount(){
+				return this.$store.state.money.moneyChangeCount
 			}
 		},
 		watch: {
@@ -271,6 +274,11 @@
 						uni.showTabBar()
 					})
 				}
+			},
+			moneyChangeCount(){
+				this.$nextTick(()=>{
+					this.findDataAll()
+				})
 			}
 		},
 		mounted() {

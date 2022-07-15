@@ -367,6 +367,8 @@
 						}).then(res=>{
 							(this as any).$toast(res.message || '更新成功');
 							this.$emit('ok');
+							// @ts-ignore
+							this.$store.dispatch('changeMoneyCount');
 							this.close();
 						}) : changeTeamChargeAction(this.editInfo.id,{
 							charge_num: Number(this.inputNum),
@@ -374,6 +376,8 @@
 						}).then(res=>{
 							(this as any).$toast(res.message || '更新成功');
 							this.$emit('ok');
+							// @ts-ignore
+							this.$store.dispatch('changeMoneyCount');
 							this.close();
 						})
 					
@@ -389,6 +393,8 @@
 						}).then(res=>{
 							(this as any).$toast(res.message || '添加成功');
 							this.$emit('ok');
+							// @ts-ignore
+							this.$store.dispatch('changeMoneyCount');
 							this.close();
 						}) : addTeamChargeAction({
 							charge_num: Number(this.inputNum),
@@ -401,6 +407,8 @@
 						}).then(res=>{
 							(this as any).$toast(res.message || '添加成功');
 							this.$emit('ok');
+							// @ts-ignore
+							this.$store.dispatch('changeMoneyCount');
 							this.close();
 						})
 				}

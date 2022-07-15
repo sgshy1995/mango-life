@@ -195,15 +195,18 @@
 					deletePersonalChargeAction(this.pickId).then(res=>{
 						this.$toast(res.message || '删除成功');
 						this.handleOk();
+						this.$store.dispatch('changeMoneyCount')
 						this.showModal = false
 					}) : deleteTeamChargeAction(this.pickId).then(res=>{
 						this.$toast(res.message || '删除成功');
 						this.handleOk();
+						this.$store.dispatch('changeMoneyCount')
 						this.showModal = false
 					})
 			},
 			handleOk(){
 				this.$emit('ok')
+				this.$store.dispatch('changeMoneyCount')
 				this.getHistoryData({charge_time: this.pickDate + ' 00:00:00', charge_type: this.chooseInfo.id});
 				this.getHistoryDataAll({charge_type: this.chooseInfo.id});
 				this.renderKey = false
