@@ -310,17 +310,17 @@
 				this.findDataMonth()
 				if(this.switchType === 'personal'){
 					this.getPersonalTypes().then(()=>{
-						this.$nextTick(()=>{
+						setTimeout(()=>{
 							this.findData()
 							this.findDataRecent()
-						})
+						},100)
 					})
 				}else{
 					this.getTeamTypes().then(()=>{
-						this.$nextTick(()=>{
+						setTimeout(()=>{
 							this.findData()
 							this.findDataRecent()
-						})
+						},100)
 					})
 				}
 			},
