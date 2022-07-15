@@ -30,11 +30,21 @@
 			</view>
 		</view>
 		<view class="mine-body">
+			<view class="mine-default-radio">
+				<view class="mine-default-radio-title">默认展开模块</view>
+				<u-radio-group 
+					@change="handleChangeRadio"
+				    v-model="radioDefaultValue"
+				    iconPlacement="left">
+					<u-radio iconSize="12" labelSize="12" activeColor="#ffbb00" label="不展开  " name="none"></u-radio>
+					<u-radio iconSize="12" labelSize="12" activeColor="#ffbb00" label="图片管理  " name="picture"></u-radio>
+					<u-radio iconSize="12" labelSize="12" activeColor="#ffbb00" label="生活助手  " name="assistant"></u-radio>
+				</u-radio-group>
+			</view>
 			<view class="mine-pictures" v-if="userInfo.id">
 				<u-collapse ref="collapse" @change="changeCollapse" @close="closeCollapse" @open="openCollapse" accordion
 					:value="valueCollapse">
-					<u-collapse-item title="个人图片管理" icon="https://eden-life.net.cn:9000/cdn/mango/images/图片管理.png"
-						name="Docs guide">
+					<u-collapse-item title="个人图片管理" icon="https://eden-life.net.cn:9000/cdn/mango/images/图片管理.png" name="picture">
 						<view class="u-collapse-content">
 							<view class="mine-pictures-title">上传和更改您的个人图片</view>
 							<u-line></u-line>
@@ -69,7 +79,7 @@
 							<u-line></u-line>
 						</view>
 					</u-collapse-item>
-					<u-collapse-item title="生活小助手" :icon="lifeIcon" name="Ass guide">
+					<u-collapse-item title="生活小助手" :icon="lifeIcon" name="assistant">
 						<view class="u-collapse-content">
 							<view class="u-collapse-content-title">
 								<image class="u-collapse-content-title-icon" src="@/static/images/mine/gas.png"></image>
@@ -79,7 +89,11 @@
 								<view class="u-collapse-content-in-top">
 									<text>当前省份： </text>
 									<view class="u-collapse-content-in-top-text">
-										<text>{{ inProvince }}</text>
+										<text>{{ inProvince ? inProvince : '暂未获取到省份信息' }}</text>
+									</view>
+									<view @click="reGetLocationInfo" class="u-collapse-content-in-top-select">
+										<text>重新定位</text>
+										<u-icon name="map" color="#999" size="10"></u-icon>
 									</view>
 									<view @click="handleShowProvincePicker" class="u-collapse-content-in-top-select">
 										<text>选择其他省份</text>
@@ -183,7 +197,7 @@
 					money_background: '',
 					user_id: 0
 				},
-				valueCollapse: 'Ass guide',
+				valueCollapse: '',
 				showModalBackground: false,
 				showModalAvatar: false,
 				ipLocation: '',
@@ -204,7 +218,9 @@
 				columnsProvince: [
 					['北京', '上海', '江苏', '天津', '河北', '山东', '重庆', '江西', '辽宁', '安徽', '内蒙古', '福建', '宁夏', '甘肃', '青海', '广东', '广西', '山西', '贵州', '陕西', '海南', '四川', '西藏', '河南', '新疆', '黑龙江', '吉林', '云南', '湖北', '浙江', '湖南']
 				],
-				defaultIndex: [0]
+				defaultIndex: [0],
+				readyLoadLocation: false,
+				radioDefaultValue: 'assistant'
 			};
 		},
 		components: {
@@ -238,7 +254,17 @@
 			this.getIpInfo()
 			this.getLocationInfo()
 		},
+		onLoad() {
+			if(uni.getStorageSync('SYS_MINE_DEFAULT_SHOW')){
+				this.radioDefaultValue = uni.getStorageSync('SYS_MINE_DEFAULT_SHOW')
+			}
+			this.valueCollapse = this.radioDefaultValue
+		},
 		methods: {
+			handleChangeRadio(type){
+				this.radioDefaultValue = type
+				uni.setStorageSync('SYS_MINE_DEFAULT_SHOW', type)
+			},
 			handleShowProvincePicker(){
 				this.showProvince = true
 			},
@@ -251,19 +277,26 @@
 				this.showProvince = false
 				this.getGasInfo(true)
 			},
-			getLocationInfo() {
+			getLocationInfo(ifLoading) {
 				const that = this
 				uni.getLocation({
 					type: 'wgs84',
 					geocode: true,
 					success: function(res) {
 						console.log('当前位置的res：', res);
-						that.inProvince = that.columnsProvince[0].find(name=>res.address.province.indexOf(name)>-1)
-						that.defaultIndex = [that.columnsProvince[0].findIndex(name=>res.address.province.indexOf(name)>-1)]
-						that.pickerKey++
-						that.getGasInfo()
+						if(!that.readyLoadLocation){
+							that.inProvince = that.columnsProvince[0].find(name=>res.address.province.indexOf(name)>-1)
+							that.defaultIndex = [that.columnsProvince[0].findIndex(name=>res.address.province.indexOf(name)>-1)]
+							that.pickerKey++
+							that.readyLoadLocation = true
+						}
+						that.getGasInfo(ifLoading)
 					}
 				});
+			},
+			reGetLocationInfo(){
+				this.readyLoadLocation = false
+				this.getLocationInfo(true)
 			},
 			getGasInfo(ifLoading){
 				if(ifLoading) this.gasLoading = true
@@ -471,6 +504,19 @@
 	.mine-body {
 		box-sizing: border-box;
 		padding: 30rpx;
+		
+		.mine-default-radio{
+			margin-top: 24rpx;
+			margin-bottom: 12rpx;
+			.mine-default-radio-title{
+				font-size: 12px;
+				margin-bottom: 12rpx;
+				font-weight: 700;
+			}
+			.u-radio-group .u-radio{
+				margin-right: 24rpx !important;
+			}
+		}
 
 		.mine-pictures {
 			width: 100%;
