@@ -145,7 +145,10 @@
 									{{ weatherLoading ? '定位中...' : '定位有误？重新定位' }}
 								</view>
 							</view>
-							<view class="u-collapse-weather-body">
+							<view class="u-collapse-weather-loading" v-if="!weatherInfoNow.obsTime">
+								<u-loading-icon text="加载中" size="14" textSize="14"></u-loading-icon>
+							</view>
+							<view class="u-collapse-weather-body" v-else>
 								<!-- <text @click="handleChooseCity">点击选择</text> -->
 								<view class="u-collapse-weather-body-update">
 									更新时间： {{ weatherInfoNow.obsTime || '--' }}
@@ -224,7 +227,7 @@
 												<view class="daily-item-left">
 													<view class="daily-item-left-top">
 														<view class="top-time">
-															<text class="top-time-day">{{ u.fxDate }}</text>
+															<text class="top-time-day">{{ index === 0 ? '今天' : u.fxDate }}</text>
 															<text class="top-time-week" v-if="u.week">{{ u.week }}</text>
 														</view>
 														<view class="top-temp">
@@ -840,6 +843,18 @@
 			border-left: 1px solid #EAEBEC;
 			border-right: 1px solid #EAEBEC;
 			margin-top: 24rpx;
+			
+			.u-collapse-weather-loading {
+				width: 100%;
+				height: 200rpx;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				box-sizing: border-box;
+				border-bottom: 1px solid #999;
+				border-left: 1px solid #999;
+				border-right: 1px solid #999;
+			}
 
 			.u-collapse-weather-title {
 				display: flex;
@@ -1164,13 +1179,12 @@
 									}
 									
 									.daily-item-text-pop{
-										margin-top: 12rpx;
+										margin-top: 6rpx;
 										white-space: nowrap;
 										font-size: 10px;
 									}
 									
 									.daily-item-text-precip{
-										margin-top: 6rpx;
 										white-space: nowrap;
 										font-size: 10px;
 									}
