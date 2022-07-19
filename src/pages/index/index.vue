@@ -39,8 +39,8 @@
 					<view class="index-switch-section-wipe" :class="{'to-right': switchType === 1}">{{ switchType === 0 ? '个人看板' :'提醒事项' }}</view>
 				</view>
 			</view>
-			<MoneyDashboard switchType="personal" ref="MoneyPersonalDashboard" v-if="switchType === 0" />
-			<MoneyDashboard switchType="team" ref="MoneyTeamDashboard" v-if="switchType === 1" />
+			<MoneyDashboard switchType="personal" ref="MoneyPersonalDashboard" v-if="switchType === 0" :key="personalKey" />
+			<MoneyDashboard switchType="team" ref="MoneyTeamDashboard" v-if="switchType === 1" :key="teamKey" />
 			<RemindDashboard ref="RemindDashboard" v-if="switchType === 2" />
 		</view>
 	</view>
@@ -69,11 +69,22 @@
 				menuBaseUrl: 'https://cdn.uviewui.com/uview/menu/',
 				title: 'Hello',
 				current: 0,
-				message: 14
+				message: 14,
+				personalKey: 'x',
+				teamKey: 'y'
 			}
 		},
 		onShow(){
 			console.log('index show ====================')
+			this.$nextTick(()=>{
+				/* if(this.switchType === 0){
+					this.$refs.MoneyPersonalDashboard.refreshPieChart ++
+					this.$refs.MoneyPersonalDashboard.refreshLineChart ++
+				}else{
+					this.$refs.MoneyTeamDashboard.refreshPieChart ++
+					this.$refs.MoneyTeamDashboard.refreshLineChart ++
+				} */
+			})
 			this.getUserInfo().then(res=>{
 				const historyType = uni.getStorageSync('SYS_INDEX_SWITCH_TYPE')
 				if(historyType !== null && historyType !== undefined){
@@ -90,14 +101,24 @@
 					}, 0)
 				},
 				immediate: true
+			},
+			moneyChangeCount(){
+				this.handleRefresh()
 			}
 		},
 		computed: {
 			userInfo(){
 				return this.$store.state.user.userInfo
+			},
+			moneyChangeCount(){
+				return this.$store.state.money.moneyChangeCount
 			}
 		},
 		methods: {
+			handleRefresh(){
+				console.log('refresh ========== refresh')
+				this.switchType = 2
+			},
 			loadChildDatas(){
 				console.log('触发了请求数据 ==== ')
 				this.switchType === 0 ? this.$refs.MoneyPersonalDashboard.findDataAll() : this.switchType === 1 ? this.$refs.MoneyTeamDashboard.findDataAll() : null

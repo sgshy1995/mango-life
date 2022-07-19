@@ -472,7 +472,23 @@ export const findBacklogsAction = (created_by: number): Promise<Record<string,an
 // 根据省份查询油价信息
 export const getGasInfoByProvinceAction = (province: string): Promise<Record<string,any>> => {
 	return doRequestAction({
-	  url: `/assistant/${province}`,
+	  url: `/assistant/gas/${province}`,
+	  method: 'GET'
+	})
+}
+
+// 根据城市编码查询天气信息
+export const getWeatherInfoByCityAction = (adcode: string): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: `/assistant/weather/${adcode}`,
+	  method: 'GET'
+	})
+}
+
+// 获取所有城市编码
+export const getPCAListAction = (): Promise<Record<string,any>> => {
+	return doRequestAction({
+	  url: '/assistant/pca',
 	  method: 'GET'
 	})
 }
