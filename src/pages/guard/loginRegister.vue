@@ -2,18 +2,38 @@
 	<view class="login-register-wrapper">
 		<view class="mine-popup">
 			<view class="mine-popup-top">
-				{{ showType === 'login' ? '登录' : '注册' }}
+				<text class="mine-popup-top-text">{{ showType === 'login' ? '登录' : '注册' }}</text>
+				<view class="mine-popup-top-switch" v-if="showType === 'login'">
+					<view class="mine-popup-top-switch-text">登录方式</view>
+					<view class="mine-popup-top-switch-in" @click="handleChangeLoginType">
+						<view class="mine-popup-top-switch-item">用户名</view>
+						<view class="mine-popup-top-switch-item">邮箱</view>
+						<view class="mine-popup-top-switch-swip" :class="{'to-right': loginType === 'email'}">{{ loginType === 'username' ? '用户名' : '邮箱' }}</view>
+					</view>
+				</view>
 			</view>
 			<view class="user-form">
-				<u--form border="none" abelPosition="left" :model="formModel" ref="Form">
-					<u-form-item required labelWidth="70" label="用户名" prop="username" borderBottom>
+				<u--form v-if="showType==='register'" border="none" abelPosition="left" :model="formModel" ref="Form">
+					<u-form-item required labelWidth="80" label="用户名" prop="username" borderBottom>
 						<u--input maxlength="18" placeholder="请输入用户名" v-model="formModel.username" border="none"></u--input>
 					</u-form-item>
-					<u-form-item v-if="showType==='register'" required labelWidth="70" label="昵称" prop="nickname"
+					<u-form-item required labelWidth="80" label="昵称" prop="nickname"
 						borderBottom>
 						<u--input maxlength="12" placeholder="请输入昵称" v-model="formModel.nickname" border="none"></u--input>
 					</u-form-item>
-					<u-form-item required labelWidth="70" label="密码" prop="password" borderBottom>
+					<u-form-item required labelWidth="80" label="邮箱" prop="email"
+						borderBottom>
+						<u--input maxlength="40" placeholder="请输入邮箱" v-model="formModel.email" border="none"></u--input>
+					</u-form-item>
+					<u-form-item required labelWidth="80" label="邮箱验证码" prop="capture_email">
+						<view class="form-item-email-code">
+							<u-code-input v-model="formModel.capture_email" :maxlength="6" size="24" fontSize="14"></u-code-input>
+						</view>
+					</u-form-item>
+					<view class="form-item-email-code-tap" @tap="tapEmailCaptcha" :class="{disabled: email_cooling}">
+						{{ email_cooling ? `${emailIntervalNum}秒后获取` : '获取验证码' }}
+					</view>
+					<u-form-item required labelWidth="80" label="密码" prop="password" borderBottom>
 						<u-input maxlength="20" placeholder="请输入密码" :type="showPassword ? 'text' : 'password'"
 							v-model="formModel.password" border="none">
 							<u-icon v-if="!showPassword" slot="suffix" name="eye-off" color="#aaa" size="18"
@@ -22,11 +42,35 @@
 								@click="showPassword = false"></u-icon>
 						</u-input>
 					</u-form-item>
-					<u-form-item v-if="showType==='register'" required labelWidth="70" label="内测码" prop="nickname"
+					<u-form-item required labelWidth="80" label="内测码" prop="nickname"
 						borderBottom>
 						<u--input maxlength="12" placeholder="请输入内测码" v-model="formModel.private_yard" border="none"></u--input>
 					</u-form-item>
-					<u-form-item required labelWidth="70" label="验证码" prop="code">
+					<u-form-item required labelWidth="80" label="验证码" prop="code">
+						<view class="form-item-code">
+							<u-code-input v-model="formModel.capture" :maxlength="4" size="24" fontSize="14"></u-code-input>
+							<image :src="captureCode" @tap="tapCaptcha"></image>
+						</view>
+					</u-form-item>
+				</u--form>
+				<u--form v-if="showType==='login'" border="none" abelPosition="left" :model="formModel" ref="Form">
+					<u-form-item v-if="loginType === 'username'" required labelWidth="80" label="用户名" prop="username" borderBottom>
+						<u--input maxlength="18" placeholder="请输入用户名" v-model="formModel.username" border="none"></u--input>
+					</u-form-item>
+					<u-form-item v-if="loginType === 'email'" required labelWidth="80" label="邮箱" prop="email"
+						borderBottom>
+						<u--input maxlength="40" placeholder="请输入邮箱" v-model="formModel.email" border="none"></u--input>
+					</u-form-item>
+					<u-form-item required labelWidth="80" label="密码" prop="password" borderBottom>
+						<u-input maxlength="20" placeholder="请输入密码" :type="showPassword ? 'text' : 'password'"
+							v-model="formModel.password" border="none">
+							<u-icon v-if="!showPassword" slot="suffix" name="eye-off" color="#aaa" size="18"
+								@click="showPassword = true"></u-icon>
+							<u-icon v-else slot="suffix" name="eye-fill" color="#aaa" size="18"
+								@click="showPassword = false"></u-icon>
+						</u-input>
+					</u-form-item>
+					<u-form-item required labelWidth="80" label="验证码" prop="code">
 						<view class="form-item-code">
 							<u-code-input v-model="formModel.capture" :maxlength="4" size="24" fontSize="14"></u-code-input>
 							<image :src="captureCode" @tap="tapCaptcha"></image>
@@ -56,12 +100,14 @@
 </template>
 
 <script>
+	import { isEmail } from '@/utils/validate.js'
 	import Vue from 'vue';
 	import {
 		registerAction,
 		loginAction,
 		getUserInfoByUsernameAction,
-		captureAction
+		captureAction,
+		captureEmailAction
 	} from '@/service/service'
 	export default Vue.extend({
 		data() {
@@ -75,6 +121,7 @@
 				arr.push(String.fromCharCode(i));
 			}
 			return {
+				loginType: 'username',
 				customStyleIn: {
 					width: '100vw'
 				},
@@ -84,7 +131,9 @@
 					nickname: '',
 					password: '',
 					capture: '',
-					private_yard: ''
+					private_yard: '',
+					email: '',
+					capture_email: ''
 				},
 				captureCode: '',
 				showPopup: false,
@@ -109,7 +158,10 @@
 					phone: '',
 					avatar: ''
 				},
-				device_id: ''
+				device_id: '',
+				email_cooling: false,
+				emailInterval: null,
+				emailIntervalNum: 0
 			}
 		},
 		created() {
@@ -118,6 +170,18 @@
 			this.tapCaptcha()
 		},
 		methods: {
+			handleChangeLoginType(){
+				this.loginType = this.loginType === 'username' ? 'email' : 'username'
+				this.formModel = {
+					username: '',
+					nickname: '',
+					password: '',
+					capture: '',
+					private_yard: '',
+					email: '',
+					capture_email: ''
+				}
+			},
 			getUserInfo(userInfo) {
 				return new Promise((reslove, reject) => {
 					getUserInfoByUsernameAction(userInfo).then(res => {
@@ -142,17 +206,38 @@
 			},
 			validateForm() {
 				let errorMessage = ''
-				if (!this.formModel.username) {
-					errorMessage = '请输入用户名'
-				} else if (!this.formModel.nickname && this.showType === 'register') {
-					errorMessage = '请输入昵称'
-				} else if (!this.formModel.password) {
-					errorMessage = '请输入密码'
-				} else if (!this.formModel.capture) {
-					errorMessage = '请输入验证码'
-				} else if (!this.formModel.private_yard && this.showType === 'register') {
-					errorMessage = '请输入内测码'
+				if(this.showType === 'register'){
+					if (!this.formModel.username) {
+						errorMessage = '请输入用户名'
+					} else if (!this.formModel.nickname) {
+						errorMessage = '请输入昵称'
+					} else if (!this.formModel.email) {
+						errorMessage = '请输入邮箱'
+					} else if (!isEmail(this.formModel.email)) {
+						errorMessage = '请输入正确格式的邮箱'
+					} else if (!this.formModel.capture_email) {
+						errorMessage = '请输入邮箱验证码'
+					} else if (!this.formModel.password) {
+						errorMessage = '请输入密码'
+					} else if (!this.formModel.capture) {
+						errorMessage = '请输入验证码'
+					} else if (!this.formModel.private_yard) {
+						errorMessage = '请输入内测码'
+					}
+				}else{
+					if (!this.formModel.username && this.loginType === 'username') {
+						errorMessage = '请输入用户名'
+					} else if (!this.formModel.email && this.loginType === 'email') {
+						errorMessage = '请输入邮箱'
+					} else if (this.loginType === 'email' && !isEmail(this.formModel.email)) {
+						errorMessage = '请输入正确格式的邮箱'
+					} else if (!this.formModel.password) {
+						errorMessage = '请输入密码'
+					} else if (!this.formModel.capture) {
+						errorMessage = '请输入验证码'
+					}
 				}
+				
 				return errorMessage
 			},
 			changeShowType(showType) {
@@ -175,8 +260,12 @@
 				} else {
 					this.$loadingOn();
 					registerAction({
-						...this.formModel,
-						device_id: this.device_id
+						user: {...this.formModel},
+						option: {
+							capture: this.formModel.capture,
+							device_id: this.device_id,
+							capture_email: this.formModel.capture_email
+						}
 					}).then(res => {
 						console.log('res', res);
 						uni.setStorageSync('SYS_AUTH_TOKEN_KEY', res.data.token);
@@ -205,8 +294,12 @@
 				} else {
 					this.$loadingOn();
 					loginAction({
-						...this.formModel,
-						device_id: this.device_id
+						user: {...this.formModel},
+						option: {
+							capture: this.formModel.capture,
+							device_id: this.device_id,
+							login_type: this.loginType
+						}
 					}).then(res => {
 						console.log('res', res);
 						uni.setStorageSync('SYS_AUTH_TOKEN_KEY', res.data.token);
@@ -236,6 +329,47 @@
 						this.captureCode = res
 					}
 				})
+			},
+			tapEmailCaptcha() {
+				if(this.email_cooling) return
+				let errorMessage = ''
+				if (!this.formModel.email) {
+					errorMessage = '请输入邮箱'
+				} else if (!isEmail(this.formModel.email)) {
+					errorMessage = '请输入正确格式的邮箱'
+				}
+				if(errorMessage){
+					uni.showToast({
+						title: errorMessage,
+						icon: 'none'
+					})
+					return
+				}
+				this.$loadingOn();
+				captureEmailAction(this.device_id, this.formModel.email).then(res=>{
+					this.$loadingOff();
+					uni.showToast({
+						title: res.message,
+						icon: 'none'
+					})
+					this.emailStartInterval()
+				}).catch(err=>{
+					this.$loadingOff();
+				})
+			},
+			emailStartInterval() {
+				this.email_cooling = true
+				this.emailInterval && clearInterval(this.emailInterval)
+				this.emailIntervalNum = 60
+				this.emailInterval = setInterval(()=>{
+					if(this.emailIntervalNum === 1){
+						this.emailInterval && clearInterval(this.emailInterval)
+						this.emailIntervalNum = 0
+						this.email_cooling = false
+					}else{
+						this.emailIntervalNum -= 1
+					}
+				}, 1000)
 			},
 			handleShowAgreement(){
 				uni.navigateTo({
@@ -268,6 +402,24 @@
 				margin-left: 20rpx;
 			}
 		}
+		
+		.form-item-email-code{
+			width: 100%;
+		}
+		
+		.form-item-email-code-tap{
+			display: inline-block;
+			box-sizing: border-box;
+			padding: 4rpx 8rpx;
+			font-size: 12px;
+			border: 1px solid #999;
+			border-radius: 12rpx;
+			
+			&.disabled{
+				background: #ddd;
+				color: #999;
+			}
+		}
 	}
 
 	.mine-popup {
@@ -276,11 +428,70 @@
 
 		.mine-popup-top {
 			width: 100%;
-			font-weight: 800;
-			font-size: 20px;
 			margin-bottom: 24rpx;
 			box-sizing: border-box;
 			padding: 0 70rpx;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			
+			.mine-popup-top-text{
+				font-weight: 800;
+				font-size: 20px;
+			}
+			
+			.mine-popup-top-switch{
+				display: flex;
+				align-items: center;
+				flex-shrink: 0;
+				
+				.mine-popup-top-switch-text{
+					font-size: 12px;
+				}
+				
+				.mine-popup-top-switch-in{
+					margin-left: 12rpx;
+					display: flex;
+					align-items: center;
+					position: relative;
+					width: 180rpx;
+					height: 48rpx;
+					border-radius: 24rpx;
+					background: #eee;
+					
+					.mine-popup-top-switch-item{
+						width: 50%;
+						height: 100%;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						font-size: 12px;
+						color: #999;
+					}
+					
+					.mine-popup-top-switch-swip{
+						width: 50%;
+						height: 100%;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						font-size: 12px;
+						color: #fff;
+						font-weight: 700;
+						background: rgba(255,187,0,1);
+						position: absolute;
+						top: 0;
+						left: 0;
+						transition: all 0.3s;
+						box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+						border-radius: 24rpx;
+						
+						&.to-right{
+							left: 50%;
+						}
+					}
+				}
+			}
 		}
 
 		.mine-popup-bottom {

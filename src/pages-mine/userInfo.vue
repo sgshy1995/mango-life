@@ -50,12 +50,13 @@
 						<text class="in-icon">></text>
 					</view>
 				</u-cell>
-				<u-cell icon="email-fill" title="邮箱" @click="handleShowEmail">
+				<!-- <u-cell icon="email-fill" title="邮箱" @click="handleShowEmail">
 					<view slot="value" class="user-info-item">
 						<text class="in-text" :class="{empty: !userInfo.email}">{{ userInfo.email || '未填写' }}</text>
 						<text class="in-icon">></text>
 					</view>
-				</u-cell>
+				</u-cell> -->
+				<u-cell icon="email-fill" title="邮箱" :value="userInfo.email"></u-cell>
 				<u-cell icon="man-add-fill" title="性别">
 					<view slot="value" class="user-info-item" @click="handleShowPickerGender">
 						<text class="in-text"

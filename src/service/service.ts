@@ -1,7 +1,7 @@
 import {Result} from "./service.d";
 import {doRequestAction,NoTokenJsonHeader,doUploadAction} from "./request";
 
-// 注册
+// 注册 验证码
 const captureUrl = '/auth/capture'
 export const captureAction = (device_id: string): Promise<Record<string,any>> => {
   return doRequestAction({
@@ -9,6 +9,17 @@ export const captureAction = (device_id: string): Promise<Record<string,any>> =>
     method: 'GET',
     header: NoTokenJsonHeader,
 	data: {device_id}
+  })
+}
+
+// 注册 邮箱验证码
+const captureEmailUrl = '/auth/capture_email'
+export const captureEmailAction = (device_id: string, email: string): Promise<Record<string,any>> => {
+  return doRequestAction({
+    url: captureEmailUrl,
+    method: 'GET',
+    header: NoTokenJsonHeader,
+	data: {device_id, email}
   })
 }
 

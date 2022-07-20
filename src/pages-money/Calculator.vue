@@ -360,6 +360,8 @@
 						icon: 'none'
 					})
 				} else if(this.editInfo.id) {
+					// @ts-ignore
+					this.$loadingOn();
 					this.switchType === 'personal' ?
 						changePersonalChargeAction(this.editInfo.id,{
 							charge_num: Number(this.inputNum),
@@ -368,8 +370,13 @@
 							(this as any).$toast(res.message || '更新成功');
 							this.$emit('ok');
 							// @ts-ignore
+							this.$loadingOff();
+							// @ts-ignore
 							this.$store.dispatch('changeMoneyCount');
 							this.close();
+						}).catch(err=>{
+							// @ts-ignore
+							this.$loadingOff();
 						}) : changeTeamChargeAction(this.editInfo.id,{
 							charge_num: Number(this.inputNum),
 							remark: this.inputNote || undefined
@@ -377,11 +384,18 @@
 							(this as any).$toast(res.message || '更新成功');
 							this.$emit('ok');
 							// @ts-ignore
+							this.$loadingOff();
+							// @ts-ignore
 							this.$store.dispatch('changeMoneyCount');
 							this.close();
+						}).catch(err=>{
+							// @ts-ignore
+							this.$loadingOff();
 						})
 					
 				} else{
+					// @ts-ignore
+					this.$loadingOn();
 					this.switchType === 'personal' ?
 						addPersonalChargeAction({
 							charge_num: Number(this.inputNum),
@@ -394,8 +408,13 @@
 							(this as any).$toast(res.message || '添加成功');
 							this.$emit('ok');
 							// @ts-ignore
+							this.$loadingOff();
+							// @ts-ignore
 							this.$store.dispatch('changeMoneyCount');
 							this.close();
+						}).catch(err=>{
+							// @ts-ignore
+							this.$loadingOff();
 						}) : addTeamChargeAction({
 							charge_num: Number(this.inputNum),
 							created_by: this.userInfo.id,
@@ -408,8 +427,13 @@
 							(this as any).$toast(res.message || '添加成功');
 							this.$emit('ok');
 							// @ts-ignore
+							this.$loadingOff();
+							// @ts-ignore
 							this.$store.dispatch('changeMoneyCount');
 							this.close();
+						}).catch(err=>{
+							// @ts-ignore
+							this.$loadingOff();
 						})
 				}
 			}
