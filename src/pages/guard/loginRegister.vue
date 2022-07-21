@@ -2,15 +2,15 @@
 	<view class="login-register-wrapper">
 		<view class="mine-popup">
 			<view class="mine-popup-top">
-				<text class="mine-popup-top-text">{{ showType === 'login' ? '登录' : '注册' }}</text>
-				<view class="mine-popup-top-switch" v-if="showType === 'login'">
+				<text class="mine-popup-top-text">{{ showType === 'register' ? '注册' : loginType === 'email' ? '邮箱登录' : '账号登录' }}</text>
+				<!-- <view class="mine-popup-top-switch" v-if="showType === 'login'">
 					<view class="mine-popup-top-switch-text">登录方式</view>
 					<view class="mine-popup-top-switch-in" @click="handleChangeLoginType">
 						<view class="mine-popup-top-switch-item">用户名</view>
 						<view class="mine-popup-top-switch-item">邮箱</view>
 						<view class="mine-popup-top-switch-swip" :class="{'to-right': loginType === 'email'}">{{ loginType === 'username' ? '用户名' : '邮箱' }}</view>
 					</view>
-				</view>
+				</view> -->
 			</view>
 			<view class="user-form">
 				<u--form v-if="showType==='register'" border="none" abelPosition="left" :model="formModel" ref="Form">
@@ -85,6 +85,23 @@
 					</u-checkbox-group>
 
 					<text>已阅读并同意<text @click="handleShowAgreement" class="a-lisence">懒比蛋使用协议</text></text>
+				</view>
+				<view class="bottom-others" v-if="showType==='login'">
+					<view class="bottom-others-text">其他登录方式</view>
+					<view class="bottom-others-icons">
+						<view class="bottom-others-icon" v-if="loginType === 'username'" @click="handleChangeLoginType">
+							<image class="bottom-others-icon-img" src="@/static/images/guard/email.png"></image>
+						</view>
+						<view class="bottom-others-icon" v-if="loginType === 'email'" @click="handleChangeLoginType">
+							<image class="bottom-others-icon-img" src="@/static/images/guard/account.png"></image>
+						</view>
+						<view class="bottom-others-icon">
+							<image class="bottom-others-icon-img" src="@/static/images/guard/wechat.png"></image>
+						</view>
+						<view class="bottom-others-icon" v-if="os === 'ios'">
+							<image class="bottom-others-icon-img" src="@/static/images/guard/apple.png"></image>
+						</view>
+					</view>
 				</view>
 				<u-button v-if="showType==='register'" color="#ffbb00" type="primary" text="注册" @click="handleRegister">
 				</u-button>
@@ -161,12 +178,14 @@
 				device_id: '',
 				email_cooling: false,
 				emailInterval: null,
-				emailIntervalNum: 0
+				emailIntervalNum: 0,
+				os: ''
 			}
 		},
 		created() {
 			console.log('uni.getSystemInfoSync()', uni.getSystemInfoSync())
 			this.device_id = uni.getSystemInfoSync().deviceId
+			this.os = uni.getSystemInfoSync().platform
 			this.tapCaptcha()
 		},
 		methods: {
@@ -508,6 +527,43 @@
 					text-decoration: underline;
 					color: #808080;
 					padding-left: 2rpx;
+				}
+			}
+			
+			.bottom-others{
+				margin-bottom: 48rpx;
+				width: 100%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				
+				.bottom-others-text{
+					font-size: 12px;
+					color: #333;
+					padding-right: 24rpx;
+				}
+				
+				.bottom-others-icons{
+					display: flex;
+					align-items: center;
+					
+					.bottom-others-icon{
+						margin-right: 24rpx;
+						box-sizing: border-box;
+						width: 72rpx;
+						height: 72rpx;
+						border-radius: 50%;
+						background: #fff;
+						box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						
+						.bottom-others-icon-img{
+							width: 48rpx;
+							height: 48rpx;
+						}
+					}
 				}
 			}
 		}
