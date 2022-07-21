@@ -71,7 +71,7 @@
 		</scroll-view>
 		<u-modal :show="showModal" showCancelButton confirmColor="#ffbb00" @confirm="handleLogout"
 			@cancel="showModal=false" content="确定退出登录吗？"></u-modal>
-		<TeamManageModal @ok="$emit('change')" :userInfo="userInfo" ref="TeamManageModal"></TeamManageModal>
+		<TeamManageModal @ok="handleOkTeam" :userInfo="userInfo" ref="TeamManageModal"></TeamManageModal>
 		<image-cropper :crop-width="200" :crop-height="200" :show-reset-btn="false" :show-rotate-btn="false"
 			:src="tempFilePath" @confirm="confirm" @cancel="cancel"></image-cropper>
 		<u-modal title="昵称" :show="showModalNickname" showCancelButton confirmColor="#ffbb00"
@@ -280,9 +280,14 @@
 					console.log('res', res)
 					this.cropFilePath = ''
 					this.$emit('change')
+					this.$toast(res.message || '保存成功');
+					this.getUserInfo();
 				}).catch(err => {
 					console.log('err', err)
 				})
+			},
+			handleOkTeam(){
+				this.getUserInfo();
 			},
 			cancel() {
 				this.tempFilePath = ''

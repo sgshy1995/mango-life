@@ -502,14 +502,14 @@
 						const topList = []
 						Object.keys(this.baseData.items).map(key=>{
 							topList.push({
-								name: key,
+								name: this.baseData.items[key].charge_name,
 								spend: Math.round(this.baseData.items[key].spend.reduce((a, b) => a + b) * 100) / 100,
 								income: Math.round(this.baseData.items[key].income.reduce((a, b) => a + b) * 100) / 100,
 								balance_type: this.baseData.items[key].balance_type
 							})
 						})
-						const topListSpend = topList.filter(item=>item.balance_type === 0).sort((a,b)=>b.spend - a.spend).map(item=>{return {name: (this.iconsListLocal.find(itemIn=>itemIn.id === item.name) || {}).name, value: item.spend}}).filter(item=>item.value !== 0).slice(0,5)
-						const topListIncome = topList.filter(item=>item.balance_type === 1).sort((a,b)=>b.income - a.income).map(item=>{return {name: (this.iconsListLocal.find(itemIn=>itemIn.id === item.name) || {}).name, value: item.income}}).filter(item=>item.value !== 0).slice(0,5)
+						const topListSpend = topList.filter(item=>item.balance_type === 0).sort((a,b)=>b.spend - a.spend).map(item=>{return {name: item.name, value: item.spend}}).filter(item=>item.value !== 0).slice(0,5)
+						const topListIncome = topList.filter(item=>item.balance_type === 1).sort((a,b)=>b.income - a.income).map(item=>{return {name: item.name, value: item.income}}).filter(item=>item.value !== 0).slice(0,5)
 						this.chartDataRing.series[0].data = this.monthSwitch === 0 ? topListSpend : topListIncome
 						if(this.curNow === 0){
 							//this.totalNumWeek = Math.round(this.iconsListLocal.map(item=>item.money).reduce((a, b) => a + b) * 100) / 100
@@ -534,14 +534,14 @@
 						const topList = []
 						Object.keys(this.baseData.items).map(key=>{
 							topList.push({
-								name: key,
+								name: this.baseData.items[key].charge_name,
 								spend: Math.round(this.baseData.items[key].spend.reduce((a, b) => a + b) * 100) / 100,
 								income: Math.round(this.baseData.items[key].income.reduce((a, b) => a + b) * 100) / 100,
 								balance_type: this.baseData.items[key].balance_type
 							})
 						})
-						const topListSpend = topList.filter(item=>item.balance_type === 0).sort((a,b)=>b.spend - a.spend).map(item=>{return {name: (this.iconsListLocal.find(itemIn=>itemIn.id === item.name) || {}).name, value: item.spend}}).filter(item=>item.value !== 0).slice(0,5)
-						const topListIncome = topList.filter(item=>item.balance_type === 1).sort((a,b)=>b.income - a.income).map(item=>{return {name: (this.iconsListLocal.find(itemIn=>itemIn.id === item.name) || {}).name, value: item.income}}).filter(item=>item.value !== 0).slice(0,5)
+						const topListSpend = topList.filter(item=>item.balance_type === 0).sort((a,b)=>b.spend - a.spend).map(item=>{return {name: item.name, value: item.spend}}).filter(item=>item.value !== 0).slice(0,5)
+						const topListIncome = topList.filter(item=>item.balance_type === 1).sort((a,b)=>b.income - a.income).map(item=>{return {name: item.name, value: item.income}}).filter(item=>item.value !== 0).slice(0,5)
 						this.chartDataRing.series[0].data = this.monthSwitch === 0 ? topListSpend : topListIncome
 						if(this.curNow === 0){
 							//this.totalNumWeek = Math.round(this.iconsListLocal.map(item=>item.money).reduce((a, b) => a + b) * 100) / 100
@@ -1004,7 +1004,7 @@
 								
 								.body-item-bottom-left{
 									color: #999;
-									max-width: 100rpx;
+									max-width: 200rpx;
 									overflow: hidden;
 									text-overflow: ellipsis;
 									white-space: nowrap;

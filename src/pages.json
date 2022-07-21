@@ -209,8 +209,8 @@
 		"selectedColor": "#ffbb00",
 		"backgroundColor": "#fff",
 		"borderStyle": "black",
-		"iconWidth": "22px",
-		"fontSize": "12px",
+		"iconWidth": "20px",
+		"fontSize": "10px",
 		"spacing": "6px",
 		"list": [
 			{
