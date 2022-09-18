@@ -40,7 +40,9 @@
                     "<uses-permission android:name=\"android.permission.WRITE_CONTACTS\"/>"
                 ]
             },
-            "ios" : {},
+            "ios" : {
+                "dSYMs" : false
+            },
             /* ios打包配置 */
             "sdkConfigs" : {
                 "oauth" : {
@@ -96,14 +98,14 @@
         "splashscreen" : {
             "alwaysShowBeforeRender" : false,
             "waiting" : false,
-			"autoclose" : false,
-			"delay" : 0
+            "autoclose" : false,
+            "delay" : 0
         },
-		"safearea": {
-			"bottom": {
-		        "offset": "none" 
-		    }   
-		}
+        "safearea" : {
+            "bottom" : {
+                "offset" : "none"
+            }
+        }
     },
     "quickapp" : {},
     /* 快应用特有相关 */
