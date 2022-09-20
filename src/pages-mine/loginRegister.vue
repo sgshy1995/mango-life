@@ -26,10 +26,6 @@
 								@click="showPassword = false"></u-icon>
 						</u-input>
 					</u-form-item>
-					<u-form-item v-if="showType==='register'" required labelWidth="70" label="内测码" prop="nickname"
-						borderBottom>
-						<u--input maxlength="12" placeholder="请输入内测码" v-model="formModel.private_yard" border="none"></u--input>
-					</u-form-item>
 					<u-form-item required labelWidth="70" label="验证码" prop="code">
 						<view class="form-item-code">
 							<u-code-input v-model="formModel.capture" :maxlength="4" size="24" fontSize="14"></u-code-input>
@@ -87,8 +83,7 @@
 					username: '',
 					nickname: '',
 					password: '',
-					capture: '',
-					private_yard: ''
+					capture: ''
 				},
 				captureCode: '',
 				showPopup: false,
@@ -154,8 +149,6 @@
 					errorMessage = '请输入密码'
 				} else if (!this.formModel.capture) {
 					errorMessage = '请输入验证码'
-				} else if (!this.formModel.private_yard && this.showType === 'register') {
-					errorMessage = '请输入内测码'
 				}
 				return errorMessage
 			},

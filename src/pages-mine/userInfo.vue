@@ -242,10 +242,10 @@
 			},
 			close() {
 				console.log('close')
-				//uni.navigateBack()
-				uni.reLaunch({
+				uni.navigateBack()
+				/* uni.reLaunch({
 					url: "/pages/guard/index"
-				})
+				}) */
 			},
 			open() {
 
